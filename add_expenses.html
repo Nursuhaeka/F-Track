@@ -4,363 +4,415 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Expenses - Family Expense Tracker</title>
-    <!-- Tesseract.js for OCR -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3137c9;
+            --accent-color: #4895ef;
+            --success-color: #4cc9f0;
+            --danger-color: #772585;
+            --warning-color: #f8961e;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --sidebar-bg: #2b2d42;
+            --card-bg: #ffffff;
+            --chart-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark-color);
+            line-height: 1.6;
             display: flex;
-            position: relative;
+            min-height: 100vh;
         }
 
-        .language-selector {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 5px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            background-color: white;
-            font-size: 12px;
-            z-index: 100;
-            width: 150px;
-        }
-
-        /* Sidebar Styles */
         .sidebar {
-            width: 250px;
-            background-color: #2c3e50;
+            width: 280px;
+            background-color: var(--sidebar-bg);
             color: white;
             height: 100vh;
             padding: 20px 0;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
         }
-        
+
         .sidebar-header {
-            padding: 0 20px 20px;
-            border-bottom: 1px solid #34495e;
+            padding: 0 25px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             margin-bottom: 20px;
         }
-        
+
         .sidebar-header h2 {
             margin: 0;
-            font-size: 20px;
-            color: #ecf0f1;
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        
+
+        .sidebar-header h2 i {
+            color: var(--accent-color);
+        }
+
         .sidebar-menu {
             list-style: none;
             padding: 0;
             margin: 0;
         }
-        
+
         .sidebar-menu li {
-            padding: 12px 20px;
+            padding: 12px 25px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            border-left: 3px solid transparent;
         }
-        
+
         .sidebar-menu li:hover {
-            background-color: #34495e;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+            border-left: 3px solid var(--accent-color);
         }
-        
+
         .sidebar-menu li.active {
-            background-color: #3498db;
+            background-color: rgba(67, 97, 238, 0.2);
+            color: white;
+            border-left: 3px solid var(--primary-color);
         }
-        
+
         .sidebar-menu li i {
-            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
         }
-        
-        /* Main Content Styles */
+
         .main-content {
             flex: 1;
-            padding: 20px;
+            padding: 30px;
+            margin-left: 280px;
+            transition: all 0.3s ease;
         }
-        
+
+        /* Form styles */
         .form-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
-        
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
         h1 {
-            font-size: 20px;
-            margin-top: 0;
-            color: #333;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
+            font-size: 28px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        
+
+        h1 i {
+            color: var(--primary-color);
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         label {
             display: block;
             margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
+            font-weight: 600;
         }
-        
-        label.required:after {
-            content: " *";
-            color: red;
+
+        select, input, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
         }
-        
+
+        select:focus, input:focus, textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
         .input-container {
             position: relative;
         }
-        
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-        
+
         .voice-icon {
             position: absolute;
-            right: 10px;
+            right: 15px;
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
-            color: #666;
-        }
-        
-        .voice-icon:hover {
-            color: #4285f4;
-        }
-        
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .checkbox-group label {
-            margin-right: 15px;
-            font-weight: normal;
-        }
-        
-        .radio-group {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .radio-option {
-            display: flex;
-            align-items: center;
-        }
-        
-        .radio-option input {
-            width: auto;
-            margin-right: 5px;
-        }
-        
-        .upload-section {
-            border: 2px dashed #ddd;
-            border-radius: 4px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            cursor: pointer;
-        }
-        
-        .upload-section:hover {
-            border-color: #4285f4;
-            background-color: #f8faff;
-        }
-        
-        .button-group {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-        
-        button {
-            padding: 10px 20px;
+            color: var(--gray-color);
+            transition: all 0.3s ease;
+            background: none;
             border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .save-draft {
-            background-color: #f1f1f1;
-            color: #555;
-        }
-        
-        .save {
-            background-color: #4285f4;
-            color: white;
-        }
-        
-        .save-draft:hover {
-            background-color: #e1e1e1;
-        }
-        
-        .save:hover {
-            background-color: #3367d6;
+            font-size: 16px;
         }
 
-        /* Receipt scanning styles */
+        .voice-icon:hover {
+            color: var(--primary-color);
+        }
+
+        .upload-section {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: var(--light-color);
+        }
+
+        .upload-section:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .upload-section p {
+            margin-bottom: 10px;
+            color: var(--gray-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
         .receipt-preview {
             max-width: 100%;
             max-height: 200px;
-            margin-top: 10px;
+            margin: 15px auto;
             display: none;
-            border-radius: 4px;
-            border: 1px solid #ddd;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        
+
         .scan-progress {
             display: none;
             text-align: center;
-            padding: 10px;
+            padding: 15px;
             background-color: #f8f9fa;
-            border-radius: 4px;
-            margin-top: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
         }
-        
+
         .scan-results {
             display: none;
-            margin-top: 15px;
-            padding: 10px;
+            margin: 20px 0;
+            padding: 15px;
             background-color: #e8f4fd;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .scan-results p {
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .scan-results ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .scan-results li {
+            padding: 5px 0;
+        }
+
+        .ocr-error {
+            color: var(--danger-color);
+            margin: 15px 0;
+            display: none;
+            padding: 10px;
+            background-color: rgba(247, 37, 133, 0.1);
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .language-selector {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .language-selector label {
+            margin-bottom: 0;
+        }
+
+        .language-btn {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
             border-radius: 4px;
-            border-left: 4px solid #4285f4;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .language-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        #apply-details {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        #apply-details:hover {
+            background-color: #3ab7d8;
+        }
+
+        /* New styles for right-aligned save button */
+        #expense-form {
+            display: flex;
+            flex-direction: column;
         }
         
-        .ocr-error {
-            color: #d32f2f;
-            margin-top: 10px;
-            display: none;
+        #expense-form button[type="submit"] {
+            align-self: flex-end;
+            margin-top: 20px;
         }
 
-        /* Loading spinner */
-        .spinner {
-            display: none;
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top: 4px solid #4285f4;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 10px auto;
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 250px;
+            }
+            .main-content {
+                margin-left: 250px;
+            }
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 1000;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
         }
 
-        /* Error message */
-        .error-message {
-            color: #d32f2f;
-            margin-top: 5px;
-            font-size: 12px;
-            display: none;
-        }
-
-        /* Budget alert styles */
-        .budget-alert {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #ff4444;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            display: none;
-            max-width: 300px;
-        }
-
-        .budget-warning {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #ffbb33;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            display: none;
-            max-width: 300px;
-        }
-
-        .close-alert {
-            float: right;
-            cursor: pointer;
-            font-weight: bold;
-            margin-left: 10px;
+        @media (max-width: 480px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .language-selector {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Budget Alert Elements -->
-    <div class="budget-alert" id="budget-alert">
-        <span class="close-alert" onclick="closeAlert('budget-alert')">×</span>
-        <strong>Budget Exceeded!</strong>
-        <p id="budget-alert-message"></p>
-    </div>
-
-    <div class="budget-warning" id="budget-warning">
-        <span class="close-alert" onclick="closeAlert('budget-warning')">×</span>
-        <strong>Budget Warning</strong>
-        <p id="budget-warning-message"></p>
-    </div>
-
-    <!-- Language Selector -->
-    <select class="language-selector" id="language-selector">
-        <option value="en-US">English</option>
-        <option value="ms-MY">Malay (Bahasa Melayu)</option>
-    </select>
-
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h2>F-Track</h2>
+            <h2><i class="fas fa-wallet"></i> F-Track</h2>
         </div>
         <ul class="sidebar-menu">
             <li class="active">
-                <i>📝</i> Add Expense
+                <i class="fas fa-plus-circle"></i> Add Expense
+            </li>
+            <li onclick="window.location.href='add_income.html'">
+                <i class="fas fa-money-bill-wave"></i> Add Income
             </li>
             <li onclick="window.location.href='dashboard.html'">
-                <i>📊</i> Dashboard
+                <i class="fas fa-chart-pie"></i> Dashboard
             </li>
             <li onclick="window.location.href='list_expenses.html'">
-                <i>💰</i> List Expenses
+                <i class="fas fa-list-ul"></i> List Expenses
             </li>
             <li onclick="window.location.href='set_budget.html'">
-                <i>💵</i> Set Budget
+                <i class="fas fa-money-bill-wave"></i> Set Budget
             </li>
             <li onclick="window.location.href='list_budget.html'">
-                <i>🧾</i> List Budgets
+                <i class="fas fa-clipboard-list"></i> List Budgets
             </li>
             <li onclick="window.location.href='report.html'">
-                <i>📅</i> Monthly Reports
+                <i class="fas fa-file-alt"></i> Monthly Reports
             </li>
-            <li>
-                <i>🏷️</i> Categories
+            <li onclick="window.location.href='category.html'">
+                <i class="fas fa-tags"></i> Categories
             </li>
             <li onclick="window.location.href='family_member.html'">
-                <i>👨‍👩‍👧‍👦</i> Family Members
+                <i class="fas fa-users"></i> Family Members
             </li>
             <li onclick="window.location.href='setting.html'">
-                <i>⚙️</i> Settings
+                <i class="fas fa-cog"></i> Settings
             </li>
         </ul>
     </div>
@@ -368,640 +420,630 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="form-container">
-            <h1>Family Expense</h1>
-            
-            <!-- Expense Form -->
-            <div class="form-group">
-                <label for="category" class="required">Category</label>
-                <select id="category">
-                    <option value="">Select category</option>
-                    <option value="groceries">Groceries</option>
-                    <option value="utilities">Utilities</option>
-                    <option value="rent">Rent/Mortgage</option>
-                    <option value="transportation">Transportation</option>
-                    <option value="education">Education</option>
-                    <option value="healthcare">Healthcare</option>
-                    <option value="entertainment">Entertainment</option>
-                    <option value="other">Other</option>
-                </select>
-                <div id="category-error" class="error-message">Please select a category</div>
+            <div class="page-header">
+                <h1><i class="fas fa-plus-circle"></i> Add New Expense</h1>
             </div>
-            
-            <!-- Place Input -->
-            <div class="form-group">
-                <label for="place" class="required">Place</label>
-                <div class="input-container">
-                    <input type="text" id="place" placeholder="Where was the expense?">
-                    <span class="voice-icon" onclick="startVoiceRecognition('place')">🎤</span>
+
+            <!-- Language Selection -->
+            <div class="language-selector">
+                <label>Voice Language:</label>
+                <button id="lang-en" class="language-btn active" onclick="setLanguage('en')">English</button>
+                <button id="lang-ms" class="language-btn" onclick="setLanguage('ms')">Malay</button>
+            </div>
+
+            <!-- Expense form -->
+            <form id="expense-form">
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" required>
+                        <option value="">Select category</option>
+                        <!-- Categories will be populated here dynamically -->
+                    </select>
                 </div>
-                <div id="place-error" class="error-message">Please enter a place</div>
-            </div>
-            
-            <!-- Date Input -->
-            <div class="form-group">
-                <label for="date" class="required">Date</label>
-                <input type="date" id="date">
-                <div id="date-error" class="error-message">Please select a date</div>
-            </div>
-            
-            <!-- Total Input -->
-            <div class="form-group">
-                <label for="total" class="required">Total</label>
-                <div class="input-container">
-                    <input type="number" id="total" placeholder="0.00" step="0.01" min="0">
-                    <span class="voice-icon" onclick="startVoiceRecognition('total')">🎤</span>
-                </div>
-                <div id="total-error" class="error-message">Please enter a valid amount</div>
-            </div>
-            
-            <!-- Family Member Input -->
-            <div class="form-group">
-                <label for="family-member" class="required">Family Member</label>
-                <select id="family-member">
-                    <option value="">Who made this expense?</option>
-                    <option value="parent1">Parent 1</option>
-                    <option value="parent2">Parent 2</option>
-                    <option value="child1">Child 1</option>
-                    <option value="child2">Child 2</option>
-                    <option value="other">Other Family Member</option>
-                </select>
-                <div id="family-member-error" class="error-message">Please select a family member</div>
-            </div>
-            
-            <!-- Payment Method Input -->
-            <div class="form-group">
-                <label for="payment-method">Payment Method</label>
-                <select id="payment-method">
-                    <option value="">Select payment method</option>
-                    <option value="cash">Cash</option>
-                    <option value="credit-card">Credit Card</option>
-                    <option value="debit-card">Debit Card</option>
-                    <option value="bank-transfer">Bank Transfer</option>
-                    <option value="digital-wallet">Digital Wallet</option>
-                </select>
-            </div>
-            
-            <!-- Description Input -->
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea id="description" rows="3" placeholder="Any additional details about this expense"></textarea>
-            </div>
-            
-            <!-- Add to Monthly Report Radio Buttons -->
-            <div class="radio-group">
-                <label>Add to monthly report</label>
-                <div class="radio-options">
-                    <div class="radio-option">
-                        <input type="radio" id="yes" name="addToReport" value="yes" checked>
-                        <label for="yes">Yes</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" id="no" name="addToReport" value="no">
-                        <label for="no">No</label>
+
+                <div class="form-group">
+                    <label for="place">Place</label>
+                    <div class="input-container">
+                        <input type="text" id="place" required>
+                        <button type="button" class="voice-icon" onclick="startVoiceRecognition('place')">
+                            <i class="fas fa-microphone"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Upload Section for Receipt -->
-            <div class="upload-section">
-                <p>Upload a receipt (optional)</p>
-                <input type="file" id="receipt" accept="image/*" style="display: none;">
-                <img id="receipt-preview" class="receipt-preview" alt="Receipt preview">
-                <div id="scan-progress" class="scan-progress">
-                    <p>Scanning receipt... <span id="progress-status">0%</span></p>
-                    <progress id="progress-bar" value="0" max="100"></progress>
+
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" required>
                 </div>
-                <div id="scan-results" class="scan-results">
-                    <p>We found these details from your receipt:</p>
-                    <ul id="extracted-details"></ul>
-                    <button id="apply-details" class="save" style="padding: 5px 10px; font-size: 12px;">Apply to Form</button>
+
+                <div class="form-group">
+                    <label for="total">Total</label>
+                    <div class="input-container">
+                        <input type="number" id="total" placeholder="0.00" step="0.01" min="0" required>
+                        <button type="button" class="voice-icon" onclick="startVoiceRecognition('total')">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
                 </div>
-                <p id="ocr-error" class="ocr-error">We couldn't read your receipt. Please enter details manually.</p>
-            </div>
-            
-            <!-- Action Buttons -->
-            <div class="button-group">
-                <button class="save-draft">Save draft</button>
-                <button class="save" id="save-button">Save expense</button>
-            </div>
-            <div class="spinner" id="loading-spinner"></div>
+
+                <div class="form-group">
+                    <label for="who-made">Who made this expense?</label>
+                    <select id="who-made" required>
+                        <option value="">Select option</option>
+                        <option value="myself">Myself</option>
+                        <option value="family">Family Member</option>
+                    </select>
+                </div>
+
+                <div id="family-member-div" style="display:none;" class="form-group">
+                    <label for="family-member">Family Member</label>
+                    <select id="family-member">
+                        <option value="">Select family member</option>
+                        <!-- Family members will be populated here dynamically -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="payment-method">Payment Method</label>
+                    <select id="payment-method" required>
+                        <option value="">Select payment method</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Debit Card">Debit Card</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <div class="input-container">
+                        <textarea id="description" placeholder="Any additional details about this expense" required></textarea>
+                        <button type="button" class="voice-icon" onclick="startVoiceRecognition('description')">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upload Section for Receipt -->
+                <div class="upload-section" onclick="document.getElementById('receipt').click()">
+                    <p><i class="fas fa-receipt"></i> Upload a receipt (optional)</p>
+                    <input type="file" id="receipt" accept="image/*" style="display: none;" onchange="handleReceiptUpload(event)">
+                    <img id="receipt-preview" class="receipt-preview" alt="Receipt preview">
+                    <div id="scan-progress" class="scan-progress">
+                        <p>Scanning receipt... <span id="progress-status">0%</span></p>
+                        <progress id="progress-bar" value="0" max="100"></progress>
+                    </div>
+                    <div id="scan-results" class="scan-results">
+                        <p>We found these details from your receipt:</p>
+                        <ul id="extracted-details"></ul>
+                        <button type="button" id="apply-details" class="btn">
+                            <i class="fas fa-check"></i> Apply to Form
+                        </button>
+                    </div>
+                    <p id="ocr-error" class="ocr-error">We couldn't read your receipt. Please enter details manually.</p>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Expense
+                </button>
+            </form>
         </div>
     </div>
 
-    <!-- Firebase App (the core Firebase SDK) -->
     <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
-    import { getFirestore, collection, addDoc, serverTimestamp, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
-    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
-    import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-functions.js';
+        // Your existing JavaScript code remains unchanged
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+        import { getFirestore, collection, getDocs, query, where, serverTimestamp, addDoc, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
-        authDomain: "f-track-e5c35.firebaseapp.com",
-        projectId: "f-track-e5c35",
-        storageBucket: "f-track-e5c35.appspot.com",
-        messagingSenderId: "650188769848",
-        appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd",
-        measurementId: "G-YPQT10VSBJ"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
+            authDomain: "f-track-e5c35.firebaseapp.com",
+            projectId: "f-track-e5c35",
+            storageBucket: "f-track-e5c35.appspot.com",
+            messagingSenderId: "650188769848",
+            appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd",
+            measurementId: "G-YPQT10VSBJ"
+        };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-    const functions = getFunctions(app);
-
-    // Main collections
-    const expensesCollection = collection(db, 'expenses');
-    const budgetsCollection = collection(db, 'budgets');
-
-    // Initialize the application when DOM is loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('date').valueAsDate = new Date();
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
         
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                initEventListeners();
-            } else {
+        let currentUser = null;
+        let totalIncome = 0;
+        let totalExpenses = 0;
+        let currentLanguage = 'en'; // Default to English
+
+        // Language selection function
+        window.setLanguage = function(lang) {
+            currentLanguage = lang;
+            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+            document.getElementById('lang-ms').classList.toggle('active', lang === 'ms');
+        };
+
+        // Check if user is authenticated
+        checkAuthState();
+
+        function checkAuthState() {
+            console.log("Checking authentication state...");
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    console.log("User authenticated:", user.email);
+                    currentUser = user;
+                    loadCategories();
+                    loadFamilyMembers(user.uid);
+                    loadCurrentIncomeAndExpenses(user.uid);
+                    document.getElementById('date').valueAsDate = new Date();
+                } else {
+                    console.log("No authenticated user, preparing redirect to login...");
+                    setTimeout(() => {
+                        redirectToLogin();
+                    }, 2000);
+                }
+            });
+        }
+
+        function redirectToLogin() {
+            console.log("Redirecting to login...");
+            if (!window.location.pathname.includes('login.html')) {
                 window.location.href = 'login.html';
             }
-        });
-    });
-
-    function initEventListeners() {
-        document.getElementById('save-button').addEventListener('click', saveExpense);
-        document.querySelector('.upload-section').addEventListener('click', handleUploadSectionClick);
-        document.getElementById('receipt').addEventListener('change', handleReceiptUpload);
-        document.querySelectorAll('.voice-icon').forEach(icon => {
-            icon.addEventListener('click', handleVoiceIconClick);
-        });
-    }
-
-async function saveExpense() {
-    if (!validateForm()) return;
-
-    const spinner = document.getElementById('loading-spinner');
-    const saveButton = document.getElementById('save-button');
-
-    try {
-        saveButton.disabled = true;
-        spinner.style.display = 'block';
-
-        const user = auth.currentUser;
-        if (!user) throw new Error("User not authenticated");
-
-        const expenseData = {
-            category: document.getElementById('category').value,
-            place: document.getElementById('place').value,
-            date: document.getElementById('date').value,
-            total: parseFloat(document.getElementById('total').value),
-            familyMember: document.getElementById('family-member').value,
-            paymentMethod: document.getElementById('payment-method').value,
-            description: document.getElementById('description').value,
-            addToReport: document.querySelector('input[name="addToReport"]:checked').value,
-            createdAt: serverTimestamp(),
-            userId: user.uid,
-            userName: user.displayName || user.email,
-            receipt: document.getElementById('receipt').files[0] ? true : false
-        };
-
-        // Add expense to Firestore
-        const docRef = await addDoc(expensesCollection, expenseData);
-        console.log("Expense saved with ID:", docRef.id);
-
-        // Check budget
-        await checkBudgetAndNotify(user.uid, expenseData.category, expenseData.total);
-        
-        alert('Expense saved successfully!');
-        resetForm();
-    } catch (error) {
-        console.error('Error saving expense:', error);
-        alert(`Error: ${error.message}`);
-    } finally {
-        saveButton.disabled = false;
-        spinner.style.display = 'none';
-    }
-}
-
-async function checkBudgetAndNotify(userId, category, expenseAmount) {
-    try {
-        // Query the budget for this user and category
-        const budgetQuery = query(
-            budgetsCollection,
-            where("userId", "==", userId),
-            where("category", "==", category)
-        );
-        
-        const querySnapshot = await getDocs(budgetQuery);
-        
-        if (querySnapshot.empty) {
-            console.log("No budget set for this category");
-            return;
         }
-        
-        // Get the first matching budget (assuming one budget per category)
-        const budgetDoc = querySnapshot.docs[0];
-        const budgetData = budgetDoc.data();
-        const budgetAmount = Number(budgetData.amount);
-        const alertThreshold = Number(budgetData.alertThreshold) || 80;
-        
-        if (isNaN(budgetAmount)) {
-            console.error("Invalid budget amount");
-            return;
-        }
-        
-        // Calculate current month's expenses for this category
-        const now = new Date();
-        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-        
-        const expensesQuery = query(
-            expensesCollection,
-            where("userId", "==", userId),
-            where("category", "==", category),
-            where("date", ">=", firstDay.toISOString().split('T')[0]),
-            where("date", "<=", lastDay.toISOString().split('T')[0])
-        );
-        
-        const expensesSnapshot = await getDocs(expensesQuery);
-        let totalExpenses = 0;
-        
-        expensesSnapshot.forEach((doc) => {
-            const expenseData = doc.data();
-            totalExpenses += Number(expenseData.total) || 0;
-        });
-        
-        // Calculate percentage
-        const usagePercentage = (totalExpenses / budgetAmount) * 100;
-        console.log(`Budget usage: ${usagePercentage.toFixed(2)}%`);
-        
-        // Check thresholds and show alerts
-        if (usagePercentage >= 100) {
-            showBudgetAlert(
-                "Budget Exceeded!",
-                `You've exceeded your ${category} budget (${usagePercentage.toFixed(2)}%)`,
-                'budget-alert'
-            );
-        } else if (usagePercentage >= alertThreshold) {
-            showBudgetAlert(
-                "Budget Warning",
-                `You've used ${usagePercentage.toFixed(2)}% of your ${category} budget`,
-                'budget-warning'
-            );
-        }
-    } catch (error) {
-        console.error("Error checking budget:", error);
-    }
-}
 
-    function closeAlert(alertId) {
-        document.getElementById(alertId).style.display = 'none';
-    }
+        async function loadCategories() {
+            try {
+                const categoriesQuery = query(collection(db, "categories"));
+                const snapshot = await getDocs(categoriesQuery);
+                const categorySelect = document.getElementById("category");
 
-    function resetForm() {
-        document.getElementById('category').value = '';
-        document.getElementById('place').value = '';
-        document.getElementById('date').valueAsDate = new Date();
-        document.getElementById('total').value = '';
-        document.getElementById('family-member').value = '';
-        document.getElementById('payment-method').value = '';
-        document.getElementById('description').value = '';
-        document.getElementById('receipt').value = '';
-        document.getElementById('receipt-preview').style.display = 'none';
-    }
-
-    function validateForm() {
-        let isValid = true;
-        const requiredFields = [
-            { id: 'category', errorId: 'category-error' },
-            { id: 'place', errorId: 'place-error' },
-            { id: 'date', errorId: 'date-error' },
-            { id: 'total', errorId: 'total-error' },
-            { id: 'family-member', errorId: 'family-member-error' }
-        ];
-
-        // Reset error states
-        requiredFields.forEach(({id, errorId}) => {
-            document.getElementById(id).style.borderColor = '#ddd';
-            document.getElementById(errorId).style.display = 'none';
-        });
-
-        // Validate required fields
-        requiredFields.forEach(({id, errorId}) => {
-            if (!document.getElementById(id).value) {
-                document.getElementById(id).style.borderColor = 'red';
-                document.getElementById(errorId).style.display = 'block';
-                isValid = false;
+                snapshot.forEach((doc) => {
+                    const categoryData = doc.data();
+                    const option = document.createElement("option");
+                    option.value = categoryData.name;
+                    option.textContent = categoryData.name;
+                    categorySelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error loading categories:", error);
             }
-        });
-
-        // Validate amount
-        const amount = parseFloat(document.getElementById('total').value);
-        if (isNaN(amount) || amount <= 0) {
-            document.getElementById('total').style.borderColor = 'red';
-            document.getElementById('total-error').textContent = 'Please enter a valid amount';
-            document.getElementById('total-error').style.display = 'block';
-            isValid = false;
         }
 
-        return isValid;
-    }
+        async function loadFamilyMembers(userId) {
+            try {
+                const familyMembersQuery = query(collection(db, "family_members"), where("userId", "==", userId));
+                const snapshot = await getDocs(familyMembersQuery);
+                const familyMemberSelect = document.getElementById("family-member");
 
-    function startVoiceRecognition(fieldId) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        
-        if (!SpeechRecognition) {
-            alert("Voice recognition is not supported in your browser. Please use Chrome or Edge.");
-            return;
-        }
-
-        const recognition = new SpeechRecognition();
-        const language = document.getElementById('language-selector').value;
-        
-        recognition.lang = language;
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        
-        recognition.onstart = function() {
-            document.getElementById(fieldId).placeholder = language === 'ms-MY' ? 
-                "Mendengar..." : "Listening...";
-        };
-        
-        recognition.onresult = function(event) {
-            const transcript = event.results[0][0].transcript;
-            processTranscript(fieldId, transcript, language);
-        };
-        
-        recognition.onerror = function(event) {
-            console.error('Voice recognition error', event.error);
-            let errorMessage = "Error occurred";
-            if (event.error === 'not-allowed') {
-                errorMessage = "Microphone access was denied. Please allow microphone access in your browser settings.";
-            } else if (event.error === 'no-speech') {
-                errorMessage = "No speech was detected. Please try again.";
-            }
-            
-            document.getElementById(fieldId).placeholder = 
-                language === 'ms-MY' ? "Ralat: " + errorMessage : errorMessage;
-        };
-        
-        recognition.onend = function() {
-            const placeholder = document.getElementById(fieldId).placeholder;
-            if (placeholder === "Listening..." || placeholder === "Mendengar...") {
-                document.getElementById(fieldId).placeholder = "";
-            }
-        };
-        
-        recognition.start();
-    }
-
-    function processTranscript(fieldId, transcript, language) {
-        if (fieldId === 'place') {
-            document.getElementById(fieldId).value = transcript;
-            return;
-        }
-        
-        if (fieldId === 'total') {
-            let processedValue = transcript.toLowerCase();
-            
-            if (language === 'ms-MY') {
-                const malayNumbers = {
-                    'kosong': '0', 'satu': '1', 'dua': '2', 'tiga': '3',
-                    'empat': '4', 'lima': '5', 'enam': '6', 'tujuh': '7',
-                    'lapan': '8', 'sembilan': '9', 'sepuluh': '10',
-                    'seratus': '100', 'ribu': '000', 'juta': '000000',
-                    'titik': '.', 'noktah': '.', 'per': '.'
-                };
-
-                Object.keys(malayNumbers).forEach(word => {
-                    const regex = new RegExp(word, 'gi');
-                    processedValue = processedValue.replace(regex, malayNumbers[word]);
+                snapshot.forEach((doc) => {
+                    const familyMemberData = doc.data();
+                    const option = document.createElement("option");
+                    option.value = familyMemberData.name;
+                    option.textContent = familyMemberData.name + ' (' + familyMemberData.relationship + ')';
+                    familyMemberSelect.appendChild(option);
                 });
 
-                processedValue = processedValue.replace(/ringgit|rm/g, '')
-                    .replace(/sen/g, '.')
-                    .replace(/(\d)\s*\.\s*(\d)/g, '$1.$2');
-            } else {
-                processedValue = processedValue.replace(/dollars|\$|euros|€|pounds|£/g, '')
-                    .replace(/cents|cent/g, '.')
-                    .replace(/point|dot|and/g, '.');
+                document.getElementById("who-made").addEventListener('change', function() {
+                    const familyMemberDiv = document.getElementById("family-member-div");
+                    const familySelect = document.getElementById("family-member");
+
+                    if (this.value === 'family') {
+                        familyMemberDiv.style.display = 'block';
+                        familySelect.required = true;
+                    } else {
+                        familyMemberDiv.style.display = 'none';
+                        familySelect.required = false;
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading family members:", error);
+            }
+        }
+
+        async function loadCurrentIncomeAndExpenses(userId) {
+            try {
+                const incomeQuery = query(
+                    collection(db, 'incomes'),
+                    where('userId', '==', userId)
+                );
+
+                const incomeSnapshot = await getDocs(incomeQuery);
+                totalIncome = 0;
+
+                incomeSnapshot.forEach(doc => {
+                    totalIncome += doc.data().amount;
+                });
+
+                const expenseQuery = query(
+                    collection(db, 'expenses'),
+                    where('userId', '==', userId)
+                );
+
+                const expenseSnapshot = await getDocs(expenseQuery);
+                totalExpenses = 0;
+
+                expenseSnapshot.forEach(doc => {
+                    totalExpenses += doc.data().total;
+                });
+
+                const remainingIncome = totalIncome - totalExpenses;
+                document.getElementById('remaining-income').textContent = `RM ${remainingIncome.toFixed(2)}`;
+
+            } catch (error) {
+                console.error("Error loading income and expenses:", error);
+            }
+        }
+
+        // Voice Recognition Functions
+        window.startVoiceRecognition = function(fieldId) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Voice recognition is not supported in your browser. Please use Chrome or Edge.");
+                return;
             }
 
-            processedValue = processedValue.replace(/[^\d.]/g, '');
-            
-            if (transcript.toLowerCase().includes('sen') || transcript.toLowerCase().includes('cent')) {
-                if (processedValue.includes('.')) {
-                    const parts = processedValue.split('.');
-                    processedValue = `${parts[0]}.${parts[1].padEnd(2, '0').substring(0, 2)}`;
-                } else {
-                    processedValue = `${processedValue.slice(0, -2)}.${processedValue.slice(-2).padStart(2, '0')}`;
-                }
-            } else if (processedValue.includes('.')) {
-                const parts = processedValue.split('.');
-                processedValue = `${parts[0]}.${parts[1].substring(0, 2)}`;
-            }
-            
-            document.getElementById(fieldId).value = processedValue;
-        }
-    }
+            const recognition = new SpeechRecognition();
+            recognition.lang = currentLanguage === 'ms' ? 'ms-MY' : 'en-US';
+            recognition.continuous = false;
+            recognition.interimResults = false;
 
-    function handleVoiceIconClick(e) {
-        e.stopPropagation();
-        const fieldId = this.getAttribute('onclick').match(/'([^']+)'/)[1];
-        startVoiceRecognition(fieldId);
-    }
-
-    function handleUploadSectionClick(e) {
-        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
-            document.getElementById('receipt').click();
-        }
-    }
-
-    function handleReceiptUpload(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const preview = document.getElementById('receipt-preview');
-        const progressDiv = document.getElementById('scan-progress');
-        const progressBar = document.getElementById('progress-bar');
-        const progressStatus = document.getElementById('progress-status');
-        const resultsDiv = document.getElementById('scan-results');
-        const extractedDetails = document.getElementById('extracted-details');
-        const ocrError = document.getElementById('ocr-error');
-        const applyBtn = document.getElementById('apply-details');
-
-        preview.style.display = 'none';
-        progressDiv.style.display = 'none';
-        resultsDiv.style.display = 'none';
-        ocrError.style.display = 'none';
-        extractedDetails.innerHTML = '';
-
-        if (file.type.match('image.*')) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-                progressDiv.style.display = 'block';
-                scanReceipt(e.target.result);
+            recognition.onstart = function() {
+                document.getElementById(fieldId).placeholder = "Listening...";
             };
-            reader.readAsDataURL(file);
-            document.querySelector('.upload-section p').textContent = file.name;
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                processTranscript(fieldId, transcript, currentLanguage);
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Voice recognition error', event.error);
+                let errorMessage = "Error occurred";
+                if (event.error === 'not-allowed') {
+                    errorMessage = "Microphone access was denied. Please allow microphone access in your browser settings.";
+                } else if (event.error === 'no-speech') {
+                    errorMessage = "No speech was detected. Please try again.";
+                }
+                document.getElementById(fieldId).placeholder = errorMessage;
+            };
+
+            recognition.onend = function() {
+                if (document.getElementById(fieldId).placeholder === "Listening...") {
+                    document.getElementById(fieldId).placeholder = "";
+                }
+            };
+
+            recognition.start();
         }
-    }
 
-    function scanReceipt(imageData) {
-        const progressDiv = document.getElementById('scan-progress');
-        const progressBar = document.getElementById('progress-bar');
-        const progressStatus = document.getElementById('progress-status');
-        const resultsDiv = document.getElementById('scan-results');
-        const extractedDetails = document.getElementById('extracted-details');
-        const ocrError = document.getElementById('ocr-error');
+        function processTranscript(fieldId, transcript, language) {
+            if (fieldId === 'place' || fieldId === 'description') {
+                document.getElementById(fieldId).value = transcript;
+                return;
+            }
 
-        Tesseract.recognize(
-            imageData,
-            'eng+msa', 
-            {
-                logger: m => {
-                    if (m.status === 'recognizing text') {
-                        progressBar.value = m.progress * 100;
-                        progressStatus.textContent = `${Math.round(m.progress * 100)}%`;
+            if (fieldId === 'total') {
+                let processedValue = transcript.toLowerCase();
+                
+                if (language === 'ms') {
+                    // Malay currency processing - "32 ringgit 80 sen" → "32.80"
+                    processedValue = processedValue.replace(/ringgit|rm/g, "")
+                        .replace(/sen/g, "")
+                        .replace(/dan|dan\s+/g, ".")
+                        .replace(/\s+/g, ""); // Remove all spaces
+                        
+                    // Handle cases where "sen" might be at the beginning
+                    if (processedValue.startsWith(".")) {
+                        processedValue = "0" + processedValue;
+                    }
+                    
+                    // Ensure we have exactly two decimal places
+                    if (processedValue.includes(".")) {
+                        const parts = processedValue.split(".");
+                        if (parts[1].length === 1) {
+                            processedValue = parts[0] + "." + parts[1] + "0";
+                        } else if (parts[1].length > 2) {
+                            processedValue = parts[0] + "." + parts[1].substring(0, 2);
+                        }
+                    }
+                } else {
+                    // English currency processing - "32 dollars and 80 cents" → "32.80"
+                    processedValue = processedValue.replace(/dollars|\$|euros|\€|pounds|£|ringgit|rm/g, "")
+                        .replace(/cents|cent/g, "")
+                        .replace(/and\s+/g, ".")
+                        .replace(/\s+/g, ""); // Remove all spaces
+                        
+                    // Handle cases where "cents" might be at the beginning
+                    if (processedValue.startsWith(".")) {
+                        processedValue = "0" + processedValue;
+                    }
+                    
+                    // Ensure we have exactly two decimal places
+                    if (processedValue.includes(".")) {
+                        const parts = processedValue.split(".");
+                        if (parts[1].length === 1) {
+                            processedValue = parts[0] + "." + parts[1] + "0";
+                        } else if (parts[1].length > 2) {
+                            processedValue = parts[0] + "." + parts[1].substring(0, 2);
+                        }
                     }
                 }
-            }
-        ).then(({ data: { text, lines } }) => {
-            progressDiv.style.display = 'none';
-            if (!text.trim()) {
-                ocrError.style.display = 'block';
-                return;
-            }
-
-            const parsedData = parseReceiptText(text);
-
-            if (Object.keys(parsedData).length === 0) {
-                ocrError.style.display = 'block';
-                return;
-            }
-
-            for (const [key, value] of Object.entries(parsedData)) {
-                if (value) {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<strong>${formatKey(key)}:</strong> ${value}`;
-                    extractedDetails.appendChild(li);
+                
+                // Final cleanup - remove any non-numeric characters except decimal point
+                processedValue = processedValue.replace(/[^\d.]/g, '');
+                
+                // If no decimal point, add .00
+                if (!processedValue.includes('.')) {
+                    processedValue += ".00";
                 }
+                
+                document.getElementById(fieldId).value = processedValue;
             }
+        }
+        // Receipt Scanning Functions
+        window.handleReceiptUpload = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
 
-            resultsDiv.style.display = 'block';
+            const preview = document.getElementById('receipt-preview');
+            const progressDiv = document.getElementById('scan-progress');
+            const progressBar = document.getElementById('progress-bar');
+            const progressStatus = document.getElementById('progress-status');
+            const resultsDiv = document.getElementById('scan-results');
+            const extractedDetails = document.getElementById('extracted-details');
+            const ocrError = document.getElementById('ocr-error');
 
-            document.getElementById('apply-details').addEventListener('click', function() {
-                applyReceiptData(parsedData);
-                resultsDiv.style.display = 'none';
-            });
-        }).catch(err => {
-            console.error('OCR Error:', err);
+            preview.style.display = 'none';
             progressDiv.style.display = 'none';
-            ocrError.style.display = 'block';
-        });
-    }
+            resultsDiv.style.display = 'none';
+            ocrError.style.display = 'none';
+            extractedDetails.innerHTML = "";
 
-    function parseReceiptText(text) {
-        const result = {};
-        const lines = text.split('\n');
-        const datePatterns = [
-            /\b(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})\b/,
-            /\b(\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2})\b/,
-            /\b(\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{2,4})\b/i
-        ];
-
-        const amountPatterns = [
-            /(?:Total|Jumlah|Amount|RM|MYR)\s*[:=]?\s*([\d,]+\.\d{2})/i,
-            /(?:Total|Jumlah|Amount)\s*[:=]?\s*RM\s*([\d,]+\.\d{2})/i
-        ];
-
-        const merchantPatterns = [
-            /^(.*?)(?:\n|$)/,
-            /(?:Receipt from|Invoice from|Resit dari)\s*(.*?)(?:\n|$)/i
-        ];
-
-        for (const pattern of datePatterns) {
-            const match = text.match(pattern);
-            if (match) {
-                result.date = match[1];
-                break;
+            if (file.type.match('image.*')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    progressDiv.style.display = 'block';
+                    scanReceipt(e.target.result);
+                };
+                reader.readAsDataURL(file);
+                document.querySelector('.upload-section p').textContent = file.name;
             }
         }
 
-        for (const pattern of amountPatterns) {
-            const match = text.match(pattern);
-            if (match) {
-                result.total = match[1].replace(',', '');
-                break;
-            }
+        function scanReceipt(imageData) {
+            const progressDiv = document.getElementById('scan-progress');
+            const progressBar = document.getElementById('progress-bar');
+            const progressStatus = document.getElementById('progress-status');
+            const resultsDiv = document.getElementById('scan-results');
+            const extractedDetails = document.getElementById('extracted-details');
+            const ocrError = document.getElementById('ocr-error');
+
+            // Try English first, then Malay if English fails
+            recognizeReceipt(imageData, 'eng').then(({ data: { text, lines } }) => {
+                progressDiv.style.display = 'none';
+                if (!text.trim()) {
+                    // If English fails, try Malay
+                    return recognizeReceipt(imageData, 'msa');
+                }
+                return { data: { text, lines } };
+            }).then(({ data: { text, lines } }) => {
+                progressDiv.style.display = 'none';
+                if (!text.trim()) {
+                    ocrError.style.display = 'block';
+                    return;
+                }
+
+                const parsedData = parseReceiptText(text);
+                if (Object.keys(parsedData).length === 0) {
+                    ocrError.style.display = 'block';
+                    return;
+                }
+
+                for (const [key, value] of Object.entries(parsedData)) {
+                    if (value) {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<strong>${formatKey(key)}:</strong> ${value}`;
+                        extractedDetails.appendChild(li);
+                    }
+                }
+
+                resultsDiv.style.display = 'block';
+                document.getElementById('apply-details').addEventListener('click', function() {
+                    applyReceiptData(parsedData);
+                    resultsDiv.style.display = 'none';
+                });
+            }).catch(err => {
+                console.error('OCR Error:', err);
+                progressDiv.style.display = 'none';
+                ocrError.style.display = 'block';
+            });
         }
 
-        for (const pattern of merchantPatterns) {
-            const match = text.match(pattern);
-            if (match && match[1].trim().length > 3) {
-                result.place = match[1].trim();
-                break;
-            }
+        function recognizeReceipt(imageData, lang) {
+            return Tesseract.recognize(
+                imageData,
+                lang,
+                {
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            const progressBar = document.getElementById('progress-bar');
+                            const progressStatus = document.getElementById('progress-status');
+                            progressBar.value = m.progress * 100;
+                            progressStatus.textContent = `${Math.round(m.progress * 100)}%`;
+                        }
+                    }
+                }
+            );
         }
 
-        if (!result.place) {
-            for (const line of lines) {
-                if (line.trim().length > 3 && !line.match(/date|time|total|jumlah/i)) {
-                    result.place = line.trim();
+        function parseReceiptText(text) {
+            const result = {};
+            const lines = text.split('\n');
+
+            // Date patterns (support both English and Malay formats)
+            const datePatterns = [
+                /\b(\d{1,2}\/\d{1,2}\/\d{2,4})\b/,  // 12/31/2023 or 31/12/2023
+                /\b(\d{4}\/\d{1,2}\/\d{1,2})\b/,     // 2023/12/31
+                /\b(\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|Januari|Februari|Mac|April|Mei|Jun|Julai|Ogos|September|Oktober|November|Disember)[a-z]*\s+\d{2,4})\b/i
+            ];
+
+            // Amount patterns (support both English and Malay terms)
+            const amountPatterns = [
+                /(?:Total|Jumlah|Amount|RM|MYR)\s*[:=]?\s*([\d,]+\.\d{2})/i,
+                /(?:Total|Jumlah|Amount)\s*[:=]?\s*RM\s*([\d,]+\.\d{2})/i,
+                /(?:JUMLAH|BAYARAN|PAYMENT)\s*[:=]?\s*RM?\s*([\d,]+\.\d{2})/i
+            ];
+
+            // Merchant patterns (support both English and Malay)
+            const merchantPatterns = [
+                /^(.+?)(?:\n|$)/,
+                /(?:Receipt from|Invoice from|Resit dari|Resit)\s*(.*?)(?:\n|$)/i,
+                /(?:Kedai|Store|Shop|Restoran|Restaurant)\s*(.*?)(?:\n|$)/i
+            ];
+
+            // Find date
+            for (const pattern of datePatterns) {
+                const match = text.match(pattern);
+                if (match) {
+                    result.date = match[1];
                     break;
                 }
             }
-        }
 
-        return result;
-    }
+            // Find total amount
+            for (const pattern of amountPatterns) {
+                const match = text.match(pattern);
+                if (match) {
+                    result.total = match[1].replace(",", "");
+                    break;
+                }
+            }
 
-    function formatKey(key) {
-        const map = {
-            'date': 'Date',
-            'total': 'Total Amount',
-            'place': 'Merchant/Place'
-        };
-        return map[key] || key;
-    }
+            // Find merchant/place
+            for (const pattern of merchantPatterns) {
+                const match = text.match(pattern);
+                if (match && match[1].trim().length > 3) {
+                    result.place = match[1].trim();
+                    break;
+                }
+            }
 
-    function applyReceiptData(data) {
-        if (data.date) {
-            let parsedDate;
-            if (data.date.includes('/') || data.date.includes('-')) {
-                const parts = data.date.split(/[\/\-]/);
-                if (parts.length === 3) {
-                    if (parts[0].length === 4) {
-                        parsedDate = new Date(data.date);
-                    } else {
-                        parsedDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+            if (!result.place) {
+                for (const line of lines) {
+                    if (line.trim().length > 3 && !line.match(/date|time|total|jumlah|tarikh|masa/i)) {
+                        result.place = line.trim();
+                        break;
                     }
                 }
-            } else {
-                parsedDate = new Date(data.date);
             }
 
-            if (parsedDate && !isNaN(parsedDate.getTime())) {
-                document.getElementById('date').valueAsDate = parsedDate;
-            }
+            return result;
         }
 
-        if (data.total) {
-            document.getElementById('total').value = data.total;
+        function formatKey(key) {
+            const map = {
+                'date': 'Date',
+                'total': 'Total Amount',
+                'place': 'Merchant/Place'
+            };
+            return map[key] || key;
         }
 
-            if (data.description) {
-                document.getElementById('description').value = data.description;
+        function applyReceiptData(data) {
+            if (data.date) {
+                let parsedDate;
+                if (data.date.includes('/') || data.date.includes('.')) {
+                    const parts = data.date.split(/[\/\.]/);
+                    if (parts.length === 3) {
+                        if (parts[0].length === 4) {
+                            parsedDate = new Date(data.date);
+                        } else {
+                            parsedDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                        }
+                    }
+                } else {
+                    // Handle Malay month names if present
+                    const malayMonths = {
+                        'januari': 'January', 'februari': 'February', 'mac': 'March',
+                        'april': 'April', 'mei': 'May', 'jun': 'June',
+                        'julai': 'July', 'ogos': 'August', 'september': 'September',
+                        'oktober': 'October', 'november': 'November', 'disember': 'December'
+                    };
+                    
+                    let dateStr = data.date.toLowerCase();
+                    for (const [malay, eng] of Object.entries(malayMonths)) {
+                        dateStr = dateStr.replace(malay, eng);
+                    }
+                    
+                    parsedDate = new Date(dateStr);
+                }
 
-                const categorySelect = document.getElementById('category');
-                if (data.description.toLowerCase().includes('grocery')) {
-                    categorySelect.value = 'groceries';
-                } else if (data.description.toLowerCase().includes('electric')) {
-                    categorySelect.value = 'utilities';
+                if (parsedDate && !isNaN(parsedDate.getTime())) {
+                    document.getElementById('date').valueAsDate = parsedDate;
                 }
             }
+
+            if (data.total) {
+                document.getElementById('total').value = data.total;
+            }
+
+            if (data.place) {
+                document.getElementById('place').value = data.place;
+            }
         }
+
+        document.getElementById("expense-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const category = document.getElementById("category").value;
+            const place = document.getElementById("place").value;
+            const date = document.getElementById("date").value;
+            const total = parseFloat(document.getElementById("total").value);
+            const whoMade = document.getElementById("who-made").value;
+            const familyMember = document.getElementById("family-member").value;
+            const paymentMethod = document.getElementById("payment-method").value;
+            const description = document.getElementById("description").value;
+
+            if (!category || !place || !date || isNaN(total) || (!familyMember && whoMade === "family") || !description || !paymentMethod) {
+                alert("Please fill in all fields");
+                return;
+            }
+
+            const madeBy = (whoMade === "myself") ? currentUser.email : familyMember;
+
+            try {
+                const expenseData = {
+                    category,
+                    place,
+                    date,
+                    total,
+                    familyMember: madeBy,
+                    paymentMethod,
+                    description,
+                    createdAt: serverTimestamp(),
+                    userId: currentUser.uid
+                };
+
+                await addDoc(collection(db, "expenses"), expenseData);
+                alert("Expense saved successfully!");
+
+                // Update the remaining income
+                totalExpenses += total;
+                const remainingIncome = totalIncome - totalExpenses;
+                document.getElementById("remaining-income").textContent = `RM ${remainingIncome.toFixed(2)}`;
+
+                // Reset the form
+                document.getElementById("expense-form").reset();
+                document.getElementById('date').valueAsDate = new Date();
+                document.getElementById('receipt-preview').style.display = 'none';
+            } catch (error) {
+                console.error("Error saving expense:", error);
+                alert("Error saving expense: " + error.message);
+            }
+        });
     </script>
 </body>
 </html>

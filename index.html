@@ -3,58 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Family Budget Tracker | Home</title>
+    <title>F-Track | Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2c3e50;
-            --accent-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #34495e;
-            --success-color: #2ecc71;
+            --primary-color: #4361ee;
+            --primary-light: #4895ef;
+            --secondary-color: #3a0ca3;
+            --accent-color: #f72585;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --text-color: #495057;
+            --text-light: #6c757d;
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
         
         body {
-            background-color: #f5f7fa;
-            color: #333;
+            background-color: var(--light-color);
+            color: var(--text-color);
+            line-height: 1.6;
         }
         
         /* Header Styles */
         header {
             background-color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 1rem 2rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            padding: 1rem 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         
         .logo img {
-            height: 40px;
+            height: 42px;
+            width: auto;
         }
         
         .logo h1 {
             color: var(--secondary-color);
-            font-size: 1.5rem;
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         nav ul {
             display: flex;
             list-style: none;
-            gap: 20px;
+            gap: 25px;
         }
         
         nav a {
@@ -62,40 +76,45 @@
             color: var(--dark-color);
             font-weight: 500;
             padding: 0.5rem 1rem;
-            border-radius: 4px;
+            border-radius: 6px;
             transition: all 0.3s ease;
+            font-size: 0.95rem;
         }
         
         nav a:hover {
-            background-color: var(--light-color);
             color: var(--primary-color);
+            transform: translateY(-2px);
         }
         
         .auth-buttons .btn {
-            padding: 0.5rem 1.5rem;
-            border-radius: 4px;
+            padding: 0.6rem 1.8rem;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
+            font-size: 0.95rem;
         }
         
         .btn-login {
-            border: 1px solid var(--primary-color);
+            border: 2px solid var(--primary-color);
             color: var(--primary-color);
-            margin-right: 10px;
+            margin-right: 12px;
         }
         
         .btn-signup {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
             color: white;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
         }
         
         .btn-login:hover {
-            background-color: var(--light-color);
+            background-color: rgba(67, 97, 238, 0.05);
+            transform: translateY(-2px);
         }
         
         .btn-signup:hover {
-            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
         }
 
         /* Hero Section */
@@ -103,191 +122,216 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 4rem 2rem;
-            max-width: 1200px;
+            padding: 5rem 5%;
+            max-width: 1400px;
             margin: 0 auto;
         }
         
         .hero-content {
             flex: 1;
-            padding-right: 2rem;
+            padding-right: 3rem;
         }
         
         .hero h2 {
-            font-size: 2.5rem;
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
+            font-size: 3rem;
+            color: var(--dark-color);
+            margin-bottom: 1.5rem;
             line-height: 1.2;
+            font-weight: 700;
         }
         
         .hero p {
-            font-size: 1.1rem;
-            color: #666;
-            margin-bottom: 2rem;
-            line-height: 1.6;
+            font-size: 1.15rem;
+            color: var(--text-light);
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+            max-width: 90%;
         }
         
         .hero-image {
             flex: 1;
             text-align: center;
+            position: relative;
         }
         
         .hero-image img {
             max-width: 100%;
             height: auto;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transform: perspective(1000px) rotateY(-10deg);
+            transition: transform 0.5s ease;
+        }
+        
+        .hero-image:hover img {
+            transform: perspective(1000px) rotateY(0deg);
         }
         
         .cta-buttons {
             display: flex;
-            gap: 15px;
+            gap: 20px;
         }
         
         .btn {
-            padding: 0.8rem 1.8rem;
-            border-radius: 4px;
+            padding: 0.9rem 2rem;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
+            display: inline-block;
+            font-size: 1rem;
         }
         
         .btn-primary {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
             color: white;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
         }
         
         .btn-primary:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
         }
         
         .btn-secondary {
-            border: 1px solid var(--primary-color);
+            border: 2px solid var(--primary-color);
             color: var(--primary-color);
         }
         
         .btn-secondary:hover {
-            background-color: var(--light-color);
-            transform: translateY(-2px);
+            background-color: rgba(67, 97, 238, 0.05);
+            transform: translateY(-3px);
         }
 
         /* Features Section */
         .features {
-            padding: 4rem 2rem;
+            padding: 6rem 5%;
             background-color: white;
         }
         
         .section-title {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
         }
         
         .section-title h3 {
-            font-size: 2rem;
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
+            font-size: 2.5rem;
+            color: var(--dark-color);
+            margin-bottom: 1.2rem;
+            font-weight: 700;
         }
         
         .section-title p {
-            color: #666;
+            color: var(--text-light);
             max-width: 700px;
             margin: 0 auto;
+            font-size: 1.1rem;
         }
         
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            gap: 2.5rem;
             max-width: 1200px;
             margin: 0 auto;
         }
         
         .feature-card {
             background-color: white;
-            border-radius: 8px;
-            padding: 2rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            text-align: center;
         }
         
         .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
         }
         
         .feature-icon {
-            font-size: 2.5rem;
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
+            font-size: 3rem;
+            margin-bottom: 1.8rem;
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .feature-card h4 {
-            font-size: 1.3rem;
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
+            font-size: 1.4rem;
+            color: var(--dark-color);
+            margin-bottom: 1.2rem;
+            font-weight: 600;
         }
         
         .feature-card p {
-            color: #666;
-            line-height: 1.6;
+            color: var(--text-light);
+            line-height: 1.7;
         }
         
         /* Stats Section */
         .stats {
-            padding: 4rem 2rem;
-            background-color: var(--secondary-color);
+            padding: 6rem 5%;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
             color: white;
         }
         
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
+            gap: 3rem;
             max-width: 1200px;
             margin: 0 auto;
             text-align: center;
         }
         
         .stat-item h4 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             margin-bottom: 0.5rem;
             color: white;
+            font-weight: 700;
         }
         
         .stat-item p {
-            color: var(--light-color);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
         }
         
         /* Testimonials Section */
         .testimonials {
-            padding: 4rem 2rem;
+            padding: 6rem 5%;
             background-color: white;
         }
         
         .testimonial-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            gap: 2.5rem;
             max-width: 1200px;
             margin: 0 auto;
         }
         
         .testimonial-card {
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            padding: 2rem;
+            background-color: white;
+            border-radius: 12px;
+            padding: 2.5rem;
             position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.03);
         }
         
         .testimonial-card::before {
             content: '"';
-            font-size: 5rem;
-            color: var(--light-color);
+            font-size: 6rem;
+            color: rgba(67, 97, 238, 0.1);
             position: absolute;
             top: 10px;
-            left: 10px;
+            left: 20px;
             line-height: 1;
+            font-family: Georgia, serif;
         }
         
         .testimonial-content {
@@ -297,8 +341,10 @@
         
         .testimonial-card p {
             font-style: italic;
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+            color: var(--text-color);
+            font-size: 1.05rem;
         }
         
         .testimonial-author {
@@ -307,55 +353,92 @@
         }
         
         .author-avatar {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background-color: var(--light-color);
-            margin-right: 1rem;
+            margin-right: 1.5rem;
             overflow: hidden;
+            border: 3px solid rgba(67, 97, 238, 0.1);
         }
         
         .author-info h5 {
-            font-size: 1rem;
-            margin-bottom: 0.2rem;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+            color: var(--dark-color);
         }
         
         .author-info p {
-            font-size: 0.8rem;
-            color: #666;
+            font-size: 0.9rem;
+            color: var(--text-light);
             font-style: normal;
         }
         
         /* CTA Section */
         .cta {
-            padding: 4rem 2rem;
-            background-color: var(--primary-color);
+            padding: 6rem 5%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
             color: white;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .cta::after {
+            content: "";
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
         }
         
         .cta h3 {
-            font-size: 2rem;
+            font-size: 2.5rem;
             margin-bottom: 1.5rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
         }
         
         .cta p {
             max-width: 700px;
-            margin: 0 auto 2rem;
-            font-size: 1.1rem;
+            margin: 0 auto 3rem;
+            font-size: 1.15rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .cta .btn {
+            position: relative;
+            z-index: 1;
         }
         
         /* Footer */
         footer {
-            background-color: var(--secondary-color);
+            background-color: var(--dark-color);
             color: white;
-            padding: 3rem 2rem;
+            padding: 5rem 5% 2rem;
         }
         
         .footer-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
+            gap: 3rem;
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -363,22 +446,26 @@
         .footer-logo {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 1rem;
+            gap: 12px;
+            margin-bottom: 1.5rem;
         }
         
         .footer-logo img {
-            height: 30px;
+            height: 36px;
         }
         
         .footer-logo h3 {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            background: linear-gradient(45deg, #fff, var(--success-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .footer-about p {
-            color: var(--light-color);
-            line-height: 1.6;
-            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
         }
         
         .social-links {
@@ -388,12 +475,20 @@
         
         .social-links a {
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            opacity: 1;
         }
         
         .footer-links h4 {
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            margin-bottom: 1.8rem;
+            font-weight: 600;
+            color: white;
         }
         
         .footer-links ul {
@@ -401,13 +496,14 @@
         }
         
         .footer-links li {
-            margin-bottom: 0.8rem;
+            margin-bottom: 1rem;
         }
         
         .footer-links a {
-            color: var(--light-color);
+            color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
             transition: color 0.3s ease;
+            font-size: 0.95rem;
         }
         
         .footer-links a:hover {
@@ -417,17 +513,98 @@
         .footer-contact p {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 1rem;
-            color: var(--light-color);
+            gap: 12px;
+            margin-bottom: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+        
+        .footer-contact i {
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
         }
         
         .copyright {
             text-align: center;
-            padding-top: 2rem;
-            margin-top: 2rem;
+            padding-top: 3rem;
+            margin-top: 3rem;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--light-color);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding: 4rem 5%;
+            }
+            
+            .hero-content {
+                padding-right: 0;
+                margin-bottom: 3rem;
+            }
+            
+            .hero p {
+                max-width: 100%;
+            }
+            
+            .cta-buttons {
+                justify-content: center;
+            }
+            
+            .hero-image img {
+                max-width: 80%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero h2 {
+                font-size: 2.5rem;
+            }
+            
+            .section-title h3 {
+                font-size: 2rem;
+            }
+            
+            .cta h3 {
+                font-size: 2rem;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .logo {
+                margin-bottom: 1rem;
+            }
+            
+            .auth-buttons {
+                margin-top: 1rem;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
         }
     </style>
 </head>
@@ -461,125 +638,30 @@
     </section>
 
     <!-- Features Section -->
-    <section class="features" id="features">
-        <div class="section-title">
-            <h3>Powerful Features for Your Family</h3>
-            <p>Everything you need to manage your family budget effectively and achieve your financial goals together.</p>
-        </div>
-        
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">📊</div>
-                <h4>Expense Tracking</h4>
-                <p>Easily record and categorize all your family expenses to understand where your money goes each month.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">💰</div>
-                <h4>Budget Planning</h4>
-                <p>Set monthly budgets for different categories and get alerts when you're approaching your limits.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">👨‍👩‍👧‍👦</div>
-                <h4>Multi-Member Access</h4>
-                <p>Invite family members to contribute to the budget while maintaining control over permissions.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">📱</div>
-                <h4>Mobile Friendly</h4>
-                <p>Access your budget from anywhere with our responsive web app that works on all devices.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">📈</div>
-                <h4>Visual Reports</h4>
-                <p>Beautiful charts and graphs to visualize your spending patterns and financial progress.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">🔒</div>
-                <h4>Bank-Level Security</h4>
-                <p>Your financial data is protected with industry-standard encryption and security protocols.</p>
-            </div>
-        </div>
-    </section>
+    <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
+        <h4>Expense Tracking</h4>
+        <p>Easily record and categorize all your family expenses...</p>
+    </div>
 
-    <!-- Stats Section -->
-    <section class="stats">
-        <div class="stats-container">
-            <div class="stat-item">
-                <h4>10,000+</h4>
-                <p>Families Tracking Budgets</p>
-            </div>
-            <div class="stat-item">
-                <h4>₱5M+</h4>
-                <p>Monthly Expenses Tracked</p>
-            </div>
-            <div class="stat-item">
-                <h4>92%</h4>
-                <p>Report Better Savings</p>
-            </div>
-            <div class="stat-item">
-                <h4>24/7</h4>
-                <p>Support Available</p>
-            </div>
-        </div>
-    </section>
+    <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-wallet"></i></div>
+        <h4>Budget Planning</h4>
+        <p>Set monthly budgets for different categories...</p>
+    </div>
 
-    <!-- Testimonials Section -->
-    <section class="testimonials">
-        <div class="section-title">
-            <h3>What Families Are Saying</h3>
-            <p>Don't just take our word for it - hear from families who transformed their finances.</p>
-        </div>
-        
-        <div class="testimonial-grid">
-            <div class="testimonial-card">
-                <div class="testimonial-content">
-                    <p>Family Budget Tracker helped us save ₱15,000 in just three months by showing us where we were overspending on groceries and eating out.</p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">
-                            <img src="images/user1.jpg" alt="Maria Santos">
-                        </div>
-                        <div class="author-info">
-                            <h5>Maria Santos</h5>
-                            <p>Manila, Philippines</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+        <h4>Mobile Friendly</h4>
+        <p>Access your budget from anywhere with our responsive web app...</p>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+        <h4>Visual Reports</h4>
+        <p>Beautiful charts and graphs to visualize your spending patterns...</p>
+    </div>
             
-            <div class="testimonial-card">
-                <div class="testimonial-content">
-                    <p>As a family of six, keeping track of expenses was chaotic. Now we all use the app and know exactly where our money goes each month.</p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">
-                            <img src="images/user2.jpg" alt="John and Lisa Reyes">
-                        </div>
-                        <div class="author-info">
-                            <h5>John & Lisa Reyes</h5>
-                            <p>Cebu, Philippines</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="testimonial-card">
-                <div class="testimonial-content">
-                    <p>The visual reports helped us explain budgeting to our teenagers. Now they understand why we can't always say yes to every request!</p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">
-                            <img src="images/user3.jpg" alt="The Lim Family">
-                        </div>
-                        <div class="author-info">
-                            <h5>The Lim Family</h5>
-                            <p>Davao, Philippines</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </section>
 
@@ -614,7 +696,6 @@
                 <ul>
                     <li><a href="#">Expense Tracking</a></li>
                     <li><a href="#">Budget Planning</a></li>
-                    <li><a href="#">Family Sharing</a></li>
                     <li><a href="#">Reports</a></li>
                 </ul>
             </div>
@@ -623,22 +704,20 @@
                 <h4>Company</h4>
                 <ul>
                     <li><a href="#">About Us</a></li>
-                    <li><a href="#">Careers</a></li>
                     <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
                 </ul>
             </div>
             
             <div class="footer-contact">
                 <h4>Contact Us</h4>
                 <p><i>📧</i> hello@familytracker.com</p>
-                <p><i>📞</i> +63 912 345 6789</p>
-                <p><i>🏢</i> Manila, Philippines</p>
+                <p><i>📞</i> +60195885049</p>
+                <p><i>🏢</i> Terengganu, Malaysia</p>
             </div>
         </div>
         
         <div class="copyright">
-            <p>&copy; 2023 Family Budget Tracker. All rights reserved.</p>
+            <p>&copy; 2025 Family Expenses Tracker. All rights reserved.</p>
         </div>
     </footer>
 

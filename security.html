@@ -1,283 +1,963 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Security Settings</title>
-  <meta http-equiv="Content-Security-Policy" 
-        content="default-src 'self';
-                 script-src 'self' 'unsafe-inline' 
-                      https://www.gstatic.com 
-                      https://cdn.jsdelivr.net 
-                      https://cdnjs.cloudflare.com;
-                 style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-                 img-src 'self' data:;
-                 connect-src 'self' https://*.firebaseio.com https://*.googleapis.com">
-  <!-- Password strength library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
-  <style>
-    :root {
-      --primary: #4285f4;
-      --danger: #ea4335;
-      --success: #34a853;
-      --warning: #fbbc05;
-      --bg-color: #f8f9fa;
-      --card-bg: #ffffff;
-      --text-primary: #202124;
-      --text-secondary: #5f6368;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Settings - Family Expense Tracker</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Password strength library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3137c9;
+            --accent-color: #4895ef;
+            --success-color: #4cc9f0;
+            --danger-color: #772585;
+            --warning-color: #f8961e;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --sidebar-bg: #2b2d42;
+            --card-bg: #ffffff;
+            --chart-bg: #ffffff;
+        }
 
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-primary);
-      margin: 0;
-      padding: 0;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    .security-container {
-      max-width: 900px;
-      margin: 20px auto;
-      padding: 20px;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark-color);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
 
-    .security-section {
-      background: var(--card-bg);
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      padding: 20px;
-      margin-bottom: 20px;
-    }
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            position: fixed;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
 
-    .form-group {
-      margin-bottom: 15px;
-    }
+        .sidebar-header {
+            padding: 0 25px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
 
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 500;
-    }
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    input[type="password"],
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #dadce0;
-      border-radius: 4px;
-      font-size: 16px;
-    }
+        .sidebar-header h2 i {
+            color: var(--accent-color);
+        }
 
-    .password-strength {
-      height: 4px;
-      background: #f1f1f1;
-      margin: 5px 0;
-      border-radius: 2px;
-      overflow: hidden;
-    }
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
 
-    .password-strength-fill {
-      height: 100%;
-      width: 0%;
-      transition: width 0.3s ease;
-    }
+        .sidebar-menu li {
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            border-left: 3px solid transparent;
+        }
 
-    .button-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
+        .sidebar-menu li:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+            border-left: 3px solid var(--accent-color);
+        }
 
-    button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: background-color 0.3s;
-    }
+        .sidebar-menu li.active {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: white;
+            border-left: 3px solid var(--primary-color);
+        }
 
-    .save-btn {
-      background-color: var(--primary);
-      color: white;
-    }
+        .sidebar-menu li i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
 
-    .cancel-btn {
-      background-color: #f1f1f1;
-      color: var(--text-primary);
-    }
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            margin-left: 280px;
+            transition: all 0.3s ease;
+        }
 
-    .toggle-switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 24px;
-    }
+        /* Security specific styles */
+        .security-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
 
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
 
-    .toggle-slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: .4s;
-      border-radius: 24px;
-    }
+        h1 {
+            font-size: 28px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-    .toggle-slider:before {
-      position: absolute;
-      content: "";
-      height: 16px;
-      width: 16px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
-    }
+        h1 i {
+            color: var(--primary-color);
+        }
 
-    input:checked + .toggle-slider {
-      background-color: var(--success);
-    }
+        .security-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
 
-    input:checked + .toggle-slider:before {
-      transform: translateX(26px);
-    }
+        .security-section h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    .notification {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 15px;
-      border-radius: 4px;
-      color: white;
-      display: none;
-      z-index: 1000;
-    }
+        .security-section h2 i {
+            color: var(--primary-color);
+        }
 
-    .notification.show {
-      display: block;
-      animation: fadeIn 0.3s;
-    }
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-    .notification.error {
-      background-color: var(--danger);
-    }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
 
-    .notification.success {
-      background-color: var(--success);
-    }
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+        }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+        .password-strength {
+            height: 6px;
+            background: #f1f1f1;
+            margin: 8px 0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .password-strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-secondary {
+            background-color: #f8f9fa;
+            color: var(--gray-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #5a1a6b;
+        }
+
+        /* Toggle switch styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin-right: 10px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--success-color);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Session item styles */
+        .session-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--light-color);
+            margin-bottom: 10px;
+        }
+
+        .session-icon {
+            margin-right: 15px;
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        .session-info {
+            flex: 1;
+        }
+
+        .session-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .session-details {
+            font-size: 14px;
+            color: var(--gray-color);
+        }
+
+        .session-current {
+            color: var(--success-color);
+            font-weight: 500;
+            margin-left: 10px;
+        }
+
+        .session-actions {
+            margin-left: auto;
+        }
+
+        /* QR code styles */
+        .qrcode-container {
+            background: white;
+            padding: 15px;
+            display: inline-block;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .notification.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        .notification.error {
+            background-color: var(--danger-color);
+        }
+
+        .notification.success {
+            background-color: var(--success-color);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 250px;
+            }
+            .main-content {
+                margin-left: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 1000;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="security-container">
-    <h1>Security Settings</h1>
-
-    <!-- Password Change Section -->
-    <div class="security-section">
-      <h2>Change Password</h2>
-      <div class="form-group">
-        <label for="current-password">Current Password</label>
-        <input type="password" id="current-password" placeholder="Enter current password">
-      </div>
-      <div class="form-group">
-        <label for="new-password">New Password</label>
-        <input type="password" id="new-password" placeholder="Enter new password">
-        <div class="password-strength">
-          <div class="password-strength-fill" id="password-strength-fill"></div>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-wallet"></i> F-Track</h2>
         </div>
-        <small>Use at least 10 characters with uppercase letters and numbers</small>
-      </div>
-      <div class="form-group">
-        <label for="confirm-password">Confirm New Password</label>
-        <input type="password" id="confirm-password" placeholder="Confirm new password">
-      </div>
-      <div class="button-group">
-        <button class="cancel-btn" id="cancel-password">Cancel</button>
-        <button class="save-btn" id="change-password-btn">Change Password</button>
-      </div>
+        <ul class="sidebar-menu">
+            <li onclick="window.location.href='add_expenses.html'">
+                <i class="fas fa-plus-circle"></i> Add Expense
+            </li>
+            <li onclick="window.location.href='add_income.html'">
+                <i class="fas fa-money-bill-wave"></i> Add Income
+            </li>
+            <li onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </li>
+            <li onclick="window.location.href='list_expenses.html'">
+                <i class="fas fa-list-ul"></i> List Expenses
+            </li>
+            <li onclick="window.location.href='set_budget.html'">
+                <i class="fas fa-money-bill-wave"></i> Set Budget
+            </li>
+            <li onclick="window.location.href='list_budget.html'">
+                <i class="fas fa-clipboard-list"></i> List Budgets
+            </li>
+            <li onclick="window.location.href='report.html'">
+                <i class="fas fa-file-alt"></i> Monthly Reports
+            </li>
+            <li onclick="window.location.href='categories.html'">
+                <i class="fas fa-tags"></i> Categories
+            </li>
+            <li onclick="window.location.href='family_member.html'">
+                <i class="fas fa-users"></i> Family Members
+            </li>
+            <li class="active">
+                <i class="fas fa-cog"></i> Settings
+            </li>
+        </ul>
     </div>
 
-    <!-- Two-Factor Authentication Section -->
-    <div class="security-section">
-      <h2>Two-Factor Authentication</h2>
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <label class="toggle-switch">
-          <input type="checkbox" id="two-factor-toggle">
-          <span class="toggle-slider"></span>
-        </label>
-        <span>Enable Two-Factor Authentication</span>
-      </div>
-      <div id="two-factor-setup" style="display: none; margin-top: 20px;">
-        <div class="form-group">
-          <p>Scan this QR code with your authenticator app:</p>
-          <div id="qrcode-container" style="background: white; padding: 15px; display: inline-block; border-radius: 8px;">
-            <div id="qrcode"></div>
-          </div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="security-container">
+            <div class="page-header">
+                <h1><i class="fas fa-shield-alt"></i> Security Settings</h1>
+            </div>
+
+            <!-- Password Change Section -->
+            <div class="security-section">
+                <h2><i class="fas fa-key"></i> Change Password</h2>
+                <div class="form-group">
+                    <label for="current-password">Current Password</label>
+                    <input type="password" id="current-password" placeholder="Enter current password">
+                </div>
+                <div class="form-group">
+                    <label for="new-password">New Password</label>
+                    <input type="password" id="new-password" placeholder="Enter new password">
+                    <div class="password-strength">
+                        <div class="password-strength-fill" id="password-strength-fill"></div>
+                    </div>
+                    <small>Use at least 10 characters with uppercase letters and numbers</small>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm New Password</label>
+                    <input type="password" id="confirm-password" placeholder="Confirm new password">
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-secondary" id="cancel-password">Cancel</button>
+                    <button class="btn btn-primary" id="change-password-btn">Change Password</button>
+                </div>
+            </div>
+
+            <!-- Two-Factor Authentication Section -->
+            <div class="security-section">
+                <h2><i class="fas fa-mobile-alt"></i> Two-Factor Authentication</h2>
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="two-factor-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span>Enable Two-Factor Authentication</span>
+                </div>
+                <div id="two-factor-setup" style="display: none;">
+                    <div class="form-group">
+                        <p>Scan this QR code with your authenticator app:</p>
+                        <div class="qrcode-container">
+                            <div id="qrcode"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="verification-code">Enter Verification Code</label>
+                        <input type="text" id="verification-code" placeholder="6-digit code" maxlength="6">
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="verify-2fa-btn">Verify & Enable</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Sessions Section -->
+            <div class="security-section">
+                <h2><i class="fas fa-laptop"></i> Active Sessions</h2>
+                <p>Devices that have accessed your account:</p>
+                <div id="sessions-container">
+                    <p>Loading active sessions...</p>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-          <label for="verification-code">Enter Verification Code</label>
-          <input type="text" id="verification-code" placeholder="6-digit code" maxlength="6">
-        </div>
-        <button class="save-btn" id="verify-2fa-btn">Verify & Enable</button>
-      </div>
     </div>
 
-    <!-- Active Sessions Section -->
-    <div class="security-section">
-      <h2>Active Sessions</h2>
-      <p>Devices that have accessed your account:</p>
-      <div id="sessions-container">
-        <p>Loading active sessions...</p>
-      </div>
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notification-message"></span>
     </div>
-  </div>
 
-  <!-- Notification -->
-  <div class="notification" id="notification">
-    <span id="notification-message"></span>
-  </div>
+    <!-- Firebase and other libraries -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-functions-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-functions-compat.js"></script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
-  
-  <script>
-// Initialize Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
-  authDomain: "f-track-e5c35.firebaseapp.com",
-  projectId: "f-track-e5c35",
-  storageBucket: "f-track-e5c35.appspot.com",
-  messagingSenderId: "650188769848",
-  appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd"
-};
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
+            authDomain: "f-track-e5c35.firebaseapp.com",
+            projectId: "f-track-e5c35",
+            storageBucket: "f-track-e5c35.appspot.com",
+            messagingSenderId: "650188769848",
+            appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd"
+        };
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
 
-const auth = firebase.auth();
-const db = firebase.firestore();
-const functions = firebase.app().functions('asia-southeast1');
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const functions = firebase.app().functions('asia-southeast1');
 
+        // DOM elements
+        const currentPasswordInput = document.getElementById('current-password');
+        const newPasswordInput = document.getElementById('new-password');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const changePasswordBtn = document.getElementById('change-password-btn');
+        const cancelPasswordBtn = document.getElementById('cancel-password');
+        const passwordStrengthFill = document.getElementById('password-strength-fill');
+        const twoFactorToggle = document.getElementById('two-factor-toggle');
+        const twoFactorSetup = document.getElementById('two-factor-setup');
+        const verify2faBtn = document.getElementById('verify-2fa-btn');
+        const verificationCodeInput = document.getElementById('verification-code');
+        const qrcodeContainer = document.getElementById('qrcode');
+        const sessionsContainer = document.getElementById('sessions-container');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
 
-  </script>
+        // Current user data
+        let currentUser = null;
+        let userDocRef = null;
+        let userData = {};
+        let secret = null;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    userDocRef = db.collection('users').doc(user.uid);
+                    loadUserData();
+                    loadSessions();
+                     recordLoginSession(); // Add this line
+                } else {
+                    // User is not logged in, redirect to login page
+                    window.location.href = '/login.html';
+                }
+            });
+
+            // Password strength indicator
+            newPasswordInput.addEventListener('input', updatePasswordStrength);
+
+            // Password change form
+            changePasswordBtn.addEventListener('click', changePassword);
+            cancelPasswordBtn.addEventListener('click', resetPasswordForm);
+
+            // 2FA toggle
+            twoFactorToggle.addEventListener('change', toggle2FA);
+
+            // 2FA verification
+            verify2faBtn.addEventListener('click', verify2FACode);
+        });
+
+        // Load user data from Firestore
+        async function loadUserData() {
+            try {
+                const doc = await userDocRef.get();
+                if (doc.exists) {
+                    userData = doc.data();
+                    // Update 2FA toggle based on user data
+                    twoFactorToggle.checked = userData.twoFactorEnabled || false;
+                    
+                    // Hide password change for Google-authenticated users
+                    if (currentUser.providerData.some(provider => provider.providerId === 'google.com')) {
+                        document.querySelector('.security-section:nth-of-type(1)').style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                showNotification('Error loading user data', 'error');
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // Update password strength indicator
+        function updatePasswordStrength() {
+            const password = newPasswordInput.value;
+            const result = zxcvbn(password);
+            const strength = result.score; // 0-4 scale
+
+            // Update strength meter
+            passwordStrengthFill.style.width = `${(strength + 1) * 20}%`;
+            
+            // Change color based on strength
+            if (strength < 2) {
+                passwordStrengthFill.style.backgroundColor = 'var(--danger-color)';
+            } else if (strength < 4) {
+                passwordStrengthFill.style.backgroundColor = 'var(--warning-color)';
+            } else {
+                passwordStrengthFill.style.backgroundColor = 'var(--success-color)';
+            }
+        }
+
+        // Change password function
+        async function changePassword() {
+            const currentPassword = currentPasswordInput.value;
+            const newPassword = newPasswordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            // Validate inputs
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showNotification('Please fill in all fields', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showNotification('New passwords do not match', 'error');
+                return;
+            }
+
+            if (newPassword.length < 10) {
+                showNotification('Password must be at least 10 characters', 'error');
+                return;
+            }
+
+            try {
+                // Show loading state
+                changePasswordBtn.disabled = true;
+                changePasswordBtn.textContent = 'Updating...';
+
+                // Create credentials with current email and password
+                const credential = firebase.auth.EmailAuthProvider.credential(
+                    currentUser.email,
+                    currentPassword
+                );
+                
+                // Reauthenticate the user
+                await currentUser.reauthenticateWithCredential(credential);
+                
+                // Update password
+                await currentUser.updatePassword(newPassword);
+                
+                // Update lastUpdated in Firestore
+                await userDocRef.update({
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastPasswordChange: new Date().toISOString()
+                });
+                
+                showNotification('Password updated successfully!', 'success');
+                resetPasswordForm();
+            } catch (error) {
+                console.error('Password change error:', error);
+                
+                // Handle specific error cases
+                switch (error.code) {
+                    case 'auth/wrong-password':
+                        showNotification('Current password is incorrect', 'error');
+                        break;
+                    case 'auth/weak-password':
+                        showNotification('Password is too weak. Use a stronger password.', 'error');
+                        break;
+                    case 'auth/requires-recent-login':
+                        showNotification('Session expired. Please log in again.', 'error');
+                        // You might want to redirect to login page here
+                        break;
+                    default:
+                        showNotification('Error changing password: ' + error.message, 'error');
+                }
+            } finally {
+                // Reset button state
+                changePasswordBtn.disabled = false;
+                changePasswordBtn.textContent = 'Change Password';
+            }
+        }
+
+        // Reset password form
+        function resetPasswordForm() {
+            currentPasswordInput.value = '';
+            newPasswordInput.value = '';
+            confirmPasswordInput.value = '';
+            passwordStrengthFill.style.width = '0%';
+        }
+
+        // Toggle 2FA
+        async function toggle2FA() {
+            if (twoFactorToggle.checked) {
+                // Enable 2FA
+                try {
+                    // Generate a secret for TOTP
+                    secret = generateSecret();
+                    
+                    // Generate QR code
+                    const otpAuthUrl = `otpauth://totp/F-Track:${currentUser.email}?secret=${secret}&issuer=F-Track`;
+                    
+                    QRCode.toDataURL(otpAuthUrl, (err, url) => {
+                        if (err) {
+                            console.error('Error generating QR code:', err);
+                            showNotification('Error generating QR code', 'error');
+                            twoFactorToggle.checked = false;
+                            return;
+                        }
+                        
+                        qrcodeContainer.innerHTML = `<img src="${url}" alt="QR Code">`;
+                        twoFactorSetup.style.display = 'block';
+                    });
+                } catch (error) {
+                    console.error('Error setting up 2FA:', error);
+                    showNotification('Error setting up 2FA', 'error');
+                    twoFactorToggle.checked = false;
+                }
+            } else {
+                // Disable 2FA
+                try {
+                    await userDocRef.update({
+                        twoFactorEnabled: false,
+                        twoFactorSecret: null
+                    });
+                    
+                    twoFactorSetup.style.display = 'none';
+                    showNotification('Two-factor authentication disabled', 'success');
+                } catch (error) {
+                    console.error('Error disabling 2FA:', error);
+                    showNotification('Error disabling 2FA', 'error');
+                    twoFactorToggle.checked = true;
+                }
+            }
+        }
+
+        // Verify 2FA code
+        async function verify2FACode() {
+            const code = verificationCodeInput.value;
+            
+            if (!code || code.length !== 6) {
+                showNotification('Please enter a valid 6-digit code', 'error');
+                return;
+            }
+            
+            try {
+                // In a real app, you would verify the TOTP code with your backend
+                // For this example, we'll just assume it's valid and save the secret
+                
+                await userDocRef.update({
+                    twoFactorEnabled: true,
+                    twoFactorSecret: secret
+                });
+                
+                twoFactorSetup.style.display = 'none';
+                verificationCodeInput.value = '';
+                showNotification('Two-factor authentication enabled successfully', 'success');
+            } catch (error) {
+                console.error('Error verifying 2FA code:', error);
+                showNotification('Error verifying 2FA code', 'error');
+            }
+        }
+
+        // Generate a random secret for TOTP
+        function generateSecret() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+            let secret = '';
+            for (let i = 0; i < 16; i++) {
+                secret += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return secret;
+        }
+
+        // Load active sessions with detailed user agent information
+        async function loadSessions() {
+            try {
+                const sessionsRef = db.collection('users').doc(currentUser.uid).collection('sessions');
+                const querySnapshot = await sessionsRef.orderBy('lastLogin', 'desc').get();
+                
+                if (querySnapshot.empty) {
+                    sessionsContainer.innerHTML = '<p>No active sessions found</p>';
+                    return;
+                }
+                
+                let sessionsHTML = '';
+                querySnapshot.forEach(doc => {
+                    const session = doc.data();
+                    sessionsHTML += createSessionItem(doc.id, session);
+                });
+                
+                sessionsContainer.innerHTML = sessionsHTML;
+                
+                // Add event listeners to logout buttons
+                document.querySelectorAll('.logout-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const sessionId = e.target.dataset.sessionId;
+                        await logoutSession(sessionId);
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading sessions:', error);
+                sessionsContainer.innerHTML = '<p>Error loading sessions</p>';
+            }
+        }
+
+          async function recordLoginSession() {
+            try {
+                const userAgent = navigator.userAgent;
+                const sessionRef = db.collection('users').doc(currentUser.uid)
+                                    .collection('sessions').doc(currentUser.uid); // Using UID as session ID
+                
+                await sessionRef.set({
+                    userAgent: userAgent,
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                    // You might also want to store IP address if you have a way to get it
+                    // ipAddress: await getIPAddress() // You would need to implement this
+                }, { merge: true });
+                
+            } catch (error) {
+                console.error('Error recording login session:', error);
+            }
+        }
+
+        // Create HTML for a session item with detailed device info
+        function createSessionItem(sessionId, session) {
+            const isCurrent = sessionId === currentUser.uid; // Simplified - in real app you'd have a better way
+            const deviceInfo = parseUserAgent(session.userAgent);
+            const lastLogin = session.lastLogin ? session.lastLogin.toDate().toLocaleString() : 'Unknown';
+            const location = session.ipAddress ? `• ${session.ipAddress}` : '';
+            
+            return `
+                <div class="session-item">
+                    <div class="session-icon">${getDeviceIcon(deviceInfo)}</div>
+                    <div class="session-info">
+                        <div class="session-name">
+                            ${deviceInfo.deviceName || 'Unknown device'}
+                            ${isCurrent ? '<span class="session-current">(Current)</span>' : ''}
+                        </div>
+                        <div class="session-details">
+                            ${deviceInfo.browser} on ${deviceInfo.os} ${location} • ${lastLogin}
+                        </div>
+                    </div>
+                    ${!isCurrent ? `
+                        <div class="session-actions">
+                            <button class="btn btn-danger logout-btn" data-session-id="${sessionId}">Logout</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // Parse user agent string to get device details
+        function parseUserAgent(userAgent) {
+            if (!userAgent) return {
+                browser: 'Unknown',
+                os: 'Unknown',
+                deviceName: 'Unknown device'
+            };
+
+            // Browser detection
+            let browser = 'Unknown';
+            if (userAgent.includes('Chrome')) browser = 'Chrome';
+            else if (userAgent.includes('Firefox')) browser = 'Firefox';
+            else if (userAgent.includes('Safari')) browser = 'Safari';
+            else if (userAgent.includes('Edge')) browser = 'Edge';
+            else if (userAgent.includes('Opera')) browser = 'Opera';
+
+            // OS detection
+            let os = 'Unknown';
+            if (userAgent.includes('Windows')) os = 'Windows';
+            else if (userAgent.includes('Macintosh')) os = 'Mac OS';
+            else if (userAgent.includes('Linux')) os = 'Linux';
+            else if (userAgent.includes('Android')) os = 'Android';
+            else if (userAgent.includes('iOS')) os = 'iOS';
+
+            // Device type
+            let deviceName = 'Unknown device';
+            if (userAgent.includes('Mobile')) deviceName = 'Mobile Device';
+            else if (userAgent.includes('Tablet')) deviceName = 'Tablet';
+            else if (userAgent.includes('Windows')) deviceName = 'Windows Computer';
+            else if (userAgent.includes('Macintosh')) deviceName = 'Mac Computer';
+            else if (userAgent.includes('Linux')) deviceName = 'Linux Computer';
+
+            return {
+                browser,
+                os,
+                deviceName
+            };
+        }
+
+        // Get appropriate device icon based on parsed device info
+        function getDeviceIcon(deviceInfo) {
+            if (!deviceInfo) return '<i class="fas fa-question-circle"></i>';
+            
+            if (deviceInfo.os === 'Android' || deviceInfo.os === 'iOS' || deviceInfo.deviceName.includes('Mobile')) {
+                return '<i class="fas fa-mobile-alt"></i>';
+            } else if (deviceInfo.deviceName.includes('Tablet')) {
+                return '<i class="fas fa-tablet-alt"></i>';
+            } else if (deviceInfo.os === 'Windows') {
+                return '<i class="fab fa-windows"></i>';
+            } else if (deviceInfo.os === 'Mac OS') {
+                return '<i class="fab fa-apple"></i>';
+            } else if (deviceInfo.os === 'Linux') {
+                return '<i class="fab fa-linux"></i>';
+            }
+            
+            return '<i class="fas fa-laptop"></i>';
+        }
+
+        // Logout a specific session
+        async function logoutSession(sessionId) {
+            try {
+                // In a real app, you would have a backend function to invalidate the session
+                // For this example, we'll just remove it from Firestore
+                
+                await db.collection('users').doc(currentUser.uid).collection('sessions').doc(sessionId).delete();
+                showNotification('Session logged out successfully', 'success');
+                loadSessions();
+            } catch (error) {
+                console.error('Error logging out session:', error);
+                showNotification('Error logging out session', 'error');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            notificationMessage.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+    </script>
 </body>
 </html>

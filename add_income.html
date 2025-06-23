@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Income - Family Expense Tracker</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3137c9;
+            --accent-color: #4895ef;
+            --success-color: #4cc9f0;
+            --danger-color: #772585;
+            --warning-color: #f8961e;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --sidebar-bg: #2b2d42;
+            --card-bg: #ffffff;
+            --chart-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark-color);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            position: fixed;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 0 25px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-header h2 i {
+            color: var(--accent-color);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-menu li:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .sidebar-menu li.active {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: white;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .sidebar-menu li i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            margin-left: 280px;
+            transition: all 0.3s ease;
+        }
+
+        /* Income specific styles */
+        .income-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h1 i {
+            color: var(--primary-color);
+        }
+
+        .income-summary {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .summary-card {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .summary-title {
+            font-size: 16px;
+            color: var(--gray-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .total-value {
+            color: var(--success-color);
+        }
+
+        .remaining-value {
+            color: var(--primary-color);
+        }
+
+        .income-form {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        label.required:after {
+            content: " *";
+            color: var(--danger-color);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .input-container:before {
+            content: "RM";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 600;
+            color: var(--gray-color);
+        }
+
+        .input-container input {
+            padding-left: 40px;
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background-color: #f8f9fa;
+            color: var(--gray-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            display: none;
+        }
+
+        /* Voice recognition styles */
+        .voice-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--gray-color);
+            transition: all 0.3s ease;
+            background: none;
+            border: none;
+            font-size: 16px;
+        }
+
+        .voice-icon:hover {
+            color: var(--primary-color);
+        }
+
+        /* Language selector styles */
+        .language-selector {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .language-selector label {
+            margin-bottom: 0;
+        }
+
+        .language-btn {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .language-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 250px;
+            }
+            .main-content {
+                margin-left: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 1000;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .income-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .language-selector {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-wallet"></i> F-Track</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="window.location.href='add_expenses.html'">
+                <i class="fas fa-plus-circle"></i> Add Expense
+            </li>
+            <li class="active">
+                <i class="fas fa-money-bill-wave"></i> Add Income
+            </li>
+            <li onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </li>
+            <li onclick="window.location.href='list_expenses.html'">
+                <i class="fas fa-list-ul"></i> List Expenses
+            </li>
+            <li onclick="window.location.href='set_budget.html'">
+                <i class="fas fa-money-bill-wave"></i> Set Budget
+            </li>
+            <li onclick="window.location.href='list_budget.html'">
+                <i class="fas fa-clipboard-list"></i> List Budgets
+            </li>
+            <li onclick="window.location.href='report.html'">
+                <i class="fas fa-file-alt"></i> Monthly Reports
+            </li>
+            <li onclick="window.location.href='categories.html'">
+                <i class="fas fa-tags"></i> Categories
+            </li>
+            <li onclick="window.location.href='family_member.html'">
+                <i class="fas fa-users"></i> Family Members
+            </li>
+            <li onclick="window.location.href='setting.html'">
+                <i class="fas fa-cog"></i> Settings
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="income-container">
+            <div class="page-header">
+                <h1><i class="fas fa-money-bill-wave"></i> Add Income</h1>
+            </div>
+
+            <!-- Language Selection -->
+            <div class="language-selector">
+                <label>Voice Language:</label>
+                <button id="lang-en" class="language-btn active" onclick="setLanguage('en')">English</button>
+                <button id="lang-ms" class="language-btn" onclick="setLanguage('ms')">Malay</button>
+            </div>
+
+            <!-- Income Summary -->
+            <div class="income-summary">
+                <div class="summary-card">
+                    <div class="summary-title">
+                        <i class="fas fa-wallet"></i> Total Income
+                    </div>
+                    <div class="summary-value total-value" id="total-income">RM 0.00</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-title">
+                        <i class="fas fa-coins"></i> Remaining Income
+                    </div>
+                    <div class="summary-value remaining-value" id="remaining-income">RM 0.00</div>
+                </div>
+            </div>
+
+            <!-- Income Form -->
+            <form id="income-form" class="income-form">
+                <div class="form-group">
+                    <label for="amount" class="required">Amount</label>
+                    <div class="input-container">
+                        <input type="number" id="amount" placeholder="0.00" step="0.01" min="0" required>
+                        <button type="button" class="voice-icon" onclick="startVoiceRecognition('amount')">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
+                    <div id="amount-error" class="error-message">Please enter a valid amount</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="type" class="required">Income Type</label>
+                        <select id="type" required>
+                            <option value="">Select type</option>
+                            <option value="salary">Salary</option>
+                            <option value="bonus">Bonus</option>
+                            <option value="investment">Investment</option>
+                            <option value="gift">Gift</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <div id="type-error" class="error-message">Please select an income type</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date" class="required">Date</label>
+                        <input type="date" id="date" required>
+                        <div id="date-error" class="error-message">Please select a date</div>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Expense
+                </button>
+                        <div class="spinner" id="loading-spinner"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, query, where, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
+        authDomain: "f-track-e5c35.firebaseapp.com",
+        projectId: "f-track-e5c35",
+        storageBucket: "f-track-e5c35.appspot.com",
+        messagingSenderId: "650188769848",
+        appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd",
+        measurementId: "G-YPQT10VSBJ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    let currentUser = null;
+    let currentLanguage = 'en'; // Default to English
+
+    // Language selection function
+    window.setLanguage = function(lang) {
+        currentLanguage = lang;
+        document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+        document.getElementById('lang-ms').classList.toggle('active', lang === 'ms');
+    };
+
+    // Check if user is authenticated
+    checkAuthState();
+
+    function checkAuthState() {
+        console.log("Checking authentication state...");
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("User authenticated:", user.email);
+                currentUser = user;
+                loadIncomesAndExpenses(user.uid);
+                document.getElementById('date').valueAsDate = new Date();
+            } else {
+                console.log("No authenticated user, redirecting to login...");
+                window.location.href = "login.html";
+            }
+        });
+    }
+
+    async function loadIncomesAndExpenses(userId) {
+        try {
+            // Fetch total income
+            const incomeQuery = query(
+                collection(db, 'incomes'),
+                where('userId', '==', userId)
+            );
+
+            const incomeSnapshot = await getDocs(incomeQuery);
+            let totalIncome = 0;
+
+            incomeSnapshot.forEach(doc => {
+                totalIncome += doc.data().amount;
+            });
+
+            // Fetch total expenses
+            const expenseQuery = query(
+                collection(db, 'expenses'),
+                where('userId', '==', userId)
+            );
+
+            const expenseSnapshot = await getDocs(expenseQuery);
+            let totalExpenses = 0;
+
+            expenseSnapshot.forEach(doc => {
+                totalExpenses += doc.data().total;
+            });
+
+            // Calculate remaining income
+            const remainingIncome = totalIncome - totalExpenses;
+
+            // Update the UI
+            document.getElementById('total-income').textContent = `RM ${totalIncome.toFixed(2)}`;
+            document.getElementById('remaining-income').textContent = `RM ${remainingIncome.toFixed(2)}`;
+
+        } catch (error) {
+            console.error("Error loading income and expenses:", error);
+        }
+    }
+
+    // Voice Recognition Functions
+    window.startVoiceRecognition = function(fieldId) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert("Voice recognition is not supported in your browser. Please use Chrome or Edge.");
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = currentLanguage === 'ms' ? 'ms-MY' : 'en-US';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = function() {
+            document.getElementById(fieldId).placeholder = "Listening...";
+        };
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            processTranscript(fieldId, transcript, currentLanguage);
+        };
+
+        recognition.onerror = function(event) {
+            console.error('Voice recognition error', event.error);
+            let errorMessage = "Error occurred";
+            if (event.error === 'not-allowed') {
+                errorMessage = "Microphone access was denied. Please allow microphone access in your browser settings.";
+            } else if (event.error === 'no-speech') {
+                errorMessage = "No speech was detected. Please try again.";
+            }
+            document.getElementById(fieldId).placeholder = errorMessage;
+        };
+
+        recognition.onend = function() {
+            if (document.getElementById(fieldId).placeholder === "Listening...") {
+                document.getElementById(fieldId).placeholder = "";
+            }
+        };
+
+        recognition.start();
+    };
+
+        function processTranscript(fieldId, transcript, language) {
+            if (fieldId === 'amount') {
+                let processedValue = transcript.toLowerCase();
+                
+                if (language === 'ms') {
+                    // Malay currency processing - "32 ringgit 80 sen" → "32.80"
+                    processedValue = processedValue.replace(/ringgit|rm/g, "")
+                        .replace(/sen/g, "")
+                        .replace(/dan|dan\s+/g, ".")
+                        .replace(/\s+/g, ""); // Remove all spaces
+                        
+                    // Handle cases where "sen" might be at the beginning
+                    if (processedValue.startsWith(".")) {
+                        processedValue = "0" + processedValue;
+                    }
+                    
+                    // Ensure we have exactly two decimal places
+                    if (processedValue.includes(".")) {
+                        const parts = processedValue.split(".");
+                        if (parts[1].length === 1) {
+                            processedValue = parts[0] + "." + parts[1] + "0";
+                        } else if (parts[1].length > 2) {
+                            processedValue = parts[0] + "." + parts[1].substring(0, 2);
+                        }
+                    }
+                } else {
+                    // English currency processing - "32 dollars and 80 cents" → "32.80"
+                    processedValue = processedValue.replace(/dollars|\$|euros|\€|pounds|£|ringgit|rm/g, "")
+                        .replace(/cents|cent/g, "")
+                        .replace(/and\s+/g, ".")
+                        .replace(/\s+/g, ""); // Remove all spaces
+                        
+                    // Handle cases where "cents" might be at the beginning
+                    if (processedValue.startsWith(".")) {
+                        processedValue = "0" + processedValue;
+                    }
+                    
+                    // Ensure we have exactly two decimal places
+                    if (processedValue.includes(".")) {
+                        const parts = processedValue.split(".");
+                        if (parts[1].length === 1) {
+                            processedValue = parts[0] + "." + parts[1] + "0";
+                        } else if (parts[1].length > 2) {
+                            processedValue = parts[0] + "." + parts[1].substring(0, 2);
+                        }
+                    }
+                }
+                
+                // Final cleanup - remove any non-numeric characters except decimal point
+                processedValue = processedValue.replace(/[^\d.]/g, '');
+                
+                // If no decimal point, add .00
+                if (!processedValue.includes('.')) {
+                    processedValue += ".00";
+                }
+                
+                document.getElementById(fieldId).value = processedValue;
+            }
+        }
+
+    document.getElementById("income-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // Validate form
+        const amount = parseFloat(document.getElementById("amount").value);
+        const type = document.getElementById("type").value;
+        const date = document.getElementById("date").value;
+
+        let isValid = true;
+
+        // Validate amount
+        if (!amount || amount <= 0) {
+            document.getElementById("amount-error").style.display = "block";
+            isValid = false;
+        } else {
+            document.getElementById("amount-error").style.display = "none";
+        }
+
+        // Validate type
+        if (!type) {
+            document.getElementById("type-error").style.display = "block";
+            isValid = false;
+        } else {
+            document.getElementById("type-error").style.display = "none";
+        }
+
+        // Validate date
+        if (!date) {
+            document.getElementById("date-error").style.display = "block";
+            isValid = false;
+        } else {
+            document.getElementById("date-error").style.display = "none";
+        }
+
+        if (!isValid) return;
+
+        // Show loading spinner
+        const saveBtn = document.getElementById("save-income");
+        const spinner = document.getElementById("loading-spinner");
+        saveBtn.disabled = true;
+        spinner.style.display = "block";
+
+        try {
+            const incomeData = {
+                amount,
+                type,
+                date,
+                createdAt: serverTimestamp(),
+                userId: currentUser.uid
+            };
+
+            // Save income data to Firestore
+            await addDoc(collection(db, "incomes"), incomeData);
+
+            // Update the totals
+            await loadIncomesAndExpenses(currentUser.uid);
+
+            // Reset form
+            document.getElementById("income-form").reset();
+            document.getElementById('date').valueAsDate = new Date();
+
+            // Show success message
+            alert("Income added successfully!");
+
+        } catch (error) {
+            console.error("Error saving income:", error);
+            alert("Error saving income: " + error.message);
+        } finally {
+            // Hide loading spinner
+            saveBtn.disabled = false;
+            spinner.style.display = "none";
+        }
+    });
+
+    // Set default date to today
+    document.addEventListener('DOMContentLoaded', () => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        document.getElementById('date').value = `${year}-${month}-${day}`;
+    });
+</script>
+</body>
+</html>

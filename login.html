@@ -3,97 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <!-- Add Firebase SDK -->
+    <title>Login to F-Track | Family Expenses Tracker</title>
+    <!-- Firebase SDK (using compat version) -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #0d2438;
-            color: white;
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1b263b;
+            --darker: #0d1b2a;
+            --light: #f8f9fa;
+            --success: #4cc9f0;
+            --error: #f72585;
+        }
+        
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            line-height: 1.6;
+        }
+        
         .container {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 50px;
+            max-width: 1200px;
+            width: 90%;
+            background: rgba(13, 27, 42, 0.8);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            margin: 2rem;
         }
+        
         .left-panel {
-            width: 50%;
+            flex: 1;
+            padding: 4rem;
+            background: linear-gradient(rgba(67, 97, 238, 0.7), rgba(63, 55, 201, 0.8)), 
+                        url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') no-repeat center center;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
+        
         .right-panel {
-            width: 45%;
-            background-color: #1b3148;
-            padding: 30px;
-            border-radius: 8px;
+            flex: 1;
+            padding: 3rem;
+            background-color: rgba(27, 38, 59, 0.9);
         }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--success);
+            margin-right: 1rem;
+        }
+        
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary-light), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
         .left-panel h1 {
-            font-size: 48px;
-            color: #4e9ad6;
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
         }
+        
+        .left-panel p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .features {
+            margin-top: 2rem;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .feature i {
+            color: var(--success);
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+        
         .right-panel h2 {
-            font-size: 24px;
-            color: #fff;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        input[type="email"], input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            background-color: #2f3c4a;
-            color: #fff;
-        }
-        .form-group label {
-            font-size: 14px;
-            color: #ccc;
-        }
-        button {
-            background-color: #4e9ad6;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            position: relative;
+        }
+        
+        .right-panel h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            border-radius: 3px;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        input[type="email"], 
+        input[type="password"] {
             width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.3);
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
         button:hover {
-            background-color: #3b7fa1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
         }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
         .forgot-password {
-            margin-top: 10px;
-            color: #ccc;
-            font-size: 14px;
+            margin-top: 1rem;
             text-align: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
         }
+        
         .forgot-password a {
-            color: #4e9ad6;
+            color: var(--primary-light);
             text-decoration: none;
+            font-weight: 600;
         }
+        
         .forgot-password a:hover {
             text-decoration: underline;
         }
-        #error-message {
-            color: #ff6b6b;
-            margin: 15px 0;
-            text-align: center;
+        
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
             display: none;
+            align-items: center;
+            gap: 10px;
         }
-        #success-message {
-            color: #4caf50;
-            margin: 15px 0;
-            text-align: center;
-            display: none;
+        
+        .error-message {
+            background-color: rgba(247, 37, 133, 0.2);
+            border-left: 4px solid var(--error);
+            color: var(--error);
+            display: flex !important; /* Force display when error occurs */
         }
+        
+        .success-message {
+            background-color: rgba(76, 201, 240, 0.2);
+            border-left: 4px solid var(--success);
+            color: var(--success);
+            display: flex !important; /* Force display when success occurs */
+        }
+        
         .loading {
             display: inline-block;
             width: 20px;
@@ -102,10 +253,133 @@
             border-radius: 50%;
             border-top-color: #fff;
             animation: spin 1s ease-in-out infinite;
-            margin-left: 10px;
         }
+        
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+        
+        .signup-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .signup-link a {
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+        
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .divider::before {
+            margin-right: 1rem;
+        }
+        
+        .divider::after {
+            margin-left: 1rem;
+        }
+        
+        .google-btn {
+            background: white;
+            color: #757575;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .google-btn:hover {
+            background: #f8f8f8;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .google-btn i {
+            color: #4285F4;
+            font-size: 1.2rem;
+        }
+        
+        .reset-password-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .reset-password-content {
+            background-color: var(--darker);
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .reset-password-content h3 {
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        
+        .reset-password-content p {
+            margin-bottom: 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .reset-password-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .reset-password-actions button {
+            width: auto;
+            padding: 0.7rem 1.5rem;
+        }
+        
+        .reset-password-actions button.cancel {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .left-panel, .right-panel {
+                padding: 2rem;
+            }
+            
+            .left-panel {
+                text-align: center;
+            }
+            
+            .features {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -113,32 +387,110 @@
 
     <div class="container">
         <div class="left-panel">
-            <h1>Welcome Back</h1>
-            <p>We are glad to see you again! Please login to access your account and explore more services.</p>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="logo-text">F-Track</div>
+            </div>
+            <h1>Welcome Back to F-Track</h1>
+            <p>Continue your journey to financial wellness. Track your family expenses and stay on budget with our intuitive tools.</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Real-time expense tracking</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Secure data protection</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Automatic sync across devices</span>
+                </div>
+            </div>
         </div>
         <div class="right-panel">
-            <h2>Login</h2>
+            <h2>Sign In to Your Account</h2>
             <form id="login-form" method="POST">
                 <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required autocomplete="username">
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" placeholder="Email Address" required autocomplete="username">
+                    </div>
                 </div>
+                
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="Password" required autocomplete="current-password">
+                    </div>
                 </div>
-                <div id="error-message"></div>
-                <div id="success-message"></div>
-                <button type="submit" id="login-button">Login</button>
+                
+                <div id="error-message" class="message error-message" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span class="message-text"></span>
+                </div>
+                
+                <div id="success-message" class="message success-message" style="display: none;">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="message-text"></span>
+                </div>
+                
+                <button type="submit" id="login-button">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span id="button-text">Login</span>
+                    <span class="loading" id="loading-spinner" style="display: none;"></span>
+                </button>
+                
                 <div class="forgot-password">
-                    <a href="#" id="reset-password-link">Forgot Password?</a>
+                    <a href="#" id="reset-password-link">Forgot your password?</a>
+                </div>
+                
+                <div class="divider">OR</div>
+                
+                <button type="button" id="google-signin-button" class="google-btn">
+                    <i class="fab fa-google"></i>
+                    <span>Continue with Google</span>
+                </button>
+                
+                <div class="signup-link">
+                    Don't have an account? <a href="signup.html">Sign Up</a>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Reset Password Modal -->
+    <div class="reset-password-modal" id="reset-password-modal">
+        <div class="reset-password-content">
+            <h3>Reset Password</h3>
+            <p>Enter your email address and we'll send you a link to reset your password.</p>
+            
+            <div class="form-group">
+                <input type="email" id="reset-email" placeholder="Your email address" class="full-width">
+            </div>
+            
+            <div id="reset-error-message" class="message error-message" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i>
+                <span class="message-text"></span>
+            </div>
+            
+            <div id="reset-success-message" class="message success-message" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <span class="message-text"></span>
+            </div>
+            
+            <div class="reset-password-actions">
+                <button class="cancel" id="cancel-reset">Cancel</button>
+                <button id="submit-reset">Send Reset Link</button>
+            </div>
+        </div>
+    </div>
+
 <script>
-    // Your Firebase configuration (same as in your signup page)
+    // Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
         authDomain: "f-track-e5c35.firebaseapp.com",
@@ -154,47 +506,112 @@
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    
+    // Initialize services with compat syntax
+    const auth = firebase.auth;
+    const db = firebase.firestore;
+    
+    // Configure Google Auth Provider
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({
+        prompt: 'select_account'
+    });
+    
+    // Get user agent details
+    function getUserAgentInfo() {
+        const userAgent = navigator.userAgent;
+        let deviceType = "Desktop";
+        let os = "Unknown";
+        
+        if (/Mobi|Android|iPhone|iPad|iPod/i.test(userAgent)) {
+            deviceType = "Mobile";
+            if (/iPad|iPhone|iPod/.test(userAgent)) {
+                deviceType = "Tablet";
+            }
+        }
+        
+        if (/Windows/.test(userAgent)) {
+            os = "Windows";
+        } else if (/Mac OS/.test(userAgent)) {
+            os = "MacOS";
+        } else if (/Linux/.test(userAgent)) {
+            os = "Linux";
+        } else if (/Android/.test(userAgent)) {
+            os = "Android";
+        } else if (/iOS|iPhone|iPad|iPod/.test(userAgent)) {
+            os = "iOS";
+        }
+        
+        let browser = "Unknown";
+        if (/Firefox/.test(userAgent)) {
+            browser = "Firefox";
+        } else if (/Chrome/.test(userAgent) && !/Edg/.test(userAgent)) {
+            browser = "Chrome";
+        } else if (/Safari/.test(userAgent) && !/Chrome/.test(userAgent)) {
+            browser = "Safari";
+        } else if (/Edg/.test(userAgent)) {
+            browser = "Edge";
+        } else if (/Opera|OPR/.test(userAgent)) {
+            browser = "Opera";
+        }
+        
+        return {
+            userAgent: userAgent,
+            deviceType: deviceType,
+            os: os,
+            browser: browser,
+            screenWidth: window.screen.width,
+            screenHeight: window.screen.height,
+            language: navigator.language,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        };
+    }
 
     // Handle form submission
     document.getElementById('login-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        e.stopImmediatePropagation();
+        e.stopPropagation();
         
-        // Get form values
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const loginButton = document.getElementById('login-button');
+        const buttonText = document.getElementById('button-text');
+        const loadingSpinner = document.getElementById('loading-spinner');
         
         // Show loading state
         loginButton.disabled = true;
-        loginButton.innerHTML = 'Logging in <span class="loading"></span>';
+        buttonText.textContent = 'Logging in...';
+        loadingSpinner.style.display = 'inline-block';
         
         // Clear previous messages
         hideMessages();
 
+        console.log("Attempting login with:", email);
+        
         // Sign in with Firebase Auth
-        auth.signInWithEmailAndPassword(email, password)
+        auth().signInWithEmailAndPassword(email, password)
             .then((userCredential) => {
-                // Login successful
+                console.log("Login successful:", userCredential.user);
                 const user = userCredential.user;
+                const userAgentInfo = getUserAgentInfo();
                 
-                // Update last login timestamp in Firestore
-                return db.collection('users').doc(user.uid).update({
-                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                // Update user document
+                return db().collection('users').doc(user.uid).set({
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                    loginHistory: firebase.firestore.FieldValue.arrayUnion({
+                        ...userAgentInfo,
+                        loginTime: new Date().toISOString()
+                    })
+                }, { merge: true });
             })
             .then(() => {
                 showSuccess("Login successful! Redirecting...");
-                
-                // Redirect to dashboard after short delay
                 setTimeout(() => {
                     window.location.href = "dashboard.html";
                 }, 1500);
             })
             .catch((error) => {
-                // Handle errors
+                console.error("Login error:", error);
                 let errorMessage = "Login failed. Please try again.";
                 
                 switch(error.code) {
@@ -210,38 +627,136 @@
                     case "auth/wrong-password":
                         errorMessage = "Incorrect password.";
                         break;
+                    case "auth/too-many-requests":
+                        errorMessage = "Too many failed attempts. Try again later.";
+                        break;
+                    case "auth/network-request-failed":
+                        errorMessage = "Network error. Check your connection.";
+                        break;
                     default:
-                        errorMessage = error.message;
+                        errorMessage = error.message || "An unknown error occurred.";
                 }
                 
                 showError(errorMessage);
             })
             .finally(() => {
-                // Reset button state
                 loginButton.disabled = false;
-                loginButton.textContent = 'Login';
+                buttonText.textContent = 'Login';
+                loadingSpinner.style.display = 'none';
             });
     });
 
-    // Password reset functionality
+    // Handle Google Sign-In
+    document.getElementById('google-signin-button').addEventListener('click', function() {
+        const googleButton = this;
+        const originalText = googleButton.innerHTML;
+        
+        googleButton.disabled = true;
+        googleButton.innerHTML = '<span class="loading"></span> Continuing with Google...';
+        
+        hideMessages();
+        
+        auth().signInWithPopup(provider)
+            .then((result) => {
+                const user = result.user;
+                const userAgentInfo = getUserAgentInfo();
+                
+                // Store user data
+                return db().collection('users').doc(user.uid).set({
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName,
+                    photoURL: user.photoURL,
+                    provider: 'google',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                    loginHistory: firebase.firestore.FieldValue.arrayUnion({
+                        ...userAgentInfo,
+                        loginTime: new Date().toISOString()
+                    })
+                }, { merge: true });
+            })
+            .then(() => {
+                window.location.href = "dashboard.html";
+            })
+            .catch((error) => {
+                console.error("Google sign-in error:", error);
+                let friendlyMessage = "Google login failed. Please try again.";
+                
+                if (error.code === 'auth/account-exists-with-different-credential') {
+                    friendlyMessage = "An account already exists with this email. Please login with your password.";
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    friendlyMessage = "Login popup was closed before completing.";
+                }
+                
+                showError(friendlyMessage);
+                googleButton.disabled = false;
+                googleButton.innerHTML = originalText;
+            });
+    });
+
+    // Reset Password Modal Handling
+    const resetModal = document.getElementById('reset-password-modal');
+    const resetEmailInput = document.getElementById('reset-email');
+    const resetErrorElement = document.getElementById('reset-error-message');
+    const resetSuccessElement = document.getElementById('reset-success-message');
+    const cancelResetBtn = document.getElementById('cancel-reset');
+    const submitResetBtn = document.getElementById('submit-reset');
+    
+    // Open reset password modal
     document.getElementById('reset-password-link').addEventListener('click', function(e) {
         e.preventDefault();
         
         const email = document.getElementById('email').value;
+        if (email) {
+            resetEmailInput.value = email;
+        }
+        
+        resetErrorElement.style.display = 'none';
+        resetSuccessElement.style.display = 'none';
+        resetModal.style.display = 'flex';
+    });
+    
+    // Close modal
+    cancelResetBtn.addEventListener('click', function() {
+        resetModal.style.display = 'none';
+    });
+    
+    resetModal.addEventListener('click', function(e) {
+        if (e.target === resetModal) {
+            resetModal.style.display = 'none';
+        }
+    });
+    
+    // Handle password reset
+    submitResetBtn.addEventListener('click', function() {
+        const email = resetEmailInput.value.trim();
         
         if (!email) {
-            showError("Please enter your email address first");
+            showResetError("Please enter your email address");
             return;
         }
         
-        hideMessages();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showResetError("Please enter a valid email address");
+            return;
+        }
         
-        auth.sendPasswordResetEmail(email)
+        submitResetBtn.disabled = true;
+        submitResetBtn.innerHTML = '<span class="loading"></span> Sending...';
+        
+        auth().sendPasswordResetEmail(email)
             .then(() => {
-                showSuccess(`Password reset email sent to ${email}. Check your inbox.`);
+                showResetSuccess(`Password reset link sent to ${email}. Check your inbox.`);
+                resetEmailInput.value = '';
+                
+                setTimeout(() => {
+                    resetModal.style.display = 'none';
+                }, 3000);
             })
             .catch((error) => {
-                let errorMessage = "Error sending reset email.";
+                console.error("Password reset error:", error);
+                let errorMessage = "Error sending reset email. Please try again.";
                 
                 switch(error.code) {
                     case "auth/invalid-email":
@@ -250,25 +765,46 @@
                     case "auth/user-not-found":
                         errorMessage = "No account found with this email.";
                         break;
+                    case "auth/too-many-requests":
+                        errorMessage = "Too many requests. Please try again later.";
+                        break;
                     default:
                         errorMessage = error.message;
                 }
                 
-                showError(errorMessage);
+                showResetError(errorMessage);
+            })
+            .finally(() => {
+                submitResetBtn.disabled = false;
+                submitResetBtn.textContent = 'Send Reset Link';
             });
     });
+    
+    // Helper functions
+    function showResetError(message) {
+        resetErrorElement.querySelector('.message-text').textContent = message;
+        resetErrorElement.style.display = 'flex';
+        resetSuccessElement.style.display = 'none';
+    }
+    
+    function showResetSuccess(message) {
+        resetSuccessElement.querySelector('.message-text').textContent = message;
+        resetSuccessElement.style.display = 'flex';
+        resetErrorElement.style.display = 'none';
+    }
 
     function showError(message) {
         const errorElement = document.getElementById('error-message');
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
+        errorElement.querySelector('.message-text').textContent = message;
+        errorElement.style.display = 'flex';
         document.getElementById('success-message').style.display = 'none';
+        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function showSuccess(message) {
         const successElement = document.getElementById('success-message');
-        successElement.textContent = message;
-        successElement.style.display = 'block';
+        successElement.querySelector('.message-text').textContent = message;
+        successElement.style.display = 'flex';
         document.getElementById('error-message').style.display = 'none';
     }
 
@@ -276,14 +812,6 @@
         document.getElementById('error-message').style.display = 'none';
         document.getElementById('success-message').style.display = 'none';
     }
-
-    // Check if user is already logged in
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            // User is signed in, redirect to dashboard
-            window.location.href = "dashboard.html";
-        }
-    });
 </script>
 </body>
 </html>

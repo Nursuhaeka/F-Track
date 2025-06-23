@@ -1,611 +1,779 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Set Budget - Family Budget Tracker</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Budget - Family Expense Tracker</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3137c9;
+            --accent-color: #4895ef;
+            --success-color: #4cc9f0;
+            --danger-color: #772585;
+            --warning-color: #f8961e;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --sidebar-bg: #2b2d42;
+            --card-bg: #ffffff;
+            --chart-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark-color);
+            line-height: 1.6;
             display: flex;
+            min-height: 100vh;
         }
 
-        .voice-icon {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #666;
-            font-size: 18px;
-            padding: 5px;
-        }
-
-        .language-selector {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 5px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            background-color: white;
-            font-size: 12px;
-            z-index: 100;
-            width: 150px;
-        }
-        /* Sidebar Styles */
         .sidebar {
-            width: 250px;
-            background-color: #2c3e50;
+            width: 280px;
+            background-color: var(--sidebar-bg);
             color: white;
             height: 100vh;
             padding: 20px 0;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
         }
+
         .sidebar-header {
-            padding: 0 20px 20px;
-            border-bottom: 1px solid #34495e;
+            padding: 0 25px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             margin-bottom: 20px;
         }
+
         .sidebar-header h2 {
             margin: 0;
-            font-size: 20px;
-            color: #ecf0f1;
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+
+        .sidebar-header h2 i {
+            color: var(--accent-color);
+        }
+
         .sidebar-menu {
             list-style: none;
             padding: 0;
             margin: 0;
         }
+
         .sidebar-menu li {
-            padding: 12px 20px;
+            padding: 12px 25px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            border-left: 3px solid transparent;
         }
+
         .sidebar-menu li:hover {
-            background-color: #34495e;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+            border-left: 3px solid var(--accent-color);
         }
+
         .sidebar-menu li.active {
-            background-color: #3498db;
+            background-color: rgba(67, 97, 238, 0.2);
+            color: white;
+            border-left: 3px solid var(--primary-color);
         }
+
         .sidebar-menu li i {
-            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
         }
-        /* Main Content Styles */
+
         .main-content {
             flex: 1;
-            padding: 20px;
+            padding: 30px;
+            margin-left: 280px;
+            transition: all 0.3s ease;
         }
-        .form-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            max-width: 600px;
+
+        /* Budget specific styles */
+        .budget-container {
+            max-width: 900px;
             margin: 0 auto;
         }
-        h1 {
-            font-size: 20px;
-            margin-top: 0;
-            color: #333;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
         }
+
+        h1 {
+            font-size: 28px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h1 i {
+            color: var(--primary-color);
+        }
+
+        .add-budget-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .add-budget-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .budget-summary {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .summary-card {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .summary-title {
+            font-size: 16px;
+            color: var(--gray-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .income-value {
+            color: var(--success-color);
+        }
+
+        .remaining-value {
+            color: var(--primary-color);
+        }
+
+        .budget-form {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
+
         label {
             display: block;
             margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
+            font-weight: 600;
         }
-        label.required:after {
-            content: " *";
-            color: red;
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
         }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-secondary {
+            background-color: #f8f9fa;
+            color: var(--gray-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 250px;
+            }
+            .main-content {
+                margin-left: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 1000;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .budget-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+
         .input-container {
             position: relative;
         }
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
+        
         .voice-icon {
             position: absolute;
-            right: 10px;
+            right: 15px;
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
-            color: #666;
-        }
-        .voice-icon:hover {
-            color: #4285f4;
-        }
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .checkbox-group label {
-            margin-right: 15px;
-            font-weight: normal;
-        }
-        .radio-group {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .radio-option {
-            display: flex;
-            align-items: center;
-        }
-        .radio-option input {
-            width: auto;
-            margin-right: 5px;
-        }
-        .upload-section {
-            border: 2px dashed #ddd;
-            border-radius: 4px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            cursor: pointer;
-        }
-        .upload-section:hover {
-            border-color: #4285f4;
-            background-color: #f8faff;
-        }
-        .button-group {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-        button {
-            padding: 10px 20px;
+            color: var(--gray-color);
+            transition: all 0.3s ease;
+            background: none;
             border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .save-draft {
-            background-color: #f1f1f1;
-            color: #555;
-        }
-        .save {
-            background-color: #4285f4;
-            color: white;
-        }
-        .save-draft:hover {
-            background-color: #e1e1e1;
-        }
-        .save:hover {
-            background-color: #3367d6;
-        }
-        /* Notification Styles */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #f44336;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 4px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            display: none;
-            animation: slideIn 0.5s forwards;
-        }
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        .notification.show {
-            display: block;
-        }
-        .close-notification {
-            float: right;
-            margin-left: 15px;
-            cursor: pointer;
-            font-weight: bold;
+            font-size: 16px;
         }
 
-        /* Loading spinner */
-        .spinner {
-            display: none;
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top: 4px solid #3498db;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
+        .voice-icon:hover {
+            color: var(--primary-color);
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        
+        /* Language selector styles */
+        .language-selector {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .language-selector label {
+            margin-bottom: 0;
+        }
+
+        .language-btn {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .language-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
         }
     </style>
 </head>
 <body>
-
-    <!-- Language Selector -->
-    <select class="language-selector" id="language-selector">
-        <option value="en-US">English</option>
-        <option value="ms-MY">Malay (Bahasa Melayu)</option>
-    </select>
-
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h2>F-Track</h2>
+            <h2><i class="fas fa-wallet"></i> F-Track</h2>
         </div>
         <ul class="sidebar-menu">
             <li onclick="window.location.href='add_expenses.html'">
-                <i>📝</i> Add Expense
+                <i class="fas fa-plus-circle"></i> Add Expense
+            </li>
+            <li onclick="window.location.href='add_income.html'">
+                <i class="fas fa-money-bill-wave"></i> Add Income
             </li>
             <li onclick="window.location.href='dashboard.html'">
-                <i>📊</i> Dashboard
+                <i class="fas fa-chart-pie"></i> Dashboard
             </li>
             <li onclick="window.location.href='list_expenses.html'">
-                <i>💰</i> List Expenses
+                <i class="fas fa-list-ul"></i> List Expenses
             </li>
             <li class="active">
-                <i>💵</i> Set Budget
+                <i class="fas fa-money-bill-wave"></i> Set Budget
             </li>
             <li onclick="window.location.href='list_budget.html'">
-                <i>🧾</i> List Budgets
+                <i class="fas fa-clipboard-list"></i> List Budgets
             </li>
             <li onclick="window.location.href='report.html'">
-                <i>📅</i> Monthly Reports
+                <i class="fas fa-file-alt"></i> Monthly Reports
             </li>
-            <li>
-                <i>🏷️</i> Categories
+            <li onclick="window.location.href='categories.html'">
+                <i class="fas fa-tags"></i> Categories
             </li>
             <li onclick="window.location.href='family_member.html'">
-                <i>👨‍👩‍👧‍👦</i> Family Members
+                <i class="fas fa-users"></i> Family Members
             </li>
             <li onclick="window.location.href='setting.html'">
-                <i>⚙️</i> Settings
+                <i class="fas fa-cog"></i> Settings
             </li>
         </ul>
     </div>
+
     <!-- Main Content -->
     <div class="main-content">
-        <div class="form-container">
-            <h1>Set Category Budget</h1>
-            <form id="budget-form">
+        <div class="budget-container">
+            <div class="page-header">
+                <h1><i class="fas fa-money-bill-wave"></i> Set Budget</h1>
+            </div>
+
+            <!-- Language Selection -->
+            <div class="language-selector">
+                <label>Voice Language:</label>
+                <button id="lang-en" class="language-btn active" onclick="setLanguage('en')">English</button>
+                <button id="lang-ms" class="language-btn" onclick="setLanguage('ms')">Malay</button>
+            </div>
+
+            <!-- Budget Summary -->
+            <div class="budget-summary">
+                <div class="summary-card">
+                    <div class="summary-title">
+                        <i class="fas fa-wallet"></i> Current Income
+                    </div>
+                    <div class="summary-value income-value" id="current-income">RM 0.00</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-title">
+                        <i class="fas fa-coins"></i> Remaining Income
+                    </div>
+                    <div class="summary-value remaining-value" id="remaining-income">RM 0.00</div>
+                </div>
+            </div>
+
+            <!-- Budget Form -->
+            <form id="budget-form" class="budget-form">
                 <div class="form-group">
-                    <label for="budget-category" class="required">Category</label>
+                    <label for="budget-category">Category</label>
                     <select id="budget-category" required>
                         <option value="">Select category</option>
-                        <option value="groceries">Groceries</option>
-                        <option value="utilities">Utilities</option>
-                        <option value="rent">Rent/Mortgage</option>
-                        <option value="transportation">Transportation</option>
-                        <option value="education">Education</option>
-                        <option value="healthcare">Healthcare</option>
-                        <option value="entertainment">Entertainment</option>
-                        <option value="other">Other</option>
+                        <!-- Categories will be populated dynamically -->
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="budget-amount" class="required">Monthly Budget</label>
-                    <div class="input-container">
-                        <input type="number" id="budget-amount" placeholder="Enter budget amount" required step="0.01" min="0.01"/>
-                        <span class="voice-icon" onclick="startVoiceRecognition('budget-amount')">🎤</span>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="budget-amount">Budget Amount (RM)</label>
+                        <div class="input-container">
+                            <input type="number" id="budget-amount" placeholder="Enter budget amount" required step="0.01" min="0.01" />
+                            <button type="button" class="voice-icon" onclick="startVoiceRecognition('budget-amount')">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="budget-date">Date</label>
+                        <input type="date" id="budget-date" required />
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="budget-period">Budget Period</label>
-                    <select id="budget-period">
-                        <option value="monthly">Monthly</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="yearly">Yearly</option>
-                    </select>
+                    <label for="alert-threshold">Alert Threshold (%)</label>
+                    <div class="input-container">
+                        <input type="number" id="alert-threshold" placeholder="Enter alert threshold" required step="1" min="1" max="100" />
+                        <button type="button" class="voice-icon" onclick="startVoiceRecognition('alert-threshold')">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="budget-alert">Alert Threshold (%)</label>
-                    <input
-                        type="number"
-                        id="budget-alert"
-                        min="0"
-                        max="100"
-                        value="80"
-                        placeholder="When to send alerts"
-                    />
-                </div>
-
-                <div class="button-group">
-                    <button type="button" class="save-draft" onclick="resetForm()">Reset</button>
-                    <button type="submit" class="save">Save Budget</button>
-                    <div class="spinner" id="spinner"></div>
+                <div class="form-footer">
+   
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Expense
+                </button>
                 </div>
             </form>
         </div>
     </div>
-    <!-- Notification -->
-    <div class="notification" id="notification">
-        <span class="close-notification" onclick="closeNotification()">×</span>
-        <span id="notification-message">Budget limit exceeded!</span>
-    </div>
-<script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
-    import { getFirestore, collection, addDoc, serverTimestamp, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
-    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
-        authDomain: "f-track-e5c35.firebaseapp.com",
-        projectId: "f-track-e5c35",
-        storageBucket: "f-track-e5c35.appspot.com",
-        messagingSenderId: "650188769848",
-        appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd",
-        measurementId: "G-YPQT10VSBJ"
-    };
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+        import { getFirestore, collection, getDocs, query, where, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-
-    // Main collections (not nested under users)
-    const budgetsCollection = collection(db, 'budgets');
-
-    // Global variables
-    let currentUser = null;
-
-    // Initialize the application
-    function initApp() {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                setupForm(); // Setup form after user is authenticated
-                setupVoiceIcons();
-            } else {
-                window.location.href = "login.html";
-            }
-        });
-    }
-
-    // Voice recognition function
-    function startVoiceRecognition(fieldId) {
-        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            showNotification("Voice recognition not supported in your browser", "error");
-            return;
-        }
-
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        const language = document.getElementById("language-selector").value;
-        recognition.lang = language;
-        recognition.interimResults = false;
-
-        const targetField = document.getElementById(fieldId);
-
-        recognition.onstart = function() {
-            targetField.placeholder = language === 'ms-MY' ? "Mendengar..." : "Listening...";
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
+            authDomain: "f-track-e5c35.firebaseapp.com",
+            projectId: "f-track-e5c35",
+            storageBucket: "f-track-e5c35.appspot.com",
+            messagingSenderId: "650188769848",
+            appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd",
+            measurementId: "G-YPQT10VSBJ"
         };
 
-        recognition.onresult = function(event) {
-            const transcript = event.results[0][0].transcript;
-            processVoiceInput(fieldId, transcript, language);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let currentUser = null;
+        let remainingIncome = 0;
+        let currentLanguage = 'en'; // Default to English
+
+        // Language selection function
+        window.setLanguage = function(lang) {
+            currentLanguage = lang;
+            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+            document.getElementById('lang-ms').classList.toggle('active', lang === 'ms');
         };
 
-        recognition.onerror = function(event) {
-            console.error("Voice recognition error", event.error);
-            let errorMessage = "Error occurred";
-            if (event.error === 'not-allowed') {
-                errorMessage = "Microphone access was denied";
-            } else if (event.error === 'no-speech') {
-                errorMessage = "No speech detected";
-            }
-            targetField.placeholder = errorMessage;
-        };
-
-        recognition.onend = function() {
-            if (targetField.placeholder === "Listening..." || targetField.placeholder === "Mendengar...") {
-                targetField.placeholder = "";
-            }
-        };
-
-        recognition.start();
-    }
-
-    // Process voice input
-    function processVoiceInput(fieldId, transcript, language) {
-        if (fieldId === 'budget-amount') {
-            let processedValue = transcript.toLowerCase();
-
-            if (language === 'ms-MY') {
-                // Malay number conversion
-                const malayNumbers = {
-                    'kosong': '0', 'satu': '1', 'dua': '2', 'tiga': '3',
-                    'empat': '4', 'lima': '5', 'enam': '6', 'tujuh': '7',
-                    'lapan': '8', 'sembilan': '9', 'sepuluh': '10',
-                    'seratus': '100', 'ribu': '000', 'juta': '000000',
-                    'titik': '.', 'noktah': '.', 'per': '.'
-                };
-
-                Object.keys(malayNumbers).forEach(word => {
-                    const regex = new RegExp(word, 'gi');
-                    processedValue = processedValue.replace(regex, malayNumbers[word]);
-                });
-
-                processedValue = processedValue.replace(/ringgit|rm/g, '')
-                    .replace(/sen/g, '')
-                    .replace(/(\d)\s*\.\s*(\d)/g, '$1.$2');
-            } else {
-                // English processing
-                processedValue = processedValue.replace(/dollars|\$|euros|€|pounds|£/g, '')
-                    .replace(/cents|cent/g, '')
-                    .replace(/point|dot|and/g, '.');
-            }
-
-            // Extract numbers
-            processedValue = processedValue.replace(/[^\d.]/g, '');
-
-            if (processedValue.includes('.')) {
-                const parts = processedValue.split('.');
-                processedValue = `${parts[0]}.${parts[1] ? parts[1].substring(0, 2) : '00'}`;
-            }
-
-            document.getElementById(fieldId).value = processedValue || '0';
-        } else {
-            // For non-amount fields
-            document.getElementById(fieldId).value = transcript;
-        }
-    }
-
-    // Setup voice icon event listeners
-    function setupVoiceIcons() {
-        document.querySelectorAll('.voice-icon').forEach(icon => {
-            icon.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const onclickAttr = this.getAttribute('onclick');
-                if (onclickAttr) {
-                    const fieldId = onclickAttr.match(/'([^']+)'/)[1];
-                    startVoiceRecognition(fieldId);
-                }
-            });
-        });
-    }
-
-    // Setup form event listeners
-    function setupForm() {
-        const budgetForm = document.getElementById("budget-form");
-        if (budgetForm) {
-            budgetForm.addEventListener("submit", async (e) => {
-                e.preventDefault();
-                await saveBudget();
-            });
-        }
-    }
-
-    // Save budget function
-    async function saveBudget() {
-        if (!currentUser) {
-            showNotification("Please login to save budgets", "error");
-            return;
-        }
-
-        const category = document.getElementById("budget-category").value.trim();
-        const amountInput = document.getElementById("budget-amount").value.trim();
-        const amount = parseFloat(amountInput);
-        const period = document.getElementById("budget-period").value;
-        const alertThreshold = parseInt(document.getElementById("budget-alert").value) || 80;
-
-        // Validation
-        if (!category) {
-            showNotification("Please select a category", "error");
-            return;
-        }
-
-        if (!amountInput || isNaN(amount)) {
-            showNotification("Please enter a valid amount", "error");
-            return;
-        }
-
-        if (amount <= 0) {
-            showNotification("Amount must be greater than 0", "error");
-            return;
-        }
-
-        // Show loading spinner
-        const spinner = document.getElementById("spinner");
-        const saveButton = document.querySelector(".save");
-        spinner.style.display = "block";
-        saveButton.disabled = true;
-
-        try {
-            // First check if budget already exists for this category
-            const existingBudgetQuery = query(
-                budgetsCollection,
-                where("userId", "==", currentUser.uid),
-                where("category", "==", category)
-            );
-
-            const existingBudgets = await getDocs(existingBudgetQuery);
-
-            if (!existingBudgets.empty) {
-                showNotification("Budget already exists for this category", "warning");
+        // Voice Recognition Functions
+        window.startVoiceRecognition = function(fieldId) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Voice recognition is not supported in your browser. Please use Chrome or Edge.");
                 return;
             }
 
-            const budgetData = {
-                category,
-                amount,
-                period,
-                alertThreshold,
-                userId: currentUser.uid,
-                userEmail: currentUser.email,
-                createdAt: serverTimestamp()
+            const recognition = new SpeechRecognition();
+            recognition.lang = currentLanguage === 'ms' ? 'ms-MY' : 'en-US';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onstart = function() {
+                document.getElementById(fieldId).placeholder = "Listening...";
             };
 
-            // Add budget to the main budgets collection
-            await addDoc(budgetsCollection, budgetData);
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                processTranscript(fieldId, transcript, currentLanguage);
+            };
 
-            resetForm();
-            showNotification("Budget saved successfully!", "success");
+            recognition.onerror = function(event) {
+                console.error('Voice recognition error', event.error);
+                let errorMessage = "Error occurred";
+                if (event.error === 'not-allowed') {
+                    errorMessage = "Microphone access was denied. Please allow microphone access in your browser settings.";
+                } else if (event.error === 'no-speech') {
+                    errorMessage = "No speech was detected. Please try again.";
+                }
+                document.getElementById(fieldId).placeholder = errorMessage;
+            };
 
-        } catch (error) {
-            console.error("Error saving budget:", error);
-            showNotification("Error saving budget: " + error.message, "error");
-        } finally {
-            spinner.style.display = "none";
-            saveButton.disabled = false;
+            recognition.onend = function() {
+                if (document.getElementById(fieldId).placeholder === "Listening...") {
+                    document.getElementById(fieldId).placeholder = "";
+                }
+            };
+
+            recognition.start();
+        };
+
+        function processTranscript(fieldId, transcript, language) {
+            const processedValue = transcript.toLowerCase();
+            
+            if (fieldId === 'budget-amount') {
+                // Handle amount with sen/cents
+                let amountValue = processedValue;
+                
+                if (language === 'ms') {
+                    // Malay currency processing - "32 ringgit 80 sen" → "32.80"
+                    amountValue = amountValue.replace(/ringgit|rm/g, "")
+                        .replace(/sen/g, "")
+                        .replace(/dan|dan\s+/g, ".")
+                        .replace(/\s+/g, ""); // Remove all spaces
+                        
+                    // Handle cases where "sen" might be at the beginning
+                    if (amountValue.startsWith(".")) {
+                        amountValue = "0" + amountValue;
+                    }
+                } else {
+                    // English currency processing - "32 dollars and 80 cents" → "32.80"
+                    amountValue = amountValue.replace(/dollars|\$|euros|€|pounds|£|ringgit|rm/g, "")
+                        .replace(/cents|cent/g, "")
+                        .replace(/and\s+/g, ".")
+                        .replace(/\s+/g, ""); // Remove all spaces
+                        
+                    // Handle cases where "cents" might be at the beginning
+                    if (amountValue.startsWith(".")) {
+                        amountValue = "0" + amountValue;
+                    }
+                }
+                
+                // Final cleanup - remove any non-numeric characters except decimal point
+                amountValue = amountValue.replace(/[^\d.]/g, '');
+                
+                // Ensure proper decimal formatting
+                if (amountValue.includes('.')) {
+                    const parts = amountValue.split('.');
+                    if (parts[1].length === 1) {
+                        amountValue = parts[0] + "." + parts[1] + "0";
+                    } else if (parts[1].length > 2) {
+                        amountValue = parts[0] + "." + parts[1].substring(0, 2);
+                    }
+                } else if (amountValue) {
+                    amountValue += ".00";
+                }
+                
+                document.getElementById(fieldId).value = amountValue;
+            } else if (fieldId === 'alert-threshold') {
+                // Handle percentage with "percent"/"peratus"
+                let thresholdValue = processedValue;
+                
+                if (language === 'ms') {
+                    // Malay percentage processing
+                    thresholdValue = thresholdValue.replace(/peratus/g, "")
+                        .replace(/\s+/g, "");
+                } else {
+                    // English percentage processing
+                    thresholdValue = thresholdValue.replace(/percent|percentage/g, "")
+                        .replace(/\s+/g, "");
+                }
+                
+                // Remove any non-numeric characters
+                thresholdValue = thresholdValue.replace(/\D/g, '');
+                
+                // Ensure value is between 1-100
+                if (thresholdValue) {
+                    const numValue = parseInt(thresholdValue);
+                    if (numValue < 1) thresholdValue = "1";
+                    if (numValue > 100) thresholdValue = "100";
+                }
+                
+                document.getElementById(fieldId).value = thresholdValue;
+            }
         }
-    }
 
-    // Reset form
-    function resetForm() {
-        document.getElementById("budget-category").value = "";
-        document.getElementById("budget-amount").value = "";
-        document.getElementById("budget-alert").value = "80";
-        document.getElementById("budget-period").value = "monthly";
-    }
+        async function loadCategories() {
+            try {
+                const categoriesQuery = query(collection(db, "categories"));
+                const snapshot = await getDocs(categoriesQuery);
+                const categorySelect = document.getElementById("budget-category");
 
-    // Show notification
-    function showNotification(message, type = "error") {
-        const notification = document.getElementById("notification");
-        const notificationMessage = document.getElementById("notification-message");
-        
-        notificationMessage.textContent = message;
-        notification.style.backgroundColor = type === "success" ? "#4caf50" : 
-                                          type === "warning" ? "#ffc107" : "#f44336";
-        notification.classList.add("show");
+                // Clear existing options except the first one
+                while (categorySelect.options.length > 1) {
+                    categorySelect.remove(1);
+                }
 
-        setTimeout(() => notification.classList.remove("show"), 5000);
-    }
+                snapshot.forEach((doc) => {
+                    const categoryData = doc.data();
+                    const option = document.createElement("option");
+                    option.value = categoryData.name;
+                    option.textContent = categoryData.name;
+                    categorySelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error loading categories:", error);
+            }
+        }
 
-    // Close notification
-    function closeNotification() {
-        document.getElementById("notification").classList.remove("show");
-    }
+        async function loadIncomeAndExpenses(userId) {
+            try {
+                // Query Firestore for incomes
+                const incomeQuery = query(
+                    collection(db, 'incomes'),
+                    where('userId', '==', userId)
+                );
 
-    // Initialize on load
-    window.addEventListener('DOMContentLoaded', initApp);
+                const snapshot = await getDocs(incomeQuery);
+                let totalIncome = 0;
 
-    // Make functions available globally
-    window.resetForm = resetForm;
-    window.closeNotification = closeNotification;
-    window.startVoiceRecognition = startVoiceRecognition;
-    window.processVoiceInput = processVoiceInput;
-</script>
+                snapshot.forEach(doc => {
+                    totalIncome += doc.data().amount;
+                });
+
+                // Query Firestore for expenses
+                const expenseQuery = query(
+                    collection(db, 'expenses'),
+                    where('userId', '==', userId)
+                );
+
+                const expenseSnapshot = await getDocs(expenseQuery);
+                let totalExpenses = 0;
+
+                expenseSnapshot.forEach(doc => {
+                    totalExpenses += doc.data().total;
+                });
+
+                // Calculate remaining income
+                remainingIncome = totalIncome - totalExpenses;
+
+                // Update the UI
+                document.getElementById('current-income').textContent = `RM ${totalIncome.toFixed(2)}`;
+                document.getElementById('remaining-income').textContent = `RM ${remainingIncome.toFixed(2)}`;
+
+                // Disable save button if no remaining income
+                const saveBudgetBtn = document.getElementById('save-budget-btn');
+                if (remainingIncome <= 0) {
+                    saveBudgetBtn.disabled = true;
+                    saveBudgetBtn.textContent = "No Available Income";
+                    saveBudgetBtn.style.backgroundColor = "#6c757d";
+                }
+            } catch (error) {
+                console.error("Error loading income and expenses:", error);
+            }
+        }
+
+        async function checkBudgetForCategory(userId, category, date) {
+            try {
+                const selectedDate = new Date(date);
+                const selectedYear = selectedDate.getFullYear();
+                const selectedMonth = selectedDate.getMonth() + 1;
+                
+                const budgetQuery = query(
+                    collection(db, 'budgets'),
+                    where('userId', '==', userId),
+                    where('category', '==', category)
+                );
+
+                const snapshot = await getDocs(budgetQuery);
+                
+                for (const doc of snapshot.docs) {
+                    const budgetData = doc.data();
+                    const budgetDate = new Date(budgetData.date);
+                    const budgetYear = budgetDate.getFullYear();
+                    const budgetMonth = budgetDate.getMonth() + 1;
+                    
+                    if (budgetYear === selectedYear && budgetMonth === selectedMonth) {
+                        return true;
+                    }
+                }
+                
+                return false;
+            } catch (error) {
+                console.error("Error checking budget for category:", error);
+                return false;
+            }
+        }
+
+        // Save budget function
+        document.getElementById("budget-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const category = document.getElementById("budget-category").value;
+            const amount = parseFloat(document.getElementById("budget-amount").value);
+            const date = document.getElementById("budget-date").value;
+            const alertThreshold = parseInt(document.getElementById("alert-threshold").value);
+
+            if (!category || isNaN(amount) || !date || isNaN(alertThreshold)) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            // Check if budget exists for this category/month
+            const budgetExists = await checkBudgetForCategory(currentUser.uid, category, date);
+            if (budgetExists) {
+                alert(`You already have a budget set for ${category} in the selected month.`);
+                return;
+            }
+
+            try {
+                const budgetData = {
+                    category,
+                    amount,
+                    date,
+                    alertThreshold,
+                    createdAt: serverTimestamp(),
+                    userId: currentUser.uid
+                };
+
+                await addDoc(collection(db, "budgets"), budgetData);
+                alert("Budget saved successfully!");
+                document.getElementById("budget-form").reset();
+            } catch (error) {
+                console.error("Error saving budget:", error);
+                alert("Error saving budget: " + error.message);
+            }
+        });
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set default date to current month
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            document.getElementById('budget-date').value = `${year}-${month}-${day}`;
+
+            // Set up auth state listener
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    loadCategories();
+                    loadIncomeAndExpenses(user.uid);
+                } else {
+                    // Redirect to login page if not authenticated
+                    window.location.href = 'login.html';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

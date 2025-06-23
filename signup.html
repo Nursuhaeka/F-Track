@@ -3,89 +3,358 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome Page</title>
+    <title>Welcome to F-Track | Family Expenses Tracker</title>
     <!-- Add Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #0d2438;
-            color: white;
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1b263b;
+            --darker: #0d1b2a;
+            --light: #f8f9fa;
+            --success: #4cc9f0;
+            --error: #f72585;
+            --google-blue: #4285F4;
+            --google-red: #DB4437;
+        }
+        
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            line-height: 1.6;
+        }
+        
         .container {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 50px;
+            max-width: 1200px;
+            width: 90%;
+            background: rgba(13, 27, 42, 0.8);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            margin: 2rem;
         }
+        
         .left-panel {
-            width: 50%;
+            flex: 1;
+            padding: 4rem;
+            background: linear-gradient(rgba(67, 97, 238, 0.7), rgba(63, 55, 201, 0.8)), 
+                        url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') no-repeat center center;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
+        
         .right-panel {
-            width: 45%;
-            background-color: #1b3148;
-            padding: 30px;
-            border-radius: 8px;
+            flex: 1;
+            padding: 3rem;
+            background-color: rgba(27, 38, 59, 0.9);
         }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--success);
+            margin-right: 1rem;
+        }
+        
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary-light), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
         .left-panel h1 {
-            font-size: 48px;
-            color: #4e9ad6;
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
         }
+        
+        .left-panel p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .features {
+            margin-top: 2rem;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .feature i {
+            color: var(--success);
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+        
         .right-panel h2 {
-            font-size: 24px;
-            color: #fff;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        input[type="text"], input[type="email"], input[type="password"], select {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            background-color: #2f3c4a;
-            color: #fff;
-        }
-        .form-group label {
-            font-size: 14px;
-            color: #ccc;
-        }
-        input[type="checkbox"] {
-            margin-right: 10px;
-        }
-        button {
-            background-color: #4e9ad6;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
             color: white;
-            padding: 10px 20px;
-            border: none;
+            position: relative;
+        }
+        
+        .right-panel h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            border-radius: 3px;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        input[type="text"], 
+        input[type="email"], 
+        input[type="password"], 
+        select {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.3);
+        }
+        
+        .role-select {
+            margin: 2rem 0;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 4px;
+            margin-right: 10px;
+            position: relative;
             cursor: pointer;
         }
-        button:hover {
-            background-color: #3b7fa1;
+        
+        .checkbox-group input[type="checkbox"]:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
         }
-        .role-select {
-            margin-top: 20px;
+        
+        .checkbox-group input[type="checkbox"]:checked::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            color: white;
+            font-size: 10px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
-        .role-select label {
-            color: #ccc;
+        
+        .checkbox-group label {
+            margin: 0;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
         }
+        
+        .terms-link {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+        
+        .terms-link:hover {
+            text-decoration: underline;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-google {
+            background-color: var(--google-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(219, 68, 55, 0.3);
+        }
+        
+        .btn-google:hover {
+            background-color: #c23321;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(219, 68, 55, 0.4);
+        }
+        
+        .btn-google i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+        
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .divider::before {
+            margin-right: 1rem;
+        }
+        
+        .divider::after {
+            margin-left: 1rem;
+        }
+        
+        #error-message, #success-message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
         #error-message {
-            color: #ff6b6b;
-            margin-top: 10px;
-            display: none;
+            background-color: rgba(247, 37, 133, 0.2);
+            border-left: 4px solid var(--error);
+            color: var(--error);
         }
+        
         #success-message {
-            color: #4caf50;
-            margin-top: 10px;
-            display: none;
+            background-color: rgba(76, 201, 240, 0.2);
+            border-left: 4px solid var(--success);
+            color: var(--success);
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .login-link a {
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .left-panel, .right-panel {
+                padding: 2rem;
+            }
+            
+            .left-panel {
+                text-align: center;
+            }
+            
+            .features {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -93,58 +362,125 @@
 
     <div class="container">
         <div class="left-panel">
-            <h1>Welcome Page</h1>
-            <p>Welcome to our website! Please create an account to get started. Your account helps us provide you with the best services tailored to your needs.</p>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="logo-text">F-Track</div>
+            </div>
+            <h1>Take Control of Your Family Finances</h1>
+            <p>F-Track helps families manage expenses, track budgets, and achieve financial goals together. Start your journey to financial wellness today.</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Visual expense tracking</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-users"></i>
+                    <span>Multi-user collaboration</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-bell"></i>
+                    <span>Smart budget alerts</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-lock"></i>
+                    <span>Bank-level security</span>
+                </div>
+            </div>
         </div>
         <div class="right-panel">
-            <h2>Create An Account</h2>
+            <h2>Create Your Account</h2>
+            
+            <button class="btn-google" id="google-signup">
+                <i class="fab fa-google"></i> Sign up with Google
+            </button>
+            
+            <div class="divider">OR</div>
+            
             <form id="signup-form">
                 <div class="form-group">
-                    <label for="first-name">First Name</label>
-                    <input type="text" id="first-name" name="first-name" required>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="first-name" name="first-name" placeholder="First Name" required>
+                    </div>
                 </div>
+                
                 <div class="form-group">
-                    <label for="last-name">Last Name</label>
-                    <input type="text" id="last-name" name="last-name" required>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="last-name" name="last-name" placeholder="Last Name" required>
+                    </div>
                 </div>
+                
                 <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" placeholder="Email Address" required>
+                    </div>
                 </div>
+                
                 <div class="form-group">
-                    <label for="address">Address</label>
-                    <input type="text" id="address" name="address" required>
+                    <div class="input-with-icon">
+                        <i class="fas fa-home"></i>
+                        <input type="text" id="address" name="address" placeholder="Street Address" required>
+                    </div>
                 </div>
+                
                 <div class="form-group">
-                    <label for="password">Create Password</label>
-                    <input type="password" id="password" name="password" required>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="Create Password" required>
+                    </div>
                 </div>
+                
                 <div class="form-group">
-                    <label for="confirm-password">Confirm Password</label>
-                    <input type="password" id="confirm-password" name="confirm-password" required>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm Password" required>
+                    </div>
                 </div>
-                <div class="role-select">
-                    <label for="role">Select Role</label>
+                
+                <div class="role-select form-group">
+                    <label for="role">Account Type</label>
                     <select id="role" name="role">
                         <option value="individual">Individual</option>
                         <option value="family">Family</option>
                     </select>
                 </div>
-                <div class="form-group">
+                
+                <div class="checkbox-group">
                     <input type="checkbox" id="terms" name="terms" required>
-                    <label for="terms">Creating your account and you accepting Terms & Conditions.</label>
+                    <label for="terms">I agree to the <a href="#" class="terms-link">Terms & Conditions</a> and <a href="#" class="terms-link">Privacy Policy</a></label>
                 </div>
-                <button type="submit">Create Account</button>
+                
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+                
                 <div id="error-message"></div>
                 <div id="success-message"></div>
+                
+                <div class="login-link">
+                    Already have an account? <a href="login.html">Login</a>
+                </div>
             </form>
         </div>
     </div>
+
 <script type="module">
     // Import Firebase modules
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
     import { getFirestore, collection, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
-    import { getAuth, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+    import { 
+        getAuth, 
+        createUserWithEmailAndPassword,
+        GoogleAuthProvider,
+        signInWithPopup,
+        signInWithRedirect,
+        getRedirectResult
+    } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
     // Your Firebase configuration
     const firebaseConfig = {
@@ -161,6 +497,62 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    // Handle Google Signup
+    document.getElementById('google-signup').addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        try {
+            const result = await signInWithPopup(auth, provider);
+            // This gives you a Google Access Token. You can use it to access the Google API.
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+            // The signed-in user info
+            const user = result.user;
+            
+            // Extract first and last name from displayName
+            const displayName = user.displayName || '';
+            const nameParts = displayName.split(' ');
+            const firstName = nameParts[0] || '';
+            const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+            
+            // Prepare user data for Firestore
+            const userData = {
+                firstName,
+                lastName,
+                email: user.email,
+                address: '', // Google signup doesn't provide address
+                role: 'individual', // Default role
+                createdAt: serverTimestamp(),
+                lastLogin: serverTimestamp(),
+                provider: 'google' // Track signup method
+            };
+
+            // Save to Firestore (users collection)
+            await setDoc(doc(db, "users", user.uid), userData);
+
+            showSuccess("Google signup successful! Redirecting...");
+            
+            // Redirect to dashboard after 1.5 seconds
+            setTimeout(() => {
+                window.location.href = "dashboard.html";
+            }, 1500);
+            
+        } catch (error) {
+            console.error("Google signup error:", error);
+            
+            // Handle specific error cases
+            let errorMessage = error.message;
+            if (error.code === 'auth/account-exists-with-different-credential') {
+                errorMessage = "An account already exists with the same email but different sign-in method.";
+            } else if (error.code === 'auth/popup-closed-by-user') {
+                errorMessage = "Signup popup was closed before completion.";
+            }
+            
+            showError(errorMessage);
+        }
+    });
 
     // Handle form submission
     document.getElementById('signup-form').addEventListener('submit', async function(e) {
@@ -200,13 +592,14 @@
                 address,
                 role,
                 createdAt: serverTimestamp(),
-                lastLogin: serverTimestamp()
+                lastLogin: serverTimestamp(),
+                provider: 'email' // Track signup method
             };
 
             // Save to Firestore (users collection)
             await setDoc(doc(db, "users", user.uid), userData);
 
-            showSuccess("Account created successfully!");
+            showSuccess("Account created successfully! Redirecting...");
             
             // Redirect to dashboard after 1.5 seconds
             setTimeout(() => {
@@ -222,6 +615,8 @@
                 errorMessage = "This email is already registered.";
             } else if (error.code === 'auth/weak-password') {
                 errorMessage = "Password should be at least 6 characters.";
+            } else if (error.code === 'auth/invalid-email') {
+                errorMessage = "Please enter a valid email address.";
             }
             
             showError(errorMessage);
@@ -230,23 +625,28 @@
 
     function showError(message) {
         const errorElement = document.getElementById('error-message');
-        errorElement.textContent = message;
+        errorElement.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
         errorElement.style.display = 'block';
         
         // Hide success message if shown
         document.getElementById('success-message').style.display = 'none';
+        
+        // Scroll to error message
+        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function showSuccess(message) {
         const successElement = document.getElementById('success-message');
-        successElement.textContent = message;
+        successElement.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
         successElement.style.display = 'block';
         
         // Hide error message if shown
         document.getElementById('error-message').style.display = 'none';
         
-        // Clear form
-        document.getElementById('signup-form').reset();
+        // Clear form (only for email signup)
+        if (document.getElementById('signup-form')) {
+            document.getElementById('signup-form').reset();
+        }
     }
 </script>
 </body>

@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories - Family Expense Tracker</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3137c9;
+            --accent-color: #4895ef;
+            --success-color: #4cc9f0;
+            --danger-color: #772585;
+            --warning-color: #f8961e;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --sidebar-bg: #2b2d42;
+            --card-bg: #ffffff;
+            --chart-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark-color);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            position: fixed;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 0 25px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-header h2 i {
+            color: var(--accent-color);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-menu li:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .sidebar-menu li.active {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: white;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .sidebar-menu li i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            margin-left: 280px;
+            transition: all 0.3s ease;
+        }
+
+        /* Categories specific styles */
+        .categories-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h1 i {
+            color: var(--primary-color);
+        }
+
+        .add-category-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .add-category-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .category-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            background-color: var(--light-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        .category-name {
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .category-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: var(--gray-color);
+        }
+
+        .action-btn:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            color: var(--dark-color);
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .icon-preview {
+            width: 60px;
+            height: 60px;
+            background-color: var(--light-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-secondary {
+            background-color: #f8f9fa;
+            color: var(--gray-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Custom icon selector styles */
+        .icon-select-container {
+            position: relative;
+        }
+
+        .icon-select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .icon-select-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: white;
+            cursor: pointer;
+            font-size: 20px;
+            height: 48px;
+        }
+
+        .icon-select-trigger i {
+            pointer-events: none;
+        }
+
+        .icon-select-options {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 10px;
+            padding: 10px;
+        }
+
+        .icon-select-options.show {
+            display: grid;
+        }
+
+        .icon-option {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .icon-option:hover {
+            background-color: #f0f0f0;
+        }
+
+        .icon-option.selected {
+            background-color: var(--light-color);
+            color: var(--primary-color);
+        }
+
+        .hidden-select {
+            display: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 250px;
+            }
+            .main-content {
+                margin-left: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 1000;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            .categories-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            .icon-select-options {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .categories-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .icon-select-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-wallet"></i> F-Track</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="window.location.href='add_expenses.html'">
+                <i class="fas fa-plus-circle"></i> Add Expense
+            </li>
+            <li onclick="window.location.href='add_income.html'">
+            <i class="fas fa-money-bill-wave"></i> Add Income
+            </li>
+            <li onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </li>
+            <li onclick="window.location.href='list_expenses.html'">
+                <i class="fas fa-list-ul"></i> List Expenses
+            </li>
+            <li onclick="window.location.href='set_budget.html'">
+                <i class="fas fa-money-bill-wave"></i> Set Budget
+            </li>
+            <li onclick="window.location.href='list_budget.html'">
+                <i class="fas fa-clipboard-list"></i> List Budgets
+            </li>
+            <li onclick="window.location.href='report.html'">
+                <i class="fas fa-file-alt"></i> Monthly Reports
+            </li>
+            <li class="active">
+                <i class="fas fa-tags"></i> Categories
+            </li>
+            <li onclick="window.location.href='family_member.html'">
+                <i class="fas fa-users"></i> Family Members
+            </li>
+            <li onclick="window.location.href='setting.html'">
+                <i class="fas fa-cog"></i> Settings
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="categories-container">
+            <div class="page-header">
+                <h1><i class="fas fa-tags"></i> Categories</h1>
+                <button class="add-category-btn" id="addCategoryBtn">
+                    <i class="fas fa-plus"></i> Add Category
+                </button>
+            </div>
+
+            <div class="categories-grid" id="categoriesGrid">
+                <!-- Categories will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Category Modal -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Add New Category</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <form id="categoryForm">
+                <input type="hidden" id="categoryId">
+                <div class="icon-preview" id="iconPreview">
+                    <i class="fas fa-tag"></i>
+                </div>
+                <div class="form-group">
+                    <label for="categoryName">Category Name</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                <div class="form-group">
+                    <label>Icon</label>
+                    <div class="icon-select-container">
+                        <select id="hiddenCategoryIcon" class="hidden-select">
+                            <option value="fa-tag"></option>
+                            <option value="fa-shopping-cart"></option>
+                            <option value="fa-utensils"></option>
+                            <option value="fa-bolt"></option>
+                            <option value="fa-home"></option>
+                            <option value="fa-car"></option>
+                            <option value="fa-heart"></option>
+                            <option value="fa-graduation-cap"></option>
+                            <option value="fa-film"></option>
+                            <option value="fa-tshirt"></option>
+                            <option value="fa-gift"></option>
+                            <option value="fa-plane"></option>
+                            <option value="fa-piggy-bank"></option>
+                            <option value="fa-ellipsis-h"></option>
+                        </select>
+                        <div class="icon-select-wrapper">
+                            <div class="icon-select-trigger" id="iconSelectTrigger">
+                                <i class="fas fa-tag"></i>
+                            </div>
+                            <div class="icon-select-options" id="iconSelectOptions">
+                                <div class="icon-option" data-value="fa-tag"><i class="fas fa-tag"></i></div>
+                                <div class="icon-option" data-value="fa-shopping-cart"><i class="fas fa-shopping-cart"></i></div>
+                                <div class="icon-option" data-value="fa-utensils"><i class="fas fa-utensils"></i></div>
+                                <div class="icon-option" data-value="fa-bolt"><i class="fas fa-bolt"></i></div>
+                                <div class="icon-option" data-value="fa-home"><i class="fas fa-home"></i></div>
+                                <div class="icon-option" data-value="fa-car"><i class="fas fa-car"></i></div>
+                                <div class="icon-option" data-value="fa-heart"><i class="fas fa-heart"></i></div>
+                                <div class="icon-option" data-value="fa-graduation-cap"><i class="fas fa-graduation-cap"></i></div>
+                                <div class="icon-option" data-value="fa-film"><i class="fas fa-film"></i></div>
+                                <div class="icon-option" data-value="fa-tshirt"><i class="fas fa-tshirt"></i></div>
+                                <div class="icon-option" data-value="fa-gift"><i class="fas fa-gift"></i></div>
+                                <div class="icon-option" data-value="fa-plane"><i class="fas fa-plane"></i></div>
+                                <div class="icon-option" data-value="fa-piggy-bank"><i class="fas fa-piggy-bank"></i></div>
+                                <div class="icon-option" data-value="fa-ellipsis-h"><i class="fas fa-ellipsis-h"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
+            authDomain: "f-track-e5c35.firebaseapp.com",
+            projectId: "f-track-e5c35",
+            storageBucket: "f-track-e5c35.appspot.com",
+            messagingSenderId: "650188769848",
+            appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd",
+            measurementId: "G-YPQT10VSBJ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // DOM elements
+        const categoriesGrid = document.getElementById('categoriesGrid');
+        const addCategoryBtn = document.getElementById('addCategoryBtn');
+        const categoryModal = document.getElementById('categoryModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const categoryForm = document.getElementById('categoryForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const categoryId = document.getElementById('categoryId');
+        const categoryName = document.getElementById('categoryName');
+        const hiddenCategoryIcon = document.getElementById('hiddenCategoryIcon');
+        const iconPreview = document.getElementById('iconPreview');
+        const saveBtn = document.getElementById('saveBtn');
+        const iconSelectTrigger = document.getElementById('iconSelectTrigger');
+        const iconSelectOptions = document.getElementById('iconSelectOptions');
+        const iconOptions = document.querySelectorAll('.icon-option');
+
+        // Current user ID
+        let userId = null;
+
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userId = user.uid;
+                    loadCategories();
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
+
+            // Event listeners
+            addCategoryBtn.addEventListener('click', openAddCategoryModal);
+            closeModal.addEventListener('click', closeCategoryModal);
+            cancelBtn.addEventListener('click', closeCategoryModal);
+            categoryForm.addEventListener('submit', saveCategory);
+            
+            // Custom icon selector events
+            iconSelectTrigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                iconSelectOptions.classList.toggle('show');
+            });
+
+            iconOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const value = this.getAttribute('data-value');
+                    hiddenCategoryIcon.value = value;
+                    iconSelectTrigger.innerHTML = `<i class="fas ${value}"></i>`;
+                    iconPreview.innerHTML = `<i class="fas ${value}"></i>`;
+                    
+                    // Update selected state
+                    iconOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    iconSelectOptions.classList.remove('show');
+                });
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                iconSelectOptions.classList.remove('show');
+            });
+        });
+
+        // Load categories from Firestore
+        async function loadCategories() {
+            try {
+                categoriesGrid.innerHTML = ''; // Clear existing categories
+                
+                const querySnapshot = await getDocs(collection(db, 'categories'));
+                querySnapshot.forEach((doc) => {
+                    const category = doc.data();
+                    if (category.userId === userId) {
+                        addCategoryToGrid(doc.id, category.name, category.icon);
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                alert('Failed to load categories. Please try again.');
+            }
+        }
+
+        // Add category card to the grid
+        function addCategoryToGrid(id, name, icon) {
+            const categoryCard = document.createElement('div');
+            categoryCard.className = 'category-card';
+            categoryCard.innerHTML = `
+                <div class="category-actions">
+                    <button class="action-btn edit-btn" data-id="${id}">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn delete-btn" data-id="${id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="category-icon">
+                    <i class="fas ${icon}"></i>
+                </div>
+                <div class="category-name">${name}</div>
+            `;
+            categoriesGrid.appendChild(categoryCard);
+
+            // Add event listeners to action buttons
+            categoryCard.querySelector('.edit-btn').addEventListener('click', () => editCategory(id));
+            categoryCard.querySelector('.delete-btn').addEventListener('click', () => deleteCategory(id));
+        }
+
+        // Open modal to add new category
+        function openAddCategoryModal() {
+            modalTitle.textContent = 'Add New Category';
+            categoryForm.reset();
+            categoryId.value = '';
+            hiddenCategoryIcon.value = 'fa-tag';
+            iconSelectTrigger.innerHTML = '<i class="fas fa-tag"></i>';
+            iconPreview.innerHTML = '<i class="fas fa-tag"></i>';
+            
+            // Reset selected icon
+            iconOptions.forEach(opt => opt.classList.remove('selected'));
+            iconOptions[0].classList.add('selected');
+            
+            categoryModal.style.display = 'flex';
+        }
+
+        // Open modal to edit existing category
+        async function editCategory(id) {
+            try {
+                const docRef = doc(db, 'categories', id);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const category = docSnap.data();
+                    modalTitle.textContent = 'Edit Category';
+                    categoryId.value = id;
+                    categoryName.value = category.name;
+                    hiddenCategoryIcon.value = category.icon;
+                    iconSelectTrigger.innerHTML = `<i class="fas ${category.icon}"></i>`;
+                    iconPreview.innerHTML = `<i class="fas ${category.icon}"></i>`;
+                    
+                    // Update selected icon
+                    iconOptions.forEach(opt => {
+                        opt.classList.remove('selected');
+                        if (opt.getAttribute('data-value') === category.icon) {
+                            opt.classList.add('selected');
+                        }
+                    });
+                    
+                    categoryModal.style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Error loading category:', error);
+                alert('Failed to load category. Please try again.');
+            }
+        }
+
+        // Close the modal
+        function closeCategoryModal() {
+            categoryModal.style.display = 'none';
+        }
+
+        // Save category to Firestore
+        async function saveCategory(e) {
+            e.preventDefault();
+            
+            const name = categoryName.value.trim();
+            const icon = hiddenCategoryIcon.value;
+            const id = categoryId.value;
+
+            if (!name) {
+                alert('Please enter a category name');
+                return;
+            }
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+
+            try {
+                if (id) {
+                    // Update existing category
+                    const docRef = doc(db, 'categories', id);
+                    await updateDoc(docRef, {
+                        name: name,
+                        icon: icon
+                    });
+                } else {
+                    // Add new category
+                    await addDoc(collection(db, 'categories'), {
+                        name: name,
+                        icon: icon,
+                        userId: userId,
+                        createdAt: new Date()
+                    });
+                }
+
+                closeCategoryModal();
+                loadCategories();
+            } catch (error) {
+                console.error('Error saving category:', error);
+                alert('Failed to save category. Please try again.');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save';
+            }
+        }
+
+        // Delete category from Firestore
+        async function deleteCategory(id) {
+            if (!confirm('Are you sure you want to delete this category?')) {
+                return;
+            }
+
+            try {
+                await deleteDoc(doc(db, 'categories', id));
+                loadCategories();
+            } catch (error) {
+                console.error('Error deleting category:', error);
+                alert('Failed to delete category. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -4,245 +4,356 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About - Family Expense Tracker</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            position: relative;
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3137c9;
+            --accent-color: #4895ef;
+            --success-color: #4cc9f0;
+            --danger-color: #772585;
+            --warning-color: #f8961e;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --sidebar-bg: #2b2d42;
+            --card-bg: #ffffff;
+            --chart-bg: #ffffff;
         }
 
-        .language-selector {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 5px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            background-color: white;
-            font-size: 12px;
-            z-index: 100;
-            width: 150px;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-        
-        /* Sidebar Styles */
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark-color);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
         .sidebar {
-            width: 250px;
-            background-color: #2c3e50;
+            width: 280px;
+            background-color: var(--sidebar-bg);
             color: white;
             height: 100vh;
             padding: 20px 0;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
         }
-        
+
         .sidebar-header {
-            padding: 0 20px 20px;
-            border-bottom: 1px solid #34495e;
+            padding: 0 25px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             margin-bottom: 20px;
         }
-        
+
         .sidebar-header h2 {
             margin: 0;
-            font-size: 20px;
-            color: #ecf0f1;
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        
+
+        .sidebar-header h2 i {
+            color: var(--accent-color);
+        }
+
         .sidebar-menu {
             list-style: none;
             padding: 0;
             margin: 0;
         }
-        
+
         .sidebar-menu li {
-            padding: 12px 20px;
+            padding: 12px 25px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            border-left: 3px solid transparent;
         }
-        
+
         .sidebar-menu li:hover {
-            background-color: #34495e;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+            border-left: 3px solid var(--accent-color);
         }
-        
+
         .sidebar-menu li.active {
-            background-color: #3498db;
+            background-color: rgba(67, 97, 238, 0.2);
+            color: white;
+            border-left: 3px solid var(--primary-color);
         }
-        
+
         .sidebar-menu li i {
-            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
         }
-        
-        /* Main Content Styles */
+
         .main-content {
             flex: 1;
-            padding: 20px;
+            padding: 30px;
+            margin-left: 280px;
+            transition: all 0.3s ease;
         }
-        
+
+        /* About page specific styles */
         .about-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
-        
-        h1 {
-            font-size: 20px;
-            margin-top: 0;
-            color: #333;
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
             border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
         }
-        
+
+        h1 {
+            font-size: 28px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h1 i {
+            color: var(--primary-color);
+        }
+
         .app-info {
             display: flex;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            gap: 30px;
         }
-        
+
         .app-icon {
-            width: 80px;
-            height: 80px;
-            background-color: #3498db;
-            border-radius: 15px;
+            width: 100px;
+            height: 100px;
+            background-color: var(--primary-color);
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 25px;
             color: white;
-            font-size: 30px;
+            font-size: 40px;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
         }
-        
+
         .app-meta h2 {
-            margin: 0 0 5px 0;
-            color: #333;
+            margin: 0 0 10px 0;
+            color: var(--dark-color);
+            font-size: 24px;
         }
-        
+
         .app-meta p {
             margin: 0;
-            color: #777;
+            color: var(--gray-color);
+            font-size: 16px;
         }
-        
+
         .about-section {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
-        
+
         .about-section h3 {
-            color: #2c3e50;
-            margin-bottom: 10px;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        
+
+        .about-section h3 i {
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+
         .about-section p {
-            line-height: 1.6;
-            color: #555;
+            line-height: 1.7;
+            color: var(--dark-color);
+            margin-bottom: 15px;
         }
-        
+
         .features-list {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin: 20px 0;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
         }
-        
+
         .feature-item {
             display: flex;
             align-items: flex-start;
-        }
-        
-        .feature-icon {
-            margin-right: 10px;
-            color: #3498db;
-            font-size: 18px;
-        }
-        
-        .version-info {
-            background-color: #f9f9f9;
+            gap: 12px;
+            background-color: var(--light-color);
             padding: 15px;
-            border-radius: 5px;
+            border-radius: 8px;
+        }
+
+        .feature-icon {
+            color: var(--primary-color);
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        .version-info {
+            background-color: var(--light-color);
+            padding: 20px;
+            border-radius: 10px;
             margin-top: 30px;
         }
-        
+
         .version-info p {
-            margin: 5px 0;
-            font-size: 14px;
-            color: #666;
+            margin: 8px 0;
+            font-size: 15px;
+            color: var(--gray-color);
         }
-        
+
+        .version-info p strong {
+            color: var(--dark-color);
+            font-weight: 600;
+            display: inline-block;
+            width: 120px;
+        }
+
         .action-buttons {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
             margin-top: 30px;
         }
-        
-        button {
+
+        .btn {
             padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
+            border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .contact {
-            background-color: #f1f1f1;
-            color: #555;
-        }
-        
-        .rate-app {
-            background-color: #4285f4;
+
+        .btn-primary {
+            background-color: var(--primary-color);
             color: white;
         }
-        
-        .contact:hover {
-            background-color: #e1e1e1;
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
         }
-        
-        .rate-app:hover {
-            background-color: #3367d6;
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 250px;
+            }
+            .main-content {
+                margin-left: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 1000;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            .app-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            .features-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .action-buttons {
+                justify-content: center;
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Language Selector -->
-    <select class="language-selector" id="language-selector">
-        <option value="en-US">English</option>
-        <option value="ms-MY">Malay (Bahasa Melayu)</option>
-    </select>
-    
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h2>F-Track</h2>
+            <h2><i class="fas fa-wallet"></i> F-Track</h2>
         </div>
         <ul class="sidebar-menu">
             <li onclick="window.location.href='add_expenses.html'">
-                <i>📝</i> Add Expense
+                <i class="fas fa-plus-circle"></i> Add Expense
             </li>
-            <li class="active">
-                <i>📊</i> Dashboard
+            <li onclick="window.location.href='add_income.html'">
+                <i class="fas fa-money-bill-wave"></i> Add Income
+            </li>
+            <li onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-chart-pie"></i> Dashboard
             </li>
             <li onclick="window.location.href='list_expenses.html'">
-                <i>💰</i> List Expenses
+                <i class="fas fa-list-ul"></i> List Expenses
             </li>
-            <li class onclick="window.location.href='set_budget.html'">
-                <i>💵</i> Set Budget
+            <li onclick="window.location.href='set_budget.html'">
+                <i class="fas fa-money-bill-wave"></i> Set Budget
             </li>
             <li onclick="window.location.href='list_budget.html'">
-                <i>🧾</i> List Budgets
+                <i class="fas fa-clipboard-list"></i> List Budgets
             </li>
             <li onclick="window.location.href='report.html'">
-                <i>📅</i> Monthly Reports
+                <i class="fas fa-file-alt"></i> Monthly Reports
             </li>
-            <li>
-                <i>🏷️</i> Categories
+            <li onclick="window.location.href='categories.html'">
+                <i class="fas fa-tags"></i> Categories
             </li>
             <li onclick="window.location.href='family_member.html'">
-                <i>👨‍👩‍👧‍👦</i> Family Members
+                <i class="fas fa-users"></i> Family Members
             </li>
             <li onclick="window.location.href='setting.html'">
-                <i>⚙️</i> Settings
+                <i class="fas fa-cog"></i> Settings
+            </li>
+            <li class="active">
+                <i class="fas fa-info-circle"></i> About
             </li>
         </ul>
     </div>
@@ -250,10 +361,14 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="about-container">
-            <h1>About Application</h1>
+            <div class="page-header">
+                <h1><i class="fas fa-info-circle"></i> About Application</h1>
+            </div>
             
             <div class="app-info">
-                <div class="app-icon">💸</div>
+                <div class="app-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
                 <div class="app-meta">
                     <h2>Family Expense Tracker</h2>
                     <p>Version 2.1.4 (Build 2104)</p>
@@ -261,63 +376,66 @@
             </div>
             
             <div class="about-section">
-                <h3>About This App</h3>
+                <h3><i class="fas fa-question-circle"></i> About This App</h3>
                 <p>The Family Expense Tracker helps families manage their finances together. Track shared expenses, monitor budgets, and gain insights into your spending patterns as a household. Our mission is to make family financial management simple, transparent, and collaborative.</p>
             </div>
             
             <div class="about-section">
-                <h3>Key Features</h3>
+                <h3><i class="fas fa-star"></i> Key Features</h3>
                 <div class="features-list">
                     <div class="feature-item">
-                        <span class="feature-icon">✓</span>
+                        <span class="feature-icon"><i class="fas fa-check"></i></span>
                         <span>Track expenses for entire family</span>
                     </div>
                     <div class="feature-item">
-                        <span class="feature-icon">✓</span>
-                        <span>Multi-user access with different roles</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon">✓</span>
+                        <span class="feature-icon"><i class="fas fa-check"></i></span>
                         <span>Monthly budget planning</span>
                     </div>
                     <div class="feature-item">
-                        <span class="feature-icon">✓</span>
+                        <span class="feature-icon"><i class="fas fa-check"></i></span>
                         <span>Expense categorization</span>
                     </div>
                     <div class="feature-item">
-                        <span class="feature-icon">✓</span>
+                        <span class="feature-icon"><i class="fas fa-check"></i></span>
                         <span>Visual reports and analytics</span>
                     </div>
                     <div class="feature-item">
-                        <span class="feature-icon">✓</span>
+                        <span class="feature-icon"><i class="fas fa-check"></i></span>
                         <span>Receipt scanning and storage</span>
                     </div>
                     <div class="feature-item">
-                        <span class="feature-icon">✓</span>
-                        <span>Multi-currency support</span>
+                        <span class="feature-icon"><i class="fas fa-check"></i></span>
+                        <span>Voice input for expenses</span>
                     </div>
                     <div class="feature-item">
-                        <span class="feature-icon">✓</span>
-                        <span>Voice input for expenses</span>
+                        <span class="feature-icon"><i class="fas fa-check"></i></span>
+                        <span>Multi-user access</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon"><i class="fas fa-check"></i></span>
+                        <span>Customizable categories</span>
                     </div>
                 </div>
             </div>
             
             <div class="about-section">
-                <h3>Privacy & Security</h3>
+                <h3><i class="fas fa-shield-alt"></i> Privacy & Security</h3>
                 <p>We take your privacy seriously. All financial data is encrypted both in transit and at rest. You maintain full ownership of your data, and we never share it with third parties without your explicit consent.</p>
+                <p>Our application uses industry-standard security measures to protect your information, including secure authentication and regular security audits.</p>
             </div>
             
             <div class="version-info">
                 <p><strong>Version:</strong> 2.1.4 (Build 2104)</p>
-                <p><strong>Last Updated:</strong> June 15, 2023</p>
+                <p><strong>Last Updated:</strong> 25 June, 2025</p>
+                <p><strong>Copyright:</strong> © 2025 Family Expenses Solutions</p>
                 <p><strong>License:</strong> Proprietary</p>
-                <p><strong>Copyright:</strong> © 2023 Family Finance Solutions</p>
+                <p><strong>Developer:</strong> F-Track Development Team</p>
             </div>
             
             <div class="action-buttons">
-                <button class="contact">Contact Support</button>
-                <button class="rate-app">Rate This App</button>
+                <button class="btn btn-primary" onclick="window.location.href='mailto:nursuhaeka10@gmail.com'">
+                    <i class="fas fa-envelope"></i> Contact Support
+                </button>
             </div>
         </div>
     </div>
@@ -329,26 +447,7 @@
             item.addEventListener('click', function() {
                 menuItems.forEach(i => i.classList.remove('active'));
                 this.classList.add('active');
-                // Here you would add code to load different content based on selection
             });
-        });
-        
-        // Language selector functionality
-        document.getElementById('language-selector').addEventListener('change', function() {
-            console.log("Language changed to:", this.value);
-            // Here you would implement language change logic
-        });
-        
-        // Button functionality
-        document.querySelector('.contact').addEventListener('click', function() {
-            // Open contact support form or email
-            window.location.href = 'mailto:support@familyexpense.com';
-        });
-        
-        document.querySelector('.rate-app').addEventListener('click', function() {
-            // Open app store rating page
-            alert('Redirecting to app store...');
-            // window.open('https://play.google.com/store/apps/details?id=com.familyexpense.tracker');
         });
     </script>
 </body>

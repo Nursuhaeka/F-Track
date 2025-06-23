@@ -1,12 +1,25 @@
 {
-  "name": "functions",
+  "name": "myfunctions",
   "engines": {
-    "node": "20"
+    "node": "22"
   },
+  "type": "module",
   "dependencies": {
     "@sendgrid/mail": "^8.1.5",
-    "firebase-admin": "^13.4.0",
-    "firebase-functions": "^6.3.2",
-    "nodemailer": "^7.0.3"
-  }
+    "body-parser": "^2.2.0",
+    "dialogflow": "^4.0.3",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^4.9.0"
+  },
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
