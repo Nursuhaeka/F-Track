@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expenses - Family Expense Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #ecf0f1;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar-menu li:hover {
+            background-color: #34495e;
+        }
+
+        .sidebar-menu li.active {
+            background-color: #3498db;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .expenses-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+        .expenses-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .expenses-header h1 {
+            font-size: 20px;
+            margin: 0;
+            color: #333;
+        }
+
+        .expenses-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 2;
+            min-width: 300px;
+        }
+
+        .search-box input {
+            padding-left: 35px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .primary-btn {
+            background-color: #428514;
+            color: white;
+        }
+
+        .secondary-btn {
+            background-color: #f1f1f1;
+            color: #555;
+        }
+
+        .primary-btn:hover {
+            background-color: #336746;
+        }
+
+        .secondary-btn:hover {
+            background-color: #e1e1e1;
+        }
+
+        .expenses-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .expenses-table th {
+            text-align: left;
+            padding: 12px 15px;
+            background-color: #f8f9fa;
+            color: #555;
+            font-weight: bold;
+            border-bottom: 2px solid #eee;
+        }
+
+        .expenses-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .expenses-table tr:hover {
+            background-color: #f8fafd;
+        }
+
+        .expense-category {
+            display: flex;
+            align-items: center;
+        }
+
+        .category-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: #1976d2;
+        }
+
+        .expense-amount {
+            font-weight: bold;
+            color: #d32f2f;
+        }
+
+        .action-icon {
+            color: #555;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .action-icon:hover {
+            color: #4285f4;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .page-info {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .page-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .page-btn {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .page-btn.active {
+            background-color: #428514;
+            color: white;
+            border-color: #428514;
+        }
+
+        .page-btn:hover:not(.active) {
+            background-color: #f1f1f1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 0;
+            color: #777;
+        }
+
+        .empty-state i {
+            font-size: 50px;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            margin: 10px 0;
+        }
+
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #428514;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            width: 600px;
+            max-width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .close-modal {
+            font-size: 24px;
+            cursor: pointer;
+            color: #777;
+        }
+
+        .modal-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>F-Track</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="window.location.href='add_expenses.html'">
+                Add Expense
+            </li>
+            <li onclick="window.location.href='dashboard.html'">
+                Dashboard
+            </li>
+            <li class="active">
+                List Expenses
+            </li>
+            <li onclick="window.location.href='set_budget.html'">
+                Set Budget
+            </li>
+            <li onclick="window.location.href='list_budget.html'">
+                List Budgets
+            </li>
+            <li onclick="window.location.href='report.html'">
+                Monthly Reports
+            </li>
+            <li>
+                Categories
+            </li>
+            <li onclick="window.location.href='family_member.html'">
+                Family Members
+            </li>
+            <li onclick="window.location.href='setting.html'">
+                Settings
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="expenses-container">
+            <div class="expenses-header">
+                <h1>Expenses</h1>
+                <div class="expenses-actions">
+                    <button class="primary-btn" onclick="window.location.href='add_expenses.html'">
+                        Add Expense
+                    </button>
+                    <button class="secondary-btn" id="export-btn">
+                        Export
+                    </button>
+                </div>
+            </div>
+
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label>Date Range</label>
+                    <select id="date-range">
+                        <option value="30">Last 30 days</option>
+                        <option value="current">This month</option>
+                        <option value="last">Last month</option>
+                        <option value="all">All time</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Category</label>
+                    <select id="category-filter">
+                        <option value="all">All Categories</option>
+                        <option value="groceries">Groceries</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="rent">Rent/Mortgage</option>
+                        <option value="transportation">Transportation</option>
+                        <option value="education">Education</option>
+                        <option value="healthcare">Healthcare</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Family Member</label>
+                    <select id="member-filter">
+                        <option value="all">All Members</option>
+                        <option value="parent1">Parent 1</option>
+                        <option value="parent2">Parent 2</option>
+                        <option value="child1">Child 1</option>
+                        <option value="child2">Child 2</option>
+                        <option value="other">Other Family Member</option>
+                    </select>
+                </div>
+
+                <div class="search-box">
+                    <label>Search</label>
+                    <div style="position: relative;">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="search-input" placeholder="Search by place, description or category">
+                    </div>
+                </div>
+            </div>
+
+            <div class="loading-spinner" id="loading-spinner"></div>
+
+            <table class="expenses-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Place</th>
+                        <th>Family Member</th>
+                        <th>Payment Method</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="expenses-body">
+                    <!-- Expenses will be loaded here dynamically -->
+                </tbody>
+            </table>
+
+            <div class="pagination">
+                <div class="page-info" id="page-info">
+                    Loading expenses...
+                </div>
+                <div class="page-controls">
+                    <div class="page-btn" id="prev-page">◀</div>
+                    <div class="page-btn active">1</div>
+                    <div class="page-btn">2</div>
+                    <div class="page-btn">3</div>
+                    <div class="page-btn" id="next-page">▶</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Expense</h2>
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="edit-category">Category</label>
+                    <select id="edit-category">
+                        <option value="groceries">Groceries</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="rent">Rent/Mortgage</option>
+                        <option value="transportation">Transportation</option>
+                        <option value="education">Education</option>
+                        <option value="healthcare">Healthcare</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-place">Place</label>
+                    <input type="text" id="edit-place">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-date">Date</label>
+                    <input type="date" id="edit-date">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-total">Total</label>
+                    <input type="number" id="edit-total" step="0.01" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-family-member">Family Member</label>
+                    <select id="edit-family-member">
+                        <option value="parent1">Parent 1</option>
+                        <option value="parent2">Parent 2</option>
+                        <option value="child1">Child 1</option>
+                        <option value="child2">Child 2</option>
+                        <option value="other">Other Family Member</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-payment-method">Payment Method</label>
+                    <select id="edit-payment-method">
+                        <option value="cash">Cash</option>
+                        <option value="credit-card">Credit Card</option>
+                        <option value="debit-card">Debit Card</option>
+                        <option value="bank-transfer">Bank Transfer</option>
+                        <option value="digital-wallet">Digital Wallet</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="grid-column: span 2;">
+                    <label for="edit-description">Description</label>
+                    <textarea id="edit-description" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="closeModal()">Cancel</button>
+                <button class="primary-btn" id="save-edit-btn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+        import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, where, getDoc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
+            authDomain: "f-track-e5c35.firebaseapp.com",
+            databaseURL: "https://f-track-e5c35-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "f-track-e5c35",
+            storageBucket: "f-track-e5c35.appspot.com",
+            messagingSenderId: "650188769848",
+            appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd",
+            measurementId: "G-YPQT10VSBJ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const expensesCollection = collection(db, 'expenses');
+
+        // Category icons mapping
+        const categoryIcons = {
+            'groceries': '🛒',
+            'utilities': '💡',
+            'rent': '🏠',
+            'transportation': '🚗',
+            'education': '🎓',
+            'healthcare': '🏥',
+            'entertainment': '🎬',
+            'other': '📌'
+        };
+
+        // Payment method icons
+        const paymentIcons = {
+            'cash': '💵',
+            'credit-card': '💳',
+            'debit-card': '💳',
+            'bank-transfer': '🏦',
+            'digital-wallet': '📱'
+        };
+
+        // Global variables
+        let allExpenses = [];
+        let currentExpenseId = null;
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        // Initialize the app
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadExpenses(user.uid);
+                setupEventListeners();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Load expenses from Firestore
+        function loadExpenses(userId) {
+            const loadingSpinner = document.getElementById('loading-spinner');
+            loadingSpinner.style.display = 'block';
+            
+            const userExpensesQuery = query(
+                expensesCollection,
+                where("userId", "==", userId),
+                orderBy('date', 'desc')
+            );
+
+            onSnapshot(userExpensesQuery, (snapshot) => {
+                allExpenses = [];
+                snapshot.forEach((doc) => {
+                    allExpenses.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                displayExpenses(allExpenses);
+                updatePagination();
+                loadingSpinner.style.display = 'none';
+            }, (error) => {
+                console.error("Error loading expenses:", error);
+                document.getElementById('expenses-body').innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <div>Error loading expenses</div>
+                            <p>${error.message}</p>
+                        </td>
+                    </tr>
+                `;
+                loadingSpinner.style.display = 'none';
+            });
+        }
+
+        // Display expenses in the table
+        function displayExpenses(expenses) {
+            const tbody = document.getElementById('expenses-body');
+            
+            if (expenses.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <div>No expenses found</div>
+                            <p>Add your first expense to get started</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Apply pagination
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const paginatedExpenses = expenses.slice(startIndex, startIndex + itemsPerPage);
+
+            tbody.innerHTML = paginatedExpenses.map(expense => {
+                const date = new Date(expense.date);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                });
+
+                const category = expense.category || 'other';
+                const categoryDisplay = category.charAt(0).toUpperCase() + category.slice(1);
+                const categoryIcon = categoryIcons[category] || '📌';
+
+                const paymentMethod = expense.paymentMethod || 'cash';
+                const paymentDisplay = paymentMethod.split('-').map(word => 
+                    word.charAt(0).toUpperCase() + word.slice(1)
+                ).join(' ');
+                const paymentIcon = paymentIcons[paymentMethod] || '💳';
+
+                const totalAmount = isNaN(expense.total) ? 0.00 : expense.total;
+
+                return `
+                    <tr data-id="${expense.id}">
+                        <td>${formattedDate}</td>
+                        <td>
+                            <div class="expense-category">
+                                <div class="category-icon">${categoryIcon}</div>
+                                <span>${categoryDisplay}</span>
+                            </div>
+                        </td>
+                        <td>${expense.place || 'No place specified'}</td>
+                        <td>${expense.familyMember || 'Personal'}</td>
+                        <td>
+                            <div class="expense-category">
+                                <div class="category-icon">${paymentIcon}</div>
+                                <span>${paymentDisplay}</span>
+                            </div>
+                        </td>
+                        <td class="expense-amount">RM ${totalAmount.toFixed(2)}</td>
+                        <td>
+                            <span class="action-icon" title="View" onclick="viewExpense('${expense.id}')">👁️</span>
+                            <span class="action-icon" title="Edit" onclick="openEditModal('${expense.id}')">✏️</span>
+                            <span class="action-icon" title="Delete" onclick="deleteExpense('${expense.id}', this.closest('tr'))">🗑️</span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Update pagination controls
+        function updatePagination() {
+            const totalPages = Math.ceil(allExpenses.length / itemsPerPage);
+            const pageInfo = document.getElementById('page-info');
+            const pageControls = document.querySelector('.page-controls');
+            
+            pageInfo.textContent = `Showing ${Math.min((currentPage - 1) * itemsPerPage + 1, allExpenses.length)}-${Math.min(currentPage * itemsPerPage, allExpenses.length)} of ${allExpenses.length} expenses`;
+            
+            // Clear existing page buttons (except prev/next)
+           const existingButtons = Array.from(pageControls.querySelectorAll('.page-btn:not(#prev-page):not(#next-page)'));
+            
+            // Add page buttons
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('div');
+                pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => {
+                    currentPage = i;
+                    displayExpenses(allExpenses);
+                    updatePagination();
+                };
+                pageControls.insertBefore(pageBtn, document.getElementById('next-page'));
+            }
+            
+            // Update prev/next buttons
+            document.getElementById('prev-page').onclick = currentPage > 1 ? () => {
+                currentPage--;
+                displayExpenses(allExpenses);
+                updatePagination();
+            } : null;
+            
+            document.getElementById('next-page').onclick = currentPage < totalPages ? () => {
+                currentPage++;
+                displayExpenses(allExpenses);
+                updatePagination();
+            } : null;
+        }
+
+        // Open edit modal with expense data
+        function openEditModal(expenseId) {
+            const expense = allExpenses.find(e => e.id === expenseId);
+            if (!expense) return;
+
+            currentExpenseId = expenseId;
+            
+            // Populate form fields
+            document.getElementById('edit-category').value = expense.category || 'other';
+            document.getElementById('edit-place').value = expense.place || '';
+            document.getElementById('edit-date').value = expense.date || new Date().toISOString().split('T')[0];
+            document.getElementById('edit-total').value = expense.total || 0;
+            document.getElementById('edit-family-member').value = expense.familyMember || 'parent1';
+            document.getElementById('edit-payment-method').value = expense.paymentMethod || 'cash';
+            document.getElementById('edit-description').value = expense.description || '';
+            
+            document.getElementById('edit-modal').style.display = 'block';
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+            currentExpenseId = null;
+        }
+
+        // Save edited expense
+        function saveEditedExpense() {
+            if (!currentExpenseId) return;
+
+            const expenseRef = doc(db, 'expenses', currentExpenseId);
+            const loadingSpinner = document.getElementById('loading-spinner');
+            loadingSpinner.style.display = 'block';
+            
+            const updatedData = {
+                category: document.getElementById('edit-category').value,
+                place: document.getElementById('edit-place').value,
+                date: document.getElementById('edit-date').value,
+                total: parseFloat(document.getElementById('edit-total').value),
+                familyMember: document.getElementById('edit-family-member').value,
+                paymentMethod: document.getElementById('edit-payment-method').value,
+                description: document.getElementById('edit-description').value,
+                updatedAt: new Date()
+            };
+
+            updateDoc(expenseRef, updatedData)
+                .then(() => {
+                    closeModal();
+                    loadingSpinner.style.display = 'none';
+                })
+                .catch(error => {
+                    console.error("Error updating expense:", error);
+                    alert('Error updating expense');
+                    loadingSpinner.style.display = 'none';
+                });
+        }
+
+        // View expense details
+        function viewExpense(expenseId) {
+            const expenseRef = doc(db, 'expenses', expenseId);
+            getDoc(expenseRef).then(doc => {
+                if (doc.exists()) {
+                    const expense = doc.data();
+                    const totalAmount = isNaN(expense.total) ? 0.00 : expense.total;
+                    const date = new Date(expense.date);
+                    const formattedDate = date.toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'long', day: 'numeric'
+                    });
+
+                    alert(`
+                        Expense Details:\n
+                        Date: ${formattedDate}\n
+                        Category: ${expense.category || 'Other'}\n
+                        Place: ${expense.place || 'Not specified'}\n
+                        Family Member: ${expense.familyMember || 'Personal'}\n
+                        Payment Method: ${expense.paymentMethod ? expense.paymentMethod.split('-').map(word => 
+                            word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : 'Cash'}\n
+                        Amount: RM ${totalAmount.toFixed(2)}\n
+                        Description: ${expense.description || 'No description provided'}\n
+                        Receipt: ${expense.receipt ? 'Available' : 'Not available'}
+                    `);
+                } else {
+                    alert('Expense not found');
+                }
+            }).catch(error => {
+                console.error("Error viewing expense:", error);
+                alert('Error loading expense details');
+            });
+        }
+
+        // Delete expense
+        function deleteExpense(expenseId, row) {
+            if (confirm('Are you sure you want to delete this expense?')) {
+                const expenseRef = doc(db, 'expenses', expenseId);
+                const loadingSpinner = document.getElementById('loading-spinner');
+                loadingSpinner.style.display = 'block';
+                
+                deleteDoc(expenseRef)
+                    .then(() => {
+                        loadingSpinner.style.display = 'none';
+                    })
+                    .catch(error => {
+                        console.error("Error deleting expense:", error);
+                        alert('Error deleting expense');
+                        loadingSpinner.style.display = 'none';
+                    });
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Search functionality
+            document.getElementById('search-input').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                if (!searchTerm) {
+                    displayExpenses(allExpenses);
+                    return;
+                }
+
+                const filtered = allExpenses.filter(expense => {
+                    return (
+                        (expense.place && expense.place.toLowerCase().includes(searchTerm)) ||
+                        (expense.description && expense.description.toLowerCase().includes(searchTerm)) ||
+                        (expense.category && expense.category.toLowerCase().includes(searchTerm))
+                    );
+                });
+
+                currentPage = 1;
+                displayExpenses(filtered);
+                updatePagination();
+            });
+
+            // Filter functionality
+            document.getElementById('date-range').addEventListener('change', function() {
+                applyFilters();
+            });
+
+            document.getElementById('category-filter').addEventListener('change', function() {
+                applyFilters();
+            });
+
+            document.getElementById('member-filter').addEventListener('change', function() {
+                applyFilters();
+            });
+
+            // Save edit button
+            document.getElementById('save-edit-btn').addEventListener('click', saveEditedExpense);
+
+            // Export button
+            document.getElementById('export-btn').addEventListener('click', function() {
+                alert('Export functionality would be implemented here');
+            });
+
+            // Sidebar menu items
+            const menuItems = document.querySelectorAll('.sidebar-menu li');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const dateRange = document.getElementById('date-range').value;
+            const categoryFilter = document.getElementById('category-filter').value;
+            const memberFilter = document.getElementById('member-filter').value;
+
+            let filtered = [...allExpenses];
+
+            // Date range filter
+            if (dateRange !== 'all') {
+                const now = new Date();
+                let startDate;
+
+                if (dateRange === '30') {
+                    startDate = new Date();
+                    startDate.setDate(now.getDate() - 30);
+                } else if (dateRange === 'current') {
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                } else if (dateRange === 'last') {
+                    startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                    const endDate = new Date(now.getFullYear(), now.getMonth(), 0);
+                }
+
+                filtered = filtered.filter(expense => {
+                    const expenseDate = new Date(expense.date);
+                    return expenseDate >= startDate;
+                });
+            }
+
+            // Category filter
+            if (categoryFilter !== 'all') {
+                filtered = filtered.filter(expense => expense.category === categoryFilter);
+            }
+
+            // Member filter
+            if (memberFilter !== 'all') {
+                filtered = filtered.filter(expense => expense.familyMember === memberFilter);
+            }
+
+            currentPage = 1;
+            displayExpenses(filtered);
+            updatePagination();
+        }
+
+        // Export functions to global scope
+        window.viewExpense = viewExpense;
+        window.openEditModal = openEditModal;
+        window.deleteExpense = deleteExpense;
+        window.closeModal = closeModal;
+    </script>
+</body>
+</html>

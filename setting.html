@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Family Expense Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            position: relative;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-size: 12px;
+            z-index: 100;
+            width: 150px;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #ecf0f1;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar-menu li:hover {
+            background-color: #34495e;
+        }
+
+        .sidebar-menu li.active {
+            background-color: #3498db;
+        }
+
+        .sidebar-menu li i {
+            margin-right: 10px;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .settings-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .settings-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .settings-menu li {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .settings-menu li:last-child {
+            border-bottom: none;
+        }
+
+        .settings-menu li:hover {
+            color: #3498db;
+        }
+
+        .settings-menu li i {
+            margin-right: 15px;
+            font-size: 18px;
+        }
+
+        .settings-menu li span {
+            flex: 1;
+        }
+
+        .settings-menu li .arrow {
+            color: #999;
+        }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
+            authDomain: "f-track-e5c35.firebaseapp.com",
+            databaseURL: "https://f-track-e5c35-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "f-track-e5c35",
+            storageBucket: "f-track-e5c35.firebasestorage.app",
+            messagingSenderId: "650188769848",
+            appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd",
+            measurementId: "G-YPQT10VSBJ"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Logout function
+        function logout() {
+            firebase.auth().signOut()
+                .then(() => {
+                    alert('You have been logged out successfully.');
+                    window.location.href = 'index.html'; // Redirect to login page
+                })
+                .catch((error) => {
+                    console.error('Error logging out: ', error);
+                    alert('Error: Could not log out. Please try again.');
+                });
+        }
+    </script>
+</head>
+<body>
+    <!-- Language Selector -->
+    <select class="language-selector" id="language-selector">
+        <option value="en-US">English</option>
+        <option value="ms-MY">Malay (Bahasa Melayu)</option>
+    </select>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>F-Track</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="window.location.href='add_expenses.html'">
+                <i>📝</i> Add Expense
+            </li>
+            <li onclick="window.location.href='dashboard.html'">
+                <i>📊</i> Dashboard
+            </li>
+            <li onclick="window.location.href='list_expenses.html'">
+                <i>💰</i> List Expenses
+            </li>
+            <li onclick="window.location.href='set_budget.html'">
+                <i>💵</i> Set Budget
+            </li>
+            <li onclick="window.location.href='list_budget.html'">
+                <i>🧾</i> List Budgets
+            </li>
+            <li onclick="window.location.href='report.html'">
+                <i>📅</i> Monthly Reports
+            </li>
+            <li>
+                <i>🏷️</i> Categories
+            </li>
+            <li onclick="window.location.href='family_member.html'">
+                <i>👨‍👩‍👧‍👦</i> Family Members
+            </li>
+            <li class="active">
+                <i>⚙️</i> Settings
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="settings-container">
+            <h1>Settings</h1>
+            
+            <ul class="settings-menu">
+                <li onclick="window.location.href='profile.html'">
+                    <i>👤</i>
+                    <span>Profile</span>
+                    <span class="arrow">›</span>
+                </li>
+                <li>
+                    <i>🔔</i>
+                    <span>Set Notification</span>
+                    <span class="arrow">›</span>
+                </li>
+                <li>
+                    <i>🎨</i>
+                    <span>Appearance</span>
+                    <span class="arrow">›</span>
+                </li>
+                <li>
+                    <i>🌐</i>
+                    <span>Language</span>
+                    <span class="arrow">›</span>
+                </li>
+                <li onclick="window.location.href='security.html'">
+                    <i>🔒</i>
+                    <span>Security</span>
+                    <span class="arrow">›</span>
+                </li>
+                <li onclick="window.location.href='helpsupport.html'">
+                    <i>❓</i>
+                    <span>Help & Support</span>
+                    <span class="arrow">›</span>
+                </li>
+                <li onclick="window.location.href='about.html'">
+                    <i>ℹ️</i>
+                    <span>About</span>
+                    <span class="arrow">›</span>
+                </li>
+                <li onclick="logout()">
+                    <i>🚪</i>
+                    <span>Logout</span>
+                    <span class="arrow">›</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar menu functionality
+        const menuItems = document.querySelectorAll('.sidebar-menu li');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                menuItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Language selector functionality
+        document.getElementById('language-selector').addEventListener('change', function() {
+            console.log("Language changed to:", this.value);
+            // Add your language change logic here
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Expenses - Family Expense Tracker</title>
+    <!-- Tesseract.js for OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            position: relative;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-size: 12px;
+            z-index: 100;
+            width: 150px;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #ecf0f1;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar-menu li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .sidebar-menu li:hover {
+            background-color: #34495e;
+        }
+        
+        .sidebar-menu li.active {
+            background-color: #3498db;
+        }
+        
+        .sidebar-menu li i {
+            margin-right: 10px;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 20px;
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        label.required:after {
+            content: " *";
+            color: red;
+        }
+        
+        .input-container {
+            position: relative;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        .voice-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .voice-icon:hover {
+            color: #4285f4;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .checkbox-group label {
+            margin-right: 15px;
+            font-weight: normal;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+        }
+        
+        .radio-option input {
+            width: auto;
+            margin-right: 5px;
+        }
+        
+        .upload-section {
+            border: 2px dashed #ddd;
+            border-radius: 4px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        
+        .upload-section:hover {
+            border-color: #4285f4;
+            background-color: #f8faff;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .save-draft {
+            background-color: #f1f1f1;
+            color: #555;
+        }
+        
+        .save {
+            background-color: #4285f4;
+            color: white;
+        }
+        
+        .save-draft:hover {
+            background-color: #e1e1e1;
+        }
+        
+        .save:hover {
+            background-color: #3367d6;
+        }
+
+        /* Receipt scanning styles */
+        .receipt-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+            display: none;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .scan-progress {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        
+        .scan-results {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e8f4fd;
+            border-radius: 4px;
+            border-left: 4px solid #4285f4;
+        }
+        
+        .ocr-error {
+            color: #d32f2f;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #4285f4;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error message */
+        .error-message {
+            color: #d32f2f;
+            margin-top: 5px;
+            font-size: 12px;
+            display: none;
+        }
+
+        /* Budget alert styles */
+        .budget-alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #ff4444;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            max-width: 300px;
+        }
+
+        .budget-warning {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #ffbb33;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            max-width: 300px;
+        }
+
+        .close-alert {
+            float: right;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Budget Alert Elements -->
+    <div class="budget-alert" id="budget-alert">
+        <span class="close-alert" onclick="closeAlert('budget-alert')">×</span>
+        <strong>Budget Exceeded!</strong>
+        <p id="budget-alert-message"></p>
+    </div>
+
+    <div class="budget-warning" id="budget-warning">
+        <span class="close-alert" onclick="closeAlert('budget-warning')">×</span>
+        <strong>Budget Warning</strong>
+        <p id="budget-warning-message"></p>
+    </div>
+
+    <!-- Language Selector -->
+    <select class="language-selector" id="language-selector">
+        <option value="en-US">English</option>
+        <option value="ms-MY">Malay (Bahasa Melayu)</option>
+    </select>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>F-Track</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="active">
+                <i>📝</i> Add Expense
+            </li>
+            <li onclick="window.location.href='dashboard.html'">
+                <i>📊</i> Dashboard
+            </li>
+            <li onclick="window.location.href='list_expenses.html'">
+                <i>💰</i> List Expenses
+            </li>
+            <li onclick="window.location.href='set_budget.html'">
+                <i>💵</i> Set Budget
+            </li>
+            <li onclick="window.location.href='list_budget.html'">
+                <i>🧾</i> List Budgets
+            </li>
+            <li onclick="window.location.href='report.html'">
+                <i>📅</i> Monthly Reports
+            </li>
+            <li>
+                <i>🏷️</i> Categories
+            </li>
+            <li onclick="window.location.href='family_member.html'">
+                <i>👨‍👩‍👧‍👦</i> Family Members
+            </li>
+            <li onclick="window.location.href='setting.html'">
+                <i>⚙️</i> Settings
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="form-container">
+            <h1>Family Expense</h1>
+            
+            <!-- Expense Form -->
+            <div class="form-group">
+                <label for="category" class="required">Category</label>
+                <select id="category">
+                    <option value="">Select category</option>
+                    <option value="groceries">Groceries</option>
+                    <option value="utilities">Utilities</option>
+                    <option value="rent">Rent/Mortgage</option>
+                    <option value="transportation">Transportation</option>
+                    <option value="education">Education</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="entertainment">Entertainment</option>
+                    <option value="other">Other</option>
+                </select>
+                <div id="category-error" class="error-message">Please select a category</div>
+            </div>
+            
+            <!-- Place Input -->
+            <div class="form-group">
+                <label for="place" class="required">Place</label>
+                <div class="input-container">
+                    <input type="text" id="place" placeholder="Where was the expense?">
+                    <span class="voice-icon" onclick="startVoiceRecognition('place')">🎤</span>
+                </div>
+                <div id="place-error" class="error-message">Please enter a place</div>
+            </div>
+            
+            <!-- Date Input -->
+            <div class="form-group">
+                <label for="date" class="required">Date</label>
+                <input type="date" id="date">
+                <div id="date-error" class="error-message">Please select a date</div>
+            </div>
+            
+            <!-- Total Input -->
+            <div class="form-group">
+                <label for="total" class="required">Total</label>
+                <div class="input-container">
+                    <input type="number" id="total" placeholder="0.00" step="0.01" min="0">
+                    <span class="voice-icon" onclick="startVoiceRecognition('total')">🎤</span>
+                </div>
+                <div id="total-error" class="error-message">Please enter a valid amount</div>
+            </div>
+            
+            <!-- Family Member Input -->
+            <div class="form-group">
+                <label for="family-member" class="required">Family Member</label>
+                <select id="family-member">
+                    <option value="">Who made this expense?</option>
+                    <option value="parent1">Parent 1</option>
+                    <option value="parent2">Parent 2</option>
+                    <option value="child1">Child 1</option>
+                    <option value="child2">Child 2</option>
+                    <option value="other">Other Family Member</option>
+                </select>
+                <div id="family-member-error" class="error-message">Please select a family member</div>
+            </div>
+            
+            <!-- Payment Method Input -->
+            <div class="form-group">
+                <label for="payment-method">Payment Method</label>
+                <select id="payment-method">
+                    <option value="">Select payment method</option>
+                    <option value="cash">Cash</option>
+                    <option value="credit-card">Credit Card</option>
+                    <option value="debit-card">Debit Card</option>
+                    <option value="bank-transfer">Bank Transfer</option>
+                    <option value="digital-wallet">Digital Wallet</option>
+                </select>
+            </div>
+            
+            <!-- Description Input -->
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" rows="3" placeholder="Any additional details about this expense"></textarea>
+            </div>
+            
+            <!-- Add to Monthly Report Radio Buttons -->
+            <div class="radio-group">
+                <label>Add to monthly report</label>
+                <div class="radio-options">
+                    <div class="radio-option">
+                        <input type="radio" id="yes" name="addToReport" value="yes" checked>
+                        <label for="yes">Yes</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="no" name="addToReport" value="no">
+                        <label for="no">No</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Upload Section for Receipt -->
+            <div class="upload-section">
+                <p>Upload a receipt (optional)</p>
+                <input type="file" id="receipt" accept="image/*" style="display: none;">
+                <img id="receipt-preview" class="receipt-preview" alt="Receipt preview">
+                <div id="scan-progress" class="scan-progress">
+                    <p>Scanning receipt... <span id="progress-status">0%</span></p>
+                    <progress id="progress-bar" value="0" max="100"></progress>
+                </div>
+                <div id="scan-results" class="scan-results">
+                    <p>We found these details from your receipt:</p>
+                    <ul id="extracted-details"></ul>
+                    <button id="apply-details" class="save" style="padding: 5px 10px; font-size: 12px;">Apply to Form</button>
+                </div>
+                <p id="ocr-error" class="ocr-error">We couldn't read your receipt. Please enter details manually.</p>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <button class="save-draft">Save draft</button>
+                <button class="save" id="save-button">Save expense</button>
+            </div>
+            <div class="spinner" id="loading-spinner"></div>
+        </div>
+    </div>
+
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, serverTimestamp, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+    import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-functions.js';
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
+        authDomain: "f-track-e5c35.firebaseapp.com",
+        projectId: "f-track-e5c35",
+        storageBucket: "f-track-e5c35.appspot.com",
+        messagingSenderId: "650188769848",
+        appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd",
+        measurementId: "G-YPQT10VSBJ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const functions = getFunctions(app);
+
+    // Main collections
+    const expensesCollection = collection(db, 'expenses');
+    const budgetsCollection = collection(db, 'budgets');
+
+    // Initialize the application when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('date').valueAsDate = new Date();
+        
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                initEventListeners();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+    });
+
+    function initEventListeners() {
+        document.getElementById('save-button').addEventListener('click', saveExpense);
+        document.querySelector('.upload-section').addEventListener('click', handleUploadSectionClick);
+        document.getElementById('receipt').addEventListener('change', handleReceiptUpload);
+        document.querySelectorAll('.voice-icon').forEach(icon => {
+            icon.addEventListener('click', handleVoiceIconClick);
+        });
+    }
+
+async function saveExpense() {
+    if (!validateForm()) return;
+
+    const spinner = document.getElementById('loading-spinner');
+    const saveButton = document.getElementById('save-button');
+
+    try {
+        saveButton.disabled = true;
+        spinner.style.display = 'block';
+
+        const user = auth.currentUser;
+        if (!user) throw new Error("User not authenticated");
+
+        const expenseData = {
+            category: document.getElementById('category').value,
+            place: document.getElementById('place').value,
+            date: document.getElementById('date').value,
+            total: parseFloat(document.getElementById('total').value),
+            familyMember: document.getElementById('family-member').value,
+            paymentMethod: document.getElementById('payment-method').value,
+            description: document.getElementById('description').value,
+            addToReport: document.querySelector('input[name="addToReport"]:checked').value,
+            createdAt: serverTimestamp(),
+            userId: user.uid,
+            userName: user.displayName || user.email,
+            receipt: document.getElementById('receipt').files[0] ? true : false
+        };
+
+        // Add expense to Firestore
+        const docRef = await addDoc(expensesCollection, expenseData);
+        console.log("Expense saved with ID:", docRef.id);
+
+        // Check budget
+        await checkBudgetAndNotify(user.uid, expenseData.category, expenseData.total);
+        
+        alert('Expense saved successfully!');
+        resetForm();
+    } catch (error) {
+        console.error('Error saving expense:', error);
+        alert(`Error: ${error.message}`);
+    } finally {
+        saveButton.disabled = false;
+        spinner.style.display = 'none';
+    }
+}
+
+async function checkBudgetAndNotify(userId, category, expenseAmount) {
+    try {
+        // Query the budget for this user and category
+        const budgetQuery = query(
+            budgetsCollection,
+            where("userId", "==", userId),
+            where("category", "==", category)
+        );
+        
+        const querySnapshot = await getDocs(budgetQuery);
+        
+        if (querySnapshot.empty) {
+            console.log("No budget set for this category");
+            return;
+        }
+        
+        // Get the first matching budget (assuming one budget per category)
+        const budgetDoc = querySnapshot.docs[0];
+        const budgetData = budgetDoc.data();
+        const budgetAmount = Number(budgetData.amount);
+        const alertThreshold = Number(budgetData.alertThreshold) || 80;
+        
+        if (isNaN(budgetAmount)) {
+            console.error("Invalid budget amount");
+            return;
+        }
+        
+        // Calculate current month's expenses for this category
+        const now = new Date();
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        
+        const expensesQuery = query(
+            expensesCollection,
+            where("userId", "==", userId),
+            where("category", "==", category),
+            where("date", ">=", firstDay.toISOString().split('T')[0]),
+            where("date", "<=", lastDay.toISOString().split('T')[0])
+        );
+        
+        const expensesSnapshot = await getDocs(expensesQuery);
+        let totalExpenses = 0;
+        
+        expensesSnapshot.forEach((doc) => {
+            const expenseData = doc.data();
+            totalExpenses += Number(expenseData.total) || 0;
+        });
+        
+        // Calculate percentage
+        const usagePercentage = (totalExpenses / budgetAmount) * 100;
+        console.log(`Budget usage: ${usagePercentage.toFixed(2)}%`);
+        
+        // Check thresholds and show alerts
+        if (usagePercentage >= 100) {
+            showBudgetAlert(
+                "Budget Exceeded!",
+                `You've exceeded your ${category} budget (${usagePercentage.toFixed(2)}%)`,
+                'budget-alert'
+            );
+        } else if (usagePercentage >= alertThreshold) {
+            showBudgetAlert(
+                "Budget Warning",
+                `You've used ${usagePercentage.toFixed(2)}% of your ${category} budget`,
+                'budget-warning'
+            );
+        }
+    } catch (error) {
+        console.error("Error checking budget:", error);
+    }
+}
+
+    function closeAlert(alertId) {
+        document.getElementById(alertId).style.display = 'none';
+    }
+
+    function resetForm() {
+        document.getElementById('category').value = '';
+        document.getElementById('place').value = '';
+        document.getElementById('date').valueAsDate = new Date();
+        document.getElementById('total').value = '';
+        document.getElementById('family-member').value = '';
+        document.getElementById('payment-method').value = '';
+        document.getElementById('description').value = '';
+        document.getElementById('receipt').value = '';
+        document.getElementById('receipt-preview').style.display = 'none';
+    }
+
+    function validateForm() {
+        let isValid = true;
+        const requiredFields = [
+            { id: 'category', errorId: 'category-error' },
+            { id: 'place', errorId: 'place-error' },
+            { id: 'date', errorId: 'date-error' },
+            { id: 'total', errorId: 'total-error' },
+            { id: 'family-member', errorId: 'family-member-error' }
+        ];
+
+        // Reset error states
+        requiredFields.forEach(({id, errorId}) => {
+            document.getElementById(id).style.borderColor = '#ddd';
+            document.getElementById(errorId).style.display = 'none';
+        });
+
+        // Validate required fields
+        requiredFields.forEach(({id, errorId}) => {
+            if (!document.getElementById(id).value) {
+                document.getElementById(id).style.borderColor = 'red';
+                document.getElementById(errorId).style.display = 'block';
+                isValid = false;
+            }
+        });
+
+        // Validate amount
+        const amount = parseFloat(document.getElementById('total').value);
+        if (isNaN(amount) || amount <= 0) {
+            document.getElementById('total').style.borderColor = 'red';
+            document.getElementById('total-error').textContent = 'Please enter a valid amount';
+            document.getElementById('total-error').style.display = 'block';
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    function startVoiceRecognition(fieldId) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        
+        if (!SpeechRecognition) {
+            alert("Voice recognition is not supported in your browser. Please use Chrome or Edge.");
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        const language = document.getElementById('language-selector').value;
+        
+        recognition.lang = language;
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        
+        recognition.onstart = function() {
+            document.getElementById(fieldId).placeholder = language === 'ms-MY' ? 
+                "Mendengar..." : "Listening...";
+        };
+        
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            processTranscript(fieldId, transcript, language);
+        };
+        
+        recognition.onerror = function(event) {
+            console.error('Voice recognition error', event.error);
+            let errorMessage = "Error occurred";
+            if (event.error === 'not-allowed') {
+                errorMessage = "Microphone access was denied. Please allow microphone access in your browser settings.";
+            } else if (event.error === 'no-speech') {
+                errorMessage = "No speech was detected. Please try again.";
+            }
+            
+            document.getElementById(fieldId).placeholder = 
+                language === 'ms-MY' ? "Ralat: " + errorMessage : errorMessage;
+        };
+        
+        recognition.onend = function() {
+            const placeholder = document.getElementById(fieldId).placeholder;
+            if (placeholder === "Listening..." || placeholder === "Mendengar...") {
+                document.getElementById(fieldId).placeholder = "";
+            }
+        };
+        
+        recognition.start();
+    }
+
+    function processTranscript(fieldId, transcript, language) {
+        if (fieldId === 'place') {
+            document.getElementById(fieldId).value = transcript;
+            return;
+        }
+        
+        if (fieldId === 'total') {
+            let processedValue = transcript.toLowerCase();
+            
+            if (language === 'ms-MY') {
+                const malayNumbers = {
+                    'kosong': '0', 'satu': '1', 'dua': '2', 'tiga': '3',
+                    'empat': '4', 'lima': '5', 'enam': '6', 'tujuh': '7',
+                    'lapan': '8', 'sembilan': '9', 'sepuluh': '10',
+                    'seratus': '100', 'ribu': '000', 'juta': '000000',
+                    'titik': '.', 'noktah': '.', 'per': '.'
+                };
+
+                Object.keys(malayNumbers).forEach(word => {
+                    const regex = new RegExp(word, 'gi');
+                    processedValue = processedValue.replace(regex, malayNumbers[word]);
+                });
+
+                processedValue = processedValue.replace(/ringgit|rm/g, '')
+                    .replace(/sen/g, '.')
+                    .replace(/(\d)\s*\.\s*(\d)/g, '$1.$2');
+            } else {
+                processedValue = processedValue.replace(/dollars|\$|euros|€|pounds|£/g, '')
+                    .replace(/cents|cent/g, '.')
+                    .replace(/point|dot|and/g, '.');
+            }
+
+            processedValue = processedValue.replace(/[^\d.]/g, '');
+            
+            if (transcript.toLowerCase().includes('sen') || transcript.toLowerCase().includes('cent')) {
+                if (processedValue.includes('.')) {
+                    const parts = processedValue.split('.');
+                    processedValue = `${parts[0]}.${parts[1].padEnd(2, '0').substring(0, 2)}`;
+                } else {
+                    processedValue = `${processedValue.slice(0, -2)}.${processedValue.slice(-2).padStart(2, '0')}`;
+                }
+            } else if (processedValue.includes('.')) {
+                const parts = processedValue.split('.');
+                processedValue = `${parts[0]}.${parts[1].substring(0, 2)}`;
+            }
+            
+            document.getElementById(fieldId).value = processedValue;
+        }
+    }
+
+    function handleVoiceIconClick(e) {
+        e.stopPropagation();
+        const fieldId = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+        startVoiceRecognition(fieldId);
+    }
+
+    function handleUploadSectionClick(e) {
+        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+            document.getElementById('receipt').click();
+        }
+    }
+
+    function handleReceiptUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const preview = document.getElementById('receipt-preview');
+        const progressDiv = document.getElementById('scan-progress');
+        const progressBar = document.getElementById('progress-bar');
+        const progressStatus = document.getElementById('progress-status');
+        const resultsDiv = document.getElementById('scan-results');
+        const extractedDetails = document.getElementById('extracted-details');
+        const ocrError = document.getElementById('ocr-error');
+        const applyBtn = document.getElementById('apply-details');
+
+        preview.style.display = 'none';
+        progressDiv.style.display = 'none';
+        resultsDiv.style.display = 'none';
+        ocrError.style.display = 'none';
+        extractedDetails.innerHTML = '';
+
+        if (file.type.match('image.*')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                progressDiv.style.display = 'block';
+                scanReceipt(e.target.result);
+            };
+            reader.readAsDataURL(file);
+            document.querySelector('.upload-section p').textContent = file.name;
+        }
+    }
+
+    function scanReceipt(imageData) {
+        const progressDiv = document.getElementById('scan-progress');
+        const progressBar = document.getElementById('progress-bar');
+        const progressStatus = document.getElementById('progress-status');
+        const resultsDiv = document.getElementById('scan-results');
+        const extractedDetails = document.getElementById('extracted-details');
+        const ocrError = document.getElementById('ocr-error');
+
+        Tesseract.recognize(
+            imageData,
+            'eng+msa', 
+            {
+                logger: m => {
+                    if (m.status === 'recognizing text') {
+                        progressBar.value = m.progress * 100;
+                        progressStatus.textContent = `${Math.round(m.progress * 100)}%`;
+                    }
+                }
+            }
+        ).then(({ data: { text, lines } }) => {
+            progressDiv.style.display = 'none';
+            if (!text.trim()) {
+                ocrError.style.display = 'block';
+                return;
+            }
+
+            const parsedData = parseReceiptText(text);
+
+            if (Object.keys(parsedData).length === 0) {
+                ocrError.style.display = 'block';
+                return;
+            }
+
+            for (const [key, value] of Object.entries(parsedData)) {
+                if (value) {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${formatKey(key)}:</strong> ${value}`;
+                    extractedDetails.appendChild(li);
+                }
+            }
+
+            resultsDiv.style.display = 'block';
+
+            document.getElementById('apply-details').addEventListener('click', function() {
+                applyReceiptData(parsedData);
+                resultsDiv.style.display = 'none';
+            });
+        }).catch(err => {
+            console.error('OCR Error:', err);
+            progressDiv.style.display = 'none';
+            ocrError.style.display = 'block';
+        });
+    }
+
+    function parseReceiptText(text) {
+        const result = {};
+        const lines = text.split('\n');
+        const datePatterns = [
+            /\b(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})\b/,
+            /\b(\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2})\b/,
+            /\b(\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{2,4})\b/i
+        ];
+
+        const amountPatterns = [
+            /(?:Total|Jumlah|Amount|RM|MYR)\s*[:=]?\s*([\d,]+\.\d{2})/i,
+            /(?:Total|Jumlah|Amount)\s*[:=]?\s*RM\s*([\d,]+\.\d{2})/i
+        ];
+
+        const merchantPatterns = [
+            /^(.*?)(?:\n|$)/,
+            /(?:Receipt from|Invoice from|Resit dari)\s*(.*?)(?:\n|$)/i
+        ];
+
+        for (const pattern of datePatterns) {
+            const match = text.match(pattern);
+            if (match) {
+                result.date = match[1];
+                break;
+            }
+        }
+
+        for (const pattern of amountPatterns) {
+            const match = text.match(pattern);
+            if (match) {
+                result.total = match[1].replace(',', '');
+                break;
+            }
+        }
+
+        for (const pattern of merchantPatterns) {
+            const match = text.match(pattern);
+            if (match && match[1].trim().length > 3) {
+                result.place = match[1].trim();
+                break;
+            }
+        }
+
+        if (!result.place) {
+            for (const line of lines) {
+                if (line.trim().length > 3 && !line.match(/date|time|total|jumlah/i)) {
+                    result.place = line.trim();
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    function formatKey(key) {
+        const map = {
+            'date': 'Date',
+            'total': 'Total Amount',
+            'place': 'Merchant/Place'
+        };
+        return map[key] || key;
+    }
+
+    function applyReceiptData(data) {
+        if (data.date) {
+            let parsedDate;
+            if (data.date.includes('/') || data.date.includes('-')) {
+                const parts = data.date.split(/[\/\-]/);
+                if (parts.length === 3) {
+                    if (parts[0].length === 4) {
+                        parsedDate = new Date(data.date);
+                    } else {
+                        parsedDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                    }
+                }
+            } else {
+                parsedDate = new Date(data.date);
+            }
+
+            if (parsedDate && !isNaN(parsedDate.getTime())) {
+                document.getElementById('date').valueAsDate = parsedDate;
+            }
+        }
+
+        if (data.total) {
+            document.getElementById('total').value = data.total;
+        }
+
+            if (data.description) {
+                document.getElementById('description').value = data.description;
+
+                const categorySelect = document.getElementById('category');
+                if (data.description.toLowerCase().includes('grocery')) {
+                    categorySelect.value = 'groceries';
+                } else if (data.description.toLowerCase().includes('electric')) {
+                    categorySelect.value = 'utilities';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

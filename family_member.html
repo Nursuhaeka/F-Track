@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Family Member - Family Expense Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            position: relative;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-size: 12px;
+            z-index: 100;
+            width: 150px;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #ecf0f1;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar-menu li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .sidebar-menu li:hover {
+            background-color: #34495e;
+        }
+        
+        .sidebar-menu li.active {
+            background-color: #3498db;
+        }
+        
+        .sidebar-menu li i {
+            margin-right: 10px;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 20px;
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: normal;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        label.required:after {
+            content: " *";
+            color: red;
+        }
+        
+        .input-container {
+            position: relative;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        .voice-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .voice-icon:hover {
+            color: #4285f4;
+        }
+        
+        .profile-pic-upload {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .profile-pic-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            color: #1976d2;
+            font-size: 30px;
+            overflow: hidden;
+        }
+        
+        .profile-pic-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .upload-btn {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #f1f1f1;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .upload-btn:hover {
+            background-color: #e1e1e1;
+        }
+        
+        #profile-upload {
+            display: none;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .checkbox-group label {
+            margin-right: 15px;
+            font-weight: normal;
+        }
+        
+        .spending-limit {
+            display: none;
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .cancel-btn {
+            background-color: #f1f1f1;
+            color: #555;
+        }
+        
+        .save-btn {
+            background-color: #4285f4;
+            color: white;
+        }
+        
+        .cancel-btn:hover {
+            background-color: #e1e1e1;
+        }
+        
+        .save-btn:hover {
+            background-color: #3367d6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <select class="language-selector" id="language-selector">
+        <option value="en-US">English</option>
+        <option value="ms-MY">Malay (Bahasa Melayu)</option>
+    </select>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>F-Track</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="window.location.href='add_expenses.html'">
+                <i>📝</i> Add Expense
+            </li>
+            <li onclick="window.location.href='dashboard.html'">
+                <i>📊</i> Dashboard
+            </li>
+            <li onclick="window.location.href='list_expenses.html'">
+                <i>💰</i> List Expenses
+            </li>
+            <li class onclick="window.location.href='set_budget.html'">
+                <i>💵</i> Set Budget
+            </li>
+            <li onclick="window.location.href='list_budget.html'">
+                <i>🧾</i> List Budgets
+            </li>
+            <li onclick="window.location.href='report.html'">
+                <i>📅</i> Monthly Reports
+            </li>
+            <li>
+                <i>🏷️</i> Categories
+            </li>
+            <li class="active">
+                <i>👨‍👩‍👧‍👦</i> Family Members
+            </li>
+            <li onclick="window.location.href='setting.html'">
+                <i>⚙️</i> Settings
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="form-container">
+            <h1>
+                Add Family Member
+                <a href="family-members.html" class="back-link">← Back to Family Members</a>
+            </h1>
+            
+            <div class="profile-pic-upload">
+                <div class="profile-pic-preview" id="profile-pic-preview">
+                    <span>👤</span>
+                </div>
+                <div>
+                    <div class="upload-btn" onclick="document.getElementById('profile-upload').click()">
+                        Upload Photo
+                    </div>
+                    <input type="file" id="profile-upload" accept="image/*">
+                    <div style="font-size: 12px; color: #777; margin-top: 5px;">Recommended size: 200x200px</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="full-name" class="required">Full Name</label>
+                <div class="input-container">
+                    <input type="text" id="full-name" placeholder="Enter full name">
+                    <span class="voice-icon" onclick="startVoiceRecognition('full-name')">🎤</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="relationship" class="required">Relationship</label>
+                <select id="relationship">
+                    <option value="">Select relationship</option>
+                    <option value="spouse">Spouse</option>
+                    <option value="child">Child</option>
+                    <option value="parent">Parent</option>
+                    <option value="sibling">Sibling</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="Enter email address">
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <div class="input-container">
+                    <input type="tel" id="phone" placeholder="Enter phone number">
+                    <span class="voice-icon" onclick="startVoiceRecognition('phone')">🎤</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="birthdate">Birthdate</label>
+                <input type="date" id="birthdate">
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="set-spending-limit">
+                <label for="set-spending-limit">Set monthly spending limit</label>
+            </div>
+            
+            <div class="spending-limit" id="spending-limit-section">
+                <div class="form-group">
+                    <label for="limit-amount" class="required">Monthly Limit Amount</label>
+                    <div class="input-container">
+                        <input type="number" id="limit-amount" placeholder="Enter amount">
+                        <span class="voice-icon" onclick="startVoiceRecognition('limit-amount')">🎤</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="limit-currency">Currency</label>
+                    <select id="limit-currency">
+                        <option value="MYR">MYR (Malaysian Ringgit)</option>
+                        <option value="USD">USD (US Dollar)</option>
+                        <option value="EUR">EUR (Euro)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="notes">Notes</label>
+                <textarea id="notes" rows="3" placeholder="Any additional notes about this family member"></textarea>
+            </div>
+            
+            <div class="button-group">
+                <button class="cancel-btn">Cancel</button>
+                <button class="save-btn">Save Family Member</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar menu functionality
+        const menuItems = document.querySelectorAll('.sidebar-menu li');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                menuItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                // Here you would add code to load different content based on selection
+            });
+        });
+        
+        // Language selector functionality
+        document.getElementById('language-selector').addEventListener('change', function() {
+            console.log("Language changed to:", this.value);
+            // Here you would implement language change logic
+        });
+        
+        // Profile picture upload
+        document.getElementById('profile-upload').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    const preview = document.getElementById('profile-pic-preview');
+                    preview.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    preview.appendChild(img);
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Spending limit toggle
+        document.getElementById('set-spending-limit').addEventListener('change', function() {
+            const limitSection = document.getElementById('spending-limit-section');
+            if (this.checked) {
+                limitSection.style.display = 'block';
+            } else {
+                limitSection.style.display = 'none';
+            }
+        });
+        
+        // Voice recognition functionality
+        function startVoiceRecognition(fieldId) {
+            if ('webkitSpeechRecognition' in window) {
+                const language = document.getElementById('language-selector').value;
+                const recognition = new webkitSpeechRecognition();
+                
+                recognition.lang = language;
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                
+                recognition.onstart = function() {
+                    document.getElementById(fieldId).placeholder = language === 'ms-MY' ? 
+                        "Mendengar..." : "Listening...";
+                };
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById(fieldId).value = transcript;
+                    document.getElementById(fieldId).placeholder = "";
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Voice recognition error', event.error);
+                    document.getElementById(fieldId).placeholder = 
+                        language === 'ms-MY' ? "Ralat berlaku" : "Error occurred";
+                };
+                
+                recognition.start();
+            } else {
+                alert("Your browser doesn't support voice recognition. Please use Chrome or Edge.");
+            }
+        }
+        
+        // Save button functionality
+        document.querySelector('.save-btn').addEventListener('click', function() {
+            const fullName = document.getElementById('full-name').value;
+            const relationship = document.getElementById('relationship').value;
+            
+            if (!fullName || !relationship) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            alert(`Family member ${fullName} added successfully!`);
+            // Here you would add code to save the family member data
+        });
+        
+        // Cancel button functionality
+        document.querySelector('.cancel-btn').addEventListener('click', function() {
+            if (confirm('Discard all changes?')) {
+                window.location.href = 'family-members.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Family Expense Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            position: relative;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-size: 12px;
+            z-index: 100;
+            width: 150px;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #ecf0f1;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar-menu li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .sidebar-menu li:hover {
+            background-color: #34495e;
+        }
+        
+        .sidebar-menu li.active {
+            background-color: #3498db;
+        }
+        
+        .sidebar-menu li i {
+            margin-right: 10px;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .notifications-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 20px;
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .notification-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom-color: #3498db;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .notification-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .notification-item {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .notification-item.unread {
+            background-color: #f8fafd;
+        }
+        
+        .notification-icon {
+            margin-right: 15px;
+            font-size: 18px;
+            color: #3498db;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .notification-time {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .notification-message {
+            color: #555;
+            line-height: 1.4;
+        }
+        
+        .notification-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            color: #3498db;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0;
+        }
+        
+        .action-btn:hover {
+            text-decoration: underline;
+        }
+        
+        .notification-settings {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .settings-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .setting-label {
+            flex: 1;
+        }
+        
+        .setting-description {
+            font-size: 12px;
+            color: #777;
+            margin-top: 3px;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #3498db;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: #777;
+        }
+        
+        .empty-state i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <select class="language-selector" id="language-selector">
+        <option value="en-US">English</option>
+        <option value="ms-MY">Malay (Bahasa Melayu)</option>
+    </select>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Family Expenses</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li>
+                <i>📝</i> Add Expense
+            </li>
+            <li>
+                <i>📊</i> Dashboard
+            </li>
+            <li>
+                <i>💰</i> Expenses
+            </li>
+            <li>
+                <i>📅</i> Monthly Reports
+            </li>
+            <li>
+                <i>🏷️</i> Categories
+            </li>
+            <li>
+                <i>👨‍👩‍👧‍👦</i> Family Members
+            </li>
+            <li class="active">
+                <i>⚙️</i> Settings
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="notifications-container">
+            <h1>
+                Notifications
+                <span style="font-size: 14px; font-weight: normal; color: #777;">Last updated: Today, 10:30 AM</span>
+            </h1>
+            
+            <div class="notification-tabs">
+                <div class="tab active" data-tab="all">All Notifications</div>
+                <div class="tab" data-tab="unread">Unread</div>
+                <div class="tab" data-tab="alerts">Alerts</div>
+            </div>
+            
+            <ul class="notification-list" id="notification-list">
+                <li class="notification-item unread">
+                    <div class="notification-icon">💸</div>
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            <span>New Expense Added</span>
+                            <span class="notification-time">10:15 AM</span>
+                        </div>
+                        <div class="notification-message">
+                            Sarah added a new expense of RM 45.20 under "Groceries" category
+                        </div>
+                        <div class="notification-actions">
+                            <button class="action-btn">View Expense</button>
+                            <button class="action-btn">Mark as Read</button>
+                        </div>
+                    </div>
+                </li>
+                
+                <li class="notification-item">
+                    <div class="notification-icon">⚠️</div>
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            <span>Budget Limit Reached</span>
+                            <span class="notification-time">Yesterday, 8:30 PM</span>
+                        </div>
+                        <div class="notification-message">
+                            Your "Dining Out" budget has reached 90% of the monthly limit
+                        </div>
+                        <div class="notification-actions">
+                            <button class="action-btn">View Budget</button>
+                        </div>
+                    </div>
+                </li>
+                
+                <li class="notification-item">
+                    <div class="notification-icon">📊</div>
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            <span>Weekly Report Ready</span>
+                            <span class="notification-time">Yesterday, 9:00 AM</span>
+                        </div>
+                        <div class="notification-message">
+                            Your family's weekly expense report is now available
+                        </div>
+                        <div class="notification-actions">
+                            <button class="action-btn">View Report</button>
+                        </div>
+                    </div>
+                </li>
+                
+                <li class="notification-item unread">
+                    <div class="notification-icon">👨‍👩‍👧‍👦</div>
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            <span>Family Member Update</span>
+                            <span class="notification-time">Monday, 3:45 PM</span>
+                        </div>
+                        <div class="notification-message">
+                            Michael updated his monthly spending limit to RM 500
+                        </div>
+                        <div class="notification-actions">
+                            <button class="action-btn">View Profile</button>
+                            <button class="action-btn">Mark as Read</button>
+                        </div>
+                    </div>
+                </li>
+                
+                <li class="notification-item">
+                    <div class="notification-icon">🔄</div>
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            <span>Bank Sync Completed</span>
+                            <span class="notification-time">Monday, 7:30 AM</span>
+                        </div>
+                        <div class="notification-message">
+                            Your Maybank account has been successfully synced with 3 new transactions
+                        </div>
+                        <div class="notification-actions">
+                            <button class="action-btn">Review Transactions</button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            
+            <div class="notification-settings">
+                <div class="settings-title">Notification Settings</div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div>Expense Notifications</div>
+                        <div class="setting-description">Get notified when family members add new expenses</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div>Budget Alerts</div>
+                        <div class="setting-description">Receive warnings when approaching budget limits</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div>Weekly Reports</div>
+                        <div class="setting-description">Send me weekly summary reports</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div>Bank Sync Notifications</div>
+                        <div class="setting-description">Notify me when bank transactions are synced</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <div>Promotional Offers</div>
+                        <div class="setting-description">Receive occasional offers and tips</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar menu functionality
+        const menuItems = document.querySelectorAll('.sidebar-menu li');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                menuItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                // Here you would add code to load different content based on selection
+            });
+        });
+        
+        // Language selector functionality
+        document.getElementById('language-selector').addEventListener('change', function() {
+            console.log("Language changed to:", this.value);
+            // Here you would implement language change logic
+        });
+        
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                const tabType = this.getAttribute('data-tab');
+                const notifications = document.querySelectorAll('.notification-item');
+                
+                notifications.forEach(notification => {
+                    if (tabType === 'all') {
+                        notification.style.display = 'flex';
+                    } else if (tabType === 'unread') {
+                        notification.style.display = notification.classList.contains('unread') ? 'flex' : 'none';
+                    } else if (tabType === 'alerts') {
+                        const icon = notification.querySelector('.notification-icon').textContent;
+                        notification.style.display = (icon === '⚠️' || icon === '🔔') ? 'flex' : 'none';
+                    }
+                });
+            });
+        });
+        
+        // Mark as read functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('action-btn') && e.target.textContent === 'Mark as Read') {
+                const notification = e.target.closest('.notification-item');
+                notification.classList.remove('unread');
+                e.target.remove();
+            }
+        });
+        
+        // Toggle switch functionality
+        const switches = document.querySelectorAll('.switch input');
+        switches.forEach(sw => {
+            sw.addEventListener('change', function() {
+                console.log(`Setting ${this.parentElement.previousElementSibling.textContent} changed to ${this.checked}`);
+                // Here you would save the notification preference
+            });
+        });
+    </script>
+</body>
+</html>

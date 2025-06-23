@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0d2438;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 50px;
+        }
+        .left-panel {
+            width: 50%;
+        }
+        .right-panel {
+            width: 45%;
+            background-color: #1b3148;
+            padding: 30px;
+            border-radius: 8px;
+        }
+        .left-panel h1 {
+            font-size: 48px;
+            color: #4e9ad6;
+        }
+        .right-panel h2 {
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background-color: #2f3c4a;
+            color: #fff;
+        }
+        .form-group label {
+            font-size: 14px;
+            color: #ccc;
+        }
+        button {
+            background-color: #4e9ad6;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #3b7fa1;
+        }
+        .forgot-password {
+            margin-top: 10px;
+            color: #ccc;
+            font-size: 14px;
+            text-align: center;
+        }
+        .forgot-password a {
+            color: #4e9ad6;
+            text-decoration: none;
+        }
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+        #error-message {
+            color: #ff6b6b;
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+        }
+        #success-message {
+            color: #4caf50;
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="left-panel">
+            <h1>Welcome Back</h1>
+            <p>We are glad to see you again! Please login to access your account and explore more services.</p>
+        </div>
+        <div class="right-panel">
+            <h2>Login</h2>
+            <form id="login-form" method="POST">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                </div>
+                <div id="error-message"></div>
+                <div id="success-message"></div>
+                <button type="submit" id="login-button">Login</button>
+                <div class="forgot-password">
+                    <a href="#" id="reset-password-link">Forgot Password?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+    // Your Firebase configuration (same as in your signup page)
+    const firebaseConfig = {
+        apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
+        authDomain: "f-track-e5c35.firebaseapp.com",
+        databaseURL: "https://f-track-e5c35-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "f-track-e5c35",
+        storageBucket: "f-track-e5c35.firebasestorage.app",
+        messagingSenderId: "650188769848",
+        appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd",
+        measurementId: "G-YPQT10VSBJ"
+    };
+
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Handle form submission
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        
+        // Get form values
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const loginButton = document.getElementById('login-button');
+        
+        // Show loading state
+        loginButton.disabled = true;
+        loginButton.innerHTML = 'Logging in <span class="loading"></span>';
+        
+        // Clear previous messages
+        hideMessages();
+
+        // Sign in with Firebase Auth
+        auth.signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // Login successful
+                const user = userCredential.user;
+                
+                // Update last login timestamp in Firestore
+                return db.collection('users').doc(user.uid).update({
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            })
+            .then(() => {
+                showSuccess("Login successful! Redirecting...");
+                
+                // Redirect to dashboard after short delay
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 1500);
+            })
+            .catch((error) => {
+                // Handle errors
+                let errorMessage = "Login failed. Please try again.";
+                
+                switch(error.code) {
+                    case "auth/invalid-email":
+                        errorMessage = "Invalid email format.";
+                        break;
+                    case "auth/user-disabled":
+                        errorMessage = "This account has been disabled.";
+                        break;
+                    case "auth/user-not-found":
+                        errorMessage = "No account found with this email.";
+                        break;
+                    case "auth/wrong-password":
+                        errorMessage = "Incorrect password.";
+                        break;
+                    default:
+                        errorMessage = error.message;
+                }
+                
+                showError(errorMessage);
+            })
+            .finally(() => {
+                // Reset button state
+                loginButton.disabled = false;
+                loginButton.textContent = 'Login';
+            });
+    });
+
+    // Password reset functionality
+    document.getElementById('reset-password-link').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        
+        if (!email) {
+            showError("Please enter your email address first");
+            return;
+        }
+        
+        hideMessages();
+        
+        auth.sendPasswordResetEmail(email)
+            .then(() => {
+                showSuccess(`Password reset email sent to ${email}. Check your inbox.`);
+            })
+            .catch((error) => {
+                let errorMessage = "Error sending reset email.";
+                
+                switch(error.code) {
+                    case "auth/invalid-email":
+                        errorMessage = "Invalid email address.";
+                        break;
+                    case "auth/user-not-found":
+                        errorMessage = "No account found with this email.";
+                        break;
+                    default:
+                        errorMessage = error.message;
+                }
+                
+                showError(errorMessage);
+            });
+    });
+
+    function showError(message) {
+        const errorElement = document.getElementById('error-message');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+        document.getElementById('success-message').style.display = 'none';
+    }
+
+    function showSuccess(message) {
+        const successElement = document.getElementById('success-message');
+        successElement.textContent = message;
+        successElement.style.display = 'block';
+        document.getElementById('error-message').style.display = 'none';
+    }
+
+    function hideMessages() {
+        document.getElementById('error-message').style.display = 'none';
+        document.getElementById('success-message').style.display = 'none';
+    }
+
+    // Check if user is already logged in
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            // User is signed in, redirect to dashboard
+            window.location.href = "dashboard.html";
+        }
+    });
+</script>
+</body>
+</html>

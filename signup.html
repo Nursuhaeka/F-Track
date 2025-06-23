@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Page</title>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0d2438;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 50px;
+        }
+        .left-panel {
+            width: 50%;
+        }
+        .right-panel {
+            width: 45%;
+            background-color: #1b3148;
+            padding: 30px;
+            border-radius: 8px;
+        }
+        .left-panel h1 {
+            font-size: 48px;
+            color: #4e9ad6;
+        }
+        .right-panel h2 {
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        input[type="text"], input[type="email"], input[type="password"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background-color: #2f3c4a;
+            color: #fff;
+        }
+        .form-group label {
+            font-size: 14px;
+            color: #ccc;
+        }
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        button {
+            background-color: #4e9ad6;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3b7fa1;
+        }
+        .role-select {
+            margin-top: 20px;
+        }
+        .role-select label {
+            color: #ccc;
+        }
+        #error-message {
+            color: #ff6b6b;
+            margin-top: 10px;
+            display: none;
+        }
+        #success-message {
+            color: #4caf50;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="left-panel">
+            <h1>Welcome Page</h1>
+            <p>Welcome to our website! Please create an account to get started. Your account helps us provide you with the best services tailored to your needs.</p>
+        </div>
+        <div class="right-panel">
+            <h2>Create An Account</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="first-name">First Name</label>
+                    <input type="text" id="first-name" name="first-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="last-name">Last Name</label>
+                    <input type="text" id="last-name" name="last-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" name="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Create Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required>
+                </div>
+                <div class="role-select">
+                    <label for="role">Select Role</label>
+                    <select id="role" name="role">
+                        <option value="individual">Individual</option>
+                        <option value="family">Family</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">Creating your account and you accepting Terms & Conditions.</label>
+                </div>
+                <button type="submit">Create Account</button>
+                <div id="error-message"></div>
+                <div id="success-message"></div>
+            </form>
+        </div>
+    </div>
+<script type="module">
+    // Import Firebase modules
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+    import { getFirestore, collection, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+    import { getAuth, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+
+    // Your Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
+        authDomain: "f-track-e5c35.firebaseapp.com",
+        projectId: "f-track-e5c35",
+        storageBucket: "f-track-e5c35.firebasestorage.app",
+        messagingSenderId: "650188769848",
+        appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd",
+        measurementId: "G-YPQT10VSBJ"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // Handle form submission
+    document.getElementById('signup-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Get form values
+        const firstName = document.getElementById('first-name').value.trim();
+        const lastName = document.getElementById('last-name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const address = document.getElementById('address').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        const role = document.getElementById('role').value;
+        const termsAccepted = document.getElementById('terms').checked;
+
+        // Validate form
+        if (password !== confirmPassword) {
+            showError("Passwords don't match!");
+            return;
+        }
+
+        if (!termsAccepted) {
+            showError("You must accept the terms and conditions");
+            return;
+        }
+
+        try {
+            // Create user with Firebase Authentication
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            
+            // Prepare user data for Firestore
+            const userData = {
+                firstName,
+                lastName,
+                email,
+                address,
+                role,
+                createdAt: serverTimestamp(),
+                lastLogin: serverTimestamp()
+            };
+
+            // Save to Firestore (users collection)
+            await setDoc(doc(db, "users", user.uid), userData);
+
+            showSuccess("Account created successfully!");
+            
+            // Redirect to dashboard after 1.5 seconds
+            setTimeout(() => {
+                window.location.href = "dashboard.html";
+            }, 1500);
+            
+        } catch (error) {
+            console.error("Signup error:", error);
+            
+            // Handle specific error cases
+            let errorMessage = error.message;
+            if (error.code === 'auth/email-already-in-use') {
+                errorMessage = "This email is already registered.";
+            } else if (error.code === 'auth/weak-password') {
+                errorMessage = "Password should be at least 6 characters.";
+            }
+            
+            showError(errorMessage);
+        }
+    });
+
+    function showError(message) {
+        const errorElement = document.getElementById('error-message');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+        
+        // Hide success message if shown
+        document.getElementById('success-message').style.display = 'none';
+    }
+
+    function showSuccess(message) {
+        const successElement = document.getElementById('success-message');
+        successElement.textContent = message;
+        successElement.style.display = 'block';
+        
+        // Hide error message if shown
+        document.getElementById('error-message').style.display = 'none';
+        
+        // Clear form
+        document.getElementById('signup-form').reset();
+    }
+</script>
+</body>
+</html>

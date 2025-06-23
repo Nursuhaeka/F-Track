@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Set Budget - Family Budget Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .voice-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+            font-size: 18px;
+            padding: 5px;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-size: 12px;
+            z-index: 100;
+            width: 150px;
+        }
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #ecf0f1;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-menu li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .sidebar-menu li:hover {
+            background-color: #34495e;
+        }
+        .sidebar-menu li.active {
+            background-color: #3498db;
+        }
+        .sidebar-menu li i {
+            margin-right: 10px;
+        }
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 20px;
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        label.required:after {
+            content: " *";
+            color: red;
+        }
+        .input-container {
+            position: relative;
+        }
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .voice-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+        }
+        .voice-icon:hover {
+            color: #4285f4;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .checkbox-group label {
+            margin-right: 15px;
+            font-weight: normal;
+        }
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .radio-option {
+            display: flex;
+            align-items: center;
+        }
+        .radio-option input {
+            width: auto;
+            margin-right: 5px;
+        }
+        .upload-section {
+            border: 2px dashed #ddd;
+            border-radius: 4px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        .upload-section:hover {
+            border-color: #4285f4;
+            background-color: #f8faff;
+        }
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .save-draft {
+            background-color: #f1f1f1;
+            color: #555;
+        }
+        .save {
+            background-color: #4285f4;
+            color: white;
+        }
+        .save-draft:hover {
+            background-color: #e1e1e1;
+        }
+        .save:hover {
+            background-color: #3367d6;
+        }
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f44336;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.5s forwards;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .notification.show {
+            display: block;
+        }
+        .close-notification {
+            float: right;
+            margin-left: 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Language Selector -->
+    <select class="language-selector" id="language-selector">
+        <option value="en-US">English</option>
+        <option value="ms-MY">Malay (Bahasa Melayu)</option>
+    </select>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>F-Track</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="window.location.href='add_expenses.html'">
+                <i>📝</i> Add Expense
+            </li>
+            <li onclick="window.location.href='dashboard.html'">
+                <i>📊</i> Dashboard
+            </li>
+            <li onclick="window.location.href='list_expenses.html'">
+                <i>💰</i> List Expenses
+            </li>
+            <li class="active">
+                <i>💵</i> Set Budget
+            </li>
+            <li onclick="window.location.href='list_budget.html'">
+                <i>🧾</i> List Budgets
+            </li>
+            <li onclick="window.location.href='report.html'">
+                <i>📅</i> Monthly Reports
+            </li>
+            <li>
+                <i>🏷️</i> Categories
+            </li>
+            <li onclick="window.location.href='family_member.html'">
+                <i>👨‍👩‍👧‍👦</i> Family Members
+            </li>
+            <li onclick="window.location.href='setting.html'">
+                <i>⚙️</i> Settings
+            </li>
+        </ul>
+    </div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="form-container">
+            <h1>Set Category Budget</h1>
+            <form id="budget-form">
+                <div class="form-group">
+                    <label for="budget-category" class="required">Category</label>
+                    <select id="budget-category" required>
+                        <option value="">Select category</option>
+                        <option value="groceries">Groceries</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="rent">Rent/Mortgage</option>
+                        <option value="transportation">Transportation</option>
+                        <option value="education">Education</option>
+                        <option value="healthcare">Healthcare</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="budget-amount" class="required">Monthly Budget</label>
+                    <div class="input-container">
+                        <input type="number" id="budget-amount" placeholder="Enter budget amount" required step="0.01" min="0.01"/>
+                        <span class="voice-icon" onclick="startVoiceRecognition('budget-amount')">🎤</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="budget-period">Budget Period</label>
+                    <select id="budget-period">
+                        <option value="monthly">Monthly</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="budget-alert">Alert Threshold (%)</label>
+                    <input
+                        type="number"
+                        id="budget-alert"
+                        min="0"
+                        max="100"
+                        value="80"
+                        placeholder="When to send alerts"
+                    />
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="save-draft" onclick="resetForm()">Reset</button>
+                    <button type="submit" class="save">Save Budget</button>
+                    <div class="spinner" id="spinner"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span class="close-notification" onclick="closeNotification()">×</span>
+        <span id="notification-message">Budget limit exceeded!</span>
+    </div>
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, serverTimestamp, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
+        authDomain: "f-track-e5c35.firebaseapp.com",
+        projectId: "f-track-e5c35",
+        storageBucket: "f-track-e5c35.appspot.com",
+        messagingSenderId: "650188769848",
+        appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd",
+        measurementId: "G-YPQT10VSBJ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // Main collections (not nested under users)
+    const budgetsCollection = collection(db, 'budgets');
+
+    // Global variables
+    let currentUser = null;
+
+    // Initialize the application
+    function initApp() {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                setupForm(); // Setup form after user is authenticated
+                setupVoiceIcons();
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+    }
+
+    // Voice recognition function
+    function startVoiceRecognition(fieldId) {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            showNotification("Voice recognition not supported in your browser", "error");
+            return;
+        }
+
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        const language = document.getElementById("language-selector").value;
+        recognition.lang = language;
+        recognition.interimResults = false;
+
+        const targetField = document.getElementById(fieldId);
+
+        recognition.onstart = function() {
+            targetField.placeholder = language === 'ms-MY' ? "Mendengar..." : "Listening...";
+        };
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            processVoiceInput(fieldId, transcript, language);
+        };
+
+        recognition.onerror = function(event) {
+            console.error("Voice recognition error", event.error);
+            let errorMessage = "Error occurred";
+            if (event.error === 'not-allowed') {
+                errorMessage = "Microphone access was denied";
+            } else if (event.error === 'no-speech') {
+                errorMessage = "No speech detected";
+            }
+            targetField.placeholder = errorMessage;
+        };
+
+        recognition.onend = function() {
+            if (targetField.placeholder === "Listening..." || targetField.placeholder === "Mendengar...") {
+                targetField.placeholder = "";
+            }
+        };
+
+        recognition.start();
+    }
+
+    // Process voice input
+    function processVoiceInput(fieldId, transcript, language) {
+        if (fieldId === 'budget-amount') {
+            let processedValue = transcript.toLowerCase();
+
+            if (language === 'ms-MY') {
+                // Malay number conversion
+                const malayNumbers = {
+                    'kosong': '0', 'satu': '1', 'dua': '2', 'tiga': '3',
+                    'empat': '4', 'lima': '5', 'enam': '6', 'tujuh': '7',
+                    'lapan': '8', 'sembilan': '9', 'sepuluh': '10',
+                    'seratus': '100', 'ribu': '000', 'juta': '000000',
+                    'titik': '.', 'noktah': '.', 'per': '.'
+                };
+
+                Object.keys(malayNumbers).forEach(word => {
+                    const regex = new RegExp(word, 'gi');
+                    processedValue = processedValue.replace(regex, malayNumbers[word]);
+                });
+
+                processedValue = processedValue.replace(/ringgit|rm/g, '')
+                    .replace(/sen/g, '')
+                    .replace(/(\d)\s*\.\s*(\d)/g, '$1.$2');
+            } else {
+                // English processing
+                processedValue = processedValue.replace(/dollars|\$|euros|€|pounds|£/g, '')
+                    .replace(/cents|cent/g, '')
+                    .replace(/point|dot|and/g, '.');
+            }
+
+            // Extract numbers
+            processedValue = processedValue.replace(/[^\d.]/g, '');
+
+            if (processedValue.includes('.')) {
+                const parts = processedValue.split('.');
+                processedValue = `${parts[0]}.${parts[1] ? parts[1].substring(0, 2) : '00'}`;
+            }
+
+            document.getElementById(fieldId).value = processedValue || '0';
+        } else {
+            // For non-amount fields
+            document.getElementById(fieldId).value = transcript;
+        }
+    }
+
+    // Setup voice icon event listeners
+    function setupVoiceIcons() {
+        document.querySelectorAll('.voice-icon').forEach(icon => {
+            icon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const onclickAttr = this.getAttribute('onclick');
+                if (onclickAttr) {
+                    const fieldId = onclickAttr.match(/'([^']+)'/)[1];
+                    startVoiceRecognition(fieldId);
+                }
+            });
+        });
+    }
+
+    // Setup form event listeners
+    function setupForm() {
+        const budgetForm = document.getElementById("budget-form");
+        if (budgetForm) {
+            budgetForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                await saveBudget();
+            });
+        }
+    }
+
+    // Save budget function
+    async function saveBudget() {
+        if (!currentUser) {
+            showNotification("Please login to save budgets", "error");
+            return;
+        }
+
+        const category = document.getElementById("budget-category").value.trim();
+        const amountInput = document.getElementById("budget-amount").value.trim();
+        const amount = parseFloat(amountInput);
+        const period = document.getElementById("budget-period").value;
+        const alertThreshold = parseInt(document.getElementById("budget-alert").value) || 80;
+
+        // Validation
+        if (!category) {
+            showNotification("Please select a category", "error");
+            return;
+        }
+
+        if (!amountInput || isNaN(amount)) {
+            showNotification("Please enter a valid amount", "error");
+            return;
+        }
+
+        if (amount <= 0) {
+            showNotification("Amount must be greater than 0", "error");
+            return;
+        }
+
+        // Show loading spinner
+        const spinner = document.getElementById("spinner");
+        const saveButton = document.querySelector(".save");
+        spinner.style.display = "block";
+        saveButton.disabled = true;
+
+        try {
+            // First check if budget already exists for this category
+            const existingBudgetQuery = query(
+                budgetsCollection,
+                where("userId", "==", currentUser.uid),
+                where("category", "==", category)
+            );
+
+            const existingBudgets = await getDocs(existingBudgetQuery);
+
+            if (!existingBudgets.empty) {
+                showNotification("Budget already exists for this category", "warning");
+                return;
+            }
+
+            const budgetData = {
+                category,
+                amount,
+                period,
+                alertThreshold,
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                createdAt: serverTimestamp()
+            };
+
+            // Add budget to the main budgets collection
+            await addDoc(budgetsCollection, budgetData);
+
+            resetForm();
+            showNotification("Budget saved successfully!", "success");
+
+        } catch (error) {
+            console.error("Error saving budget:", error);
+            showNotification("Error saving budget: " + error.message, "error");
+        } finally {
+            spinner.style.display = "none";
+            saveButton.disabled = false;
+        }
+    }
+
+    // Reset form
+    function resetForm() {
+        document.getElementById("budget-category").value = "";
+        document.getElementById("budget-amount").value = "";
+        document.getElementById("budget-alert").value = "80";
+        document.getElementById("budget-period").value = "monthly";
+    }
+
+    // Show notification
+    function showNotification(message, type = "error") {
+        const notification = document.getElementById("notification");
+        const notificationMessage = document.getElementById("notification-message");
+        
+        notificationMessage.textContent = message;
+        notification.style.backgroundColor = type === "success" ? "#4caf50" : 
+                                          type === "warning" ? "#ffc107" : "#f44336";
+        notification.classList.add("show");
+
+        setTimeout(() => notification.classList.remove("show"), 5000);
+    }
+
+    // Close notification
+    function closeNotification() {
+        document.getElementById("notification").classList.remove("show");
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', initApp);
+
+    // Make functions available globally
+    window.resetForm = resetForm;
+    window.closeNotification = closeNotification;
+    window.startVoiceRecognition = startVoiceRecognition;
+    window.processVoiceInput = processVoiceInput;
+</script>
+</body>
+</html>

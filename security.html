@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Settings</title>
+  <meta http-equiv="Content-Security-Policy" 
+        content="default-src 'self';
+                 script-src 'self' 'unsafe-inline' 
+                      https://www.gstatic.com 
+                      https://cdn.jsdelivr.net 
+                      https://cdnjs.cloudflare.com;
+                 style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+                 img-src 'self' data:;
+                 connect-src 'self' https://*.firebaseio.com https://*.googleapis.com">
+  <!-- Password strength library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
+  <style>
+    :root {
+      --primary: #4285f4;
+      --danger: #ea4335;
+      --success: #34a853;
+      --warning: #fbbc05;
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-primary: #202124;
+      --text-secondary: #5f6368;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+    }
+
+    .security-container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+
+    .security-section {
+      background: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    .password-strength {
+      height: 4px;
+      background: #f1f1f1;
+      margin: 5px 0;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .password-strength-fill {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+
+    .save-btn {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .cancel-btn {
+      background-color: #f1f1f1;
+      color: var(--text-primary);
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: var(--success);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(26px);
+    }
+
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 15px;
+      border-radius: 4px;
+      color: white;
+      display: none;
+      z-index: 1000;
+    }
+
+    .notification.show {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+
+    .notification.error {
+      background-color: var(--danger);
+    }
+
+    .notification.success {
+      background-color: var(--success);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="security-container">
+    <h1>Security Settings</h1>
+
+    <!-- Password Change Section -->
+    <div class="security-section">
+      <h2>Change Password</h2>
+      <div class="form-group">
+        <label for="current-password">Current Password</label>
+        <input type="password" id="current-password" placeholder="Enter current password">
+      </div>
+      <div class="form-group">
+        <label for="new-password">New Password</label>
+        <input type="password" id="new-password" placeholder="Enter new password">
+        <div class="password-strength">
+          <div class="password-strength-fill" id="password-strength-fill"></div>
+        </div>
+        <small>Use at least 10 characters with uppercase letters and numbers</small>
+      </div>
+      <div class="form-group">
+        <label for="confirm-password">Confirm New Password</label>
+        <input type="password" id="confirm-password" placeholder="Confirm new password">
+      </div>
+      <div class="button-group">
+        <button class="cancel-btn" id="cancel-password">Cancel</button>
+        <button class="save-btn" id="change-password-btn">Change Password</button>
+      </div>
+    </div>
+
+    <!-- Two-Factor Authentication Section -->
+    <div class="security-section">
+      <h2>Two-Factor Authentication</h2>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <label class="toggle-switch">
+          <input type="checkbox" id="two-factor-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+        <span>Enable Two-Factor Authentication</span>
+      </div>
+      <div id="two-factor-setup" style="display: none; margin-top: 20px;">
+        <div class="form-group">
+          <p>Scan this QR code with your authenticator app:</p>
+          <div id="qrcode-container" style="background: white; padding: 15px; display: inline-block; border-radius: 8px;">
+            <div id="qrcode"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="verification-code">Enter Verification Code</label>
+          <input type="text" id="verification-code" placeholder="6-digit code" maxlength="6">
+        </div>
+        <button class="save-btn" id="verify-2fa-btn">Verify & Enable</button>
+      </div>
+    </div>
+
+    <!-- Active Sessions Section -->
+    <div class="security-section">
+      <h2>Active Sessions</h2>
+      <p>Devices that have accessed your account:</p>
+      <div id="sessions-container">
+        <p>Loading active sessions...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification -->
+  <div class="notification" id="notification">
+    <span id="notification-message"></span>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-functions-compat.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  
+  <script>
+// Initialize Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
+  authDomain: "f-track-e5c35.firebaseapp.com",
+  projectId: "f-track-e5c35",
+  storageBucket: "f-track-e5c35.appspot.com",
+  messagingSenderId: "650188769848",
+  appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd"
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+const functions = firebase.app().functions('asia-southeast1');
+
+
+  </script>
+</body>
+</html>

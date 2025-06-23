@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Family Expense Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            position: relative;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-size: 12px;
+            z-index: 100;
+            width: 150px;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #ecf0f1;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar-menu li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .sidebar-menu li:hover {
+            background-color: #34495e;
+        }
+        
+        .sidebar-menu li.active {
+            background-color: #3498db;
+        }
+        
+        .sidebar-menu li i {
+            margin-right: 10px;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .about-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 20px;
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        .app-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .app-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #3498db;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 25px;
+            color: white;
+            font-size: 30px;
+        }
+        
+        .app-meta h2 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        
+        .app-meta p {
+            margin: 0;
+            color: #777;
+        }
+        
+        .about-section {
+            margin-bottom: 25px;
+        }
+        
+        .about-section h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .about-section p {
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .features-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .feature-icon {
+            margin-right: 10px;
+            color: #3498db;
+            font-size: 18px;
+        }
+        
+        .version-info {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+        
+        .version-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .contact {
+            background-color: #f1f1f1;
+            color: #555;
+        }
+        
+        .rate-app {
+            background-color: #4285f4;
+            color: white;
+        }
+        
+        .contact:hover {
+            background-color: #e1e1e1;
+        }
+        
+        .rate-app:hover {
+            background-color: #3367d6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <select class="language-selector" id="language-selector">
+        <option value="en-US">English</option>
+        <option value="ms-MY">Malay (Bahasa Melayu)</option>
+    </select>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>F-Track</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="window.location.href='add_expenses.html'">
+                <i>📝</i> Add Expense
+            </li>
+            <li class="active">
+                <i>📊</i> Dashboard
+            </li>
+            <li onclick="window.location.href='list_expenses.html'">
+                <i>💰</i> List Expenses
+            </li>
+            <li class onclick="window.location.href='set_budget.html'">
+                <i>💵</i> Set Budget
+            </li>
+            <li onclick="window.location.href='list_budget.html'">
+                <i>🧾</i> List Budgets
+            </li>
+            <li onclick="window.location.href='report.html'">
+                <i>📅</i> Monthly Reports
+            </li>
+            <li>
+                <i>🏷️</i> Categories
+            </li>
+            <li onclick="window.location.href='family_member.html'">
+                <i>👨‍👩‍👧‍👦</i> Family Members
+            </li>
+            <li onclick="window.location.href='setting.html'">
+                <i>⚙️</i> Settings
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="about-container">
+            <h1>About Application</h1>
+            
+            <div class="app-info">
+                <div class="app-icon">💸</div>
+                <div class="app-meta">
+                    <h2>Family Expense Tracker</h2>
+                    <p>Version 2.1.4 (Build 2104)</p>
+                </div>
+            </div>
+            
+            <div class="about-section">
+                <h3>About This App</h3>
+                <p>The Family Expense Tracker helps families manage their finances together. Track shared expenses, monitor budgets, and gain insights into your spending patterns as a household. Our mission is to make family financial management simple, transparent, and collaborative.</p>
+            </div>
+            
+            <div class="about-section">
+                <h3>Key Features</h3>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>Track expenses for entire family</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>Multi-user access with different roles</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>Monthly budget planning</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>Expense categorization</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>Visual reports and analytics</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>Receipt scanning and storage</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>Multi-currency support</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>Voice input for expenses</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="about-section">
+                <h3>Privacy & Security</h3>
+                <p>We take your privacy seriously. All financial data is encrypted both in transit and at rest. You maintain full ownership of your data, and we never share it with third parties without your explicit consent.</p>
+            </div>
+            
+            <div class="version-info">
+                <p><strong>Version:</strong> 2.1.4 (Build 2104)</p>
+                <p><strong>Last Updated:</strong> June 15, 2023</p>
+                <p><strong>License:</strong> Proprietary</p>
+                <p><strong>Copyright:</strong> © 2023 Family Finance Solutions</p>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="contact">Contact Support</button>
+                <button class="rate-app">Rate This App</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar menu functionality
+        const menuItems = document.querySelectorAll('.sidebar-menu li');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                menuItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                // Here you would add code to load different content based on selection
+            });
+        });
+        
+        // Language selector functionality
+        document.getElementById('language-selector').addEventListener('change', function() {
+            console.log("Language changed to:", this.value);
+            // Here you would implement language change logic
+        });
+        
+        // Button functionality
+        document.querySelector('.contact').addEventListener('click', function() {
+            // Open contact support form or email
+            window.location.href = 'mailto:support@familyexpense.com';
+        });
+        
+        document.querySelector('.rate-app').addEventListener('click', function() {
+            // Open app store rating page
+            alert('Redirecting to app store...');
+            // window.open('https://play.google.com/store/apps/details?id=com.familyexpense.tracker');
+        });
+    </script>
+</body>
+</html>

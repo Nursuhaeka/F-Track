@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Budget Dashboard</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #ecf0f1;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar-menu li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .sidebar-menu li:hover {
+            background-color: #34495e;
+        }
+        
+        .sidebar-menu li.active {
+            background-color: #3498db;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-title {
+            font-size: 24px;
+            color: #333;
+            margin: 0;
+        }
+        
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            color: #555;
+            margin: 0;
+            font-weight: bold;
+        }
+        
+        .card-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .card-positive {
+            color: #4CAF50;
+        }
+        
+        .card-negative {
+            color: #F44336;
+        }
+        
+        .chart-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            height: 400px;
+        }
+        
+        .progress-container {
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.3s, background-color 0.3s;
+        }
+        
+        .progress-fill.warning {
+            background-color: #FFC107;
+        }
+        
+        .progress-fill.danger {
+            background-color: #F44336;
+        }
+        
+        .retry-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .retry-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* New styles for category charts */
+        #category-charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .category-chart {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px;
+            height: 350px;
+        }
+        
+        .category-chart-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .category-chart-title {
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .time-period-selector {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Family Budget</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="window.location.href='add_expenses.html'">Add Expense</li>
+            <li class="active">Dashboard</li>
+            <li onclick="window.location.href='list_expenses.html'">List Expenses</li>
+            <li onclick="window.location.href='set_budget.html'">Set Budget</li>
+            <li onclick="window.location.href='list_budget.html'">List Budgets</li>
+            <li onclick="window.location.href='report.html'">Monthly Reports</li>
+            <li>Categories</li>
+            <li onclick="window.location.href='family_member.html'">Family Members</li>
+            <li onclick="window.location.href='setting.html'">Settings</li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Family Budget Dashboard</h1>
+            <select class="time-period-selector" id="time-period-selector">
+                <option value="month" selected>This Month</option>
+                <option value="last-month">Last Month</option>
+                <option value="year">This Year</option>
+                <option value="custom">Custom Range</option>
+            </select>
+        </div>
+
+        <div id="custom-range-selector" style="display: none; margin-bottom: 20px;">
+            <input type="date" id="start-date">
+            <span>to</span>
+            <input type="date" id="end-date">
+            <button id="apply-custom-range">Apply</button>
+        </div>
+
+        <div class="spinner" id="spinner"></div>
+
+        <!-- Summary Cards -->
+        <div class="card-container" id="card-container">
+            <!-- Dynamic cards will be inserted here -->
+        </div>
+
+        <!-- Progress Bars for each category -->
+        <div class="chart-container" id="progress-container">
+            <h3>Budget Progress by Category</h3>
+            <!-- Progress charts will be inserted here -->
+        </div>
+
+        <!-- Main Budget vs Expenses Chart -->
+        <div class="chart-container">
+            <canvas id="budgetChart"></canvas>
+        </div>
+
+        <!-- Individual Category Charts -->
+        <div id="category-charts-container"></div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
+            authDomain: "f-track-e5c35.firebaseapp.com",
+            databaseURL: "https://f-track-e5c35-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "f-track-e5c35",
+            storageBucket: "f-track-e5c35.appspot.com",
+            messagingSenderId: "650188769848",
+            appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd",
+            measurementId: "G-YPQT10VSBJ"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        let currentUser = null;
+        let budgetChart = null;
+        let categoryCharts = {};
+
+        // Date Utilities (consistent with report code)
+        const DateUtils = {
+            parseInputDate: (dateString) => {
+                if (!dateString) return new Date(NaN);
+                const isoDate = new Date(dateString);
+                if (!isNaN(isoDate.getTime())) return isoDate;
+                const parts = dateString.split('-');
+                if (parts.length === 3) {
+                    return new Date(parts[0], parts[1]-1, parts[2]);
+                }
+                return new Date(NaN);
+            },
+            validateDate: (date) => {
+                return date instanceof Date && !isNaN(date.getTime());
+            },
+            endOfDay: (date) => {
+                const d = new Date(date);
+                d.setHours(23, 59, 59, 999);
+                return d;
+            },
+            formatDate: (date) => {
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
+        };
+
+        // Initialize Firebase auth state
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                currentUser = user;
+                // Set default dates for custom range
+                const today = new Date();
+                document.getElementById('start-date').valueAsDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                document.getElementById('end-date').valueAsDate = today;
+                
+                // Set up event listeners
+                document.getElementById('time-period-selector').addEventListener('change', updatePeriodSelector);
+                document.getElementById('apply-custom-range').addEventListener('click', loadDashboardData);
+                
+                loadDashboardData();
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        function updatePeriodSelector() {
+            const periodType = document.getElementById('time-period-selector').value;
+            const customRange = document.getElementById('custom-range-selector');
+            
+            if (periodType === 'custom') {
+                customRange.style.display = 'block';
+            } else {
+                customRange.style.display = 'none';
+                loadDashboardData();
+            }
+        }
+
+        function getDateRange() {
+            const periodType = document.getElementById('time-period-selector').value;
+            let startDate, endDate;
+            const today = new Date();
+
+            switch(periodType) {
+                case 'month':
+                    startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                    endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    break;
+                case 'last-month':
+                    startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                    endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+                    break;
+                case 'year':
+                    startDate = new Date(today.getFullYear(), 0, 1);
+                    endDate = new Date(today.getFullYear(), 11, 31);
+                    break;
+                case 'custom':
+                    startDate = DateUtils.parseInputDate(document.getElementById('start-date').value);
+                    endDate = DateUtils.parseInputDate(document.getElementById('end-date').value);
+                    break;
+                default:
+                    startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                    endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            }
+
+            // Validate dates (consistent with report code)
+            if (!DateUtils.validateDate(startDate) || !DateUtils.validateDate(endDate)) {
+                console.error('Invalid date range selected');
+                return getDefaultRange();
+            }
+
+            // Set time to end of day
+            endDate = DateUtils.endOfDay(endDate);
+            
+            return { startDate, endDate };
+        }
+
+        function getDefaultRange() {
+            const today = new Date();
+            const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+            const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            return {
+                startDate,
+                endDate: DateUtils.endOfDay(endDate)
+            };
+        }
+
+        async function loadDashboardData() {
+            try {
+                document.getElementById('spinner').style.display = 'block';
+                const { startDate, endDate } = getDateRange();
+                
+                console.log("Loading data for period:", startDate, "to", endDate);
+
+                // Fetch budgets and expenses (consistent with report code)
+                const budgetsQuery = await db.collection('budgets')
+                    .where('userId', '==', currentUser.uid)
+                    .where('period', '==', 'monthly')
+                    .get();
+                
+                // Get expenses for date range (consistent with report code)
+                const expensesQuery = await db.collection('expenses')
+                    .where('userId', '==', currentUser.uid)
+                    .get();
+
+                // Process budgets (consistent with report code)
+                const budgetsData = {};
+                budgetsQuery.forEach(doc => {
+                    const budgetData = doc.data();
+                    budgetsData[budgetData.category] = {
+                        amount: parseFloat(budgetData.amount) || 0,
+                        id: doc.id
+                    };
+                });
+
+                // Process expenses - filter by date range (consistent with report code)
+                const expensesData = {};
+                let totalExpenses = 0;
+                expensesQuery.forEach(doc => {
+                    const expense = doc.data();
+                    const expenseDate = DateUtils.parseInputDate(expense.date);
+                    
+                    if (DateUtils.validateDate(expenseDate) &&
+                        expenseDate >= startDate && 
+                        expenseDate <= endDate) {
+                        const category = expense.category || 'Uncategorized';
+                        const amount = parseFloat(expense.total) || 0;
+                        
+                        if (!expensesData[category]) {
+                            expensesData[category] = 0;
+                        }
+                        expensesData[category] += amount;
+                        totalExpenses += amount;
+                    }
+                });
+
+                console.log("Budgets data:", budgetsData);
+                console.log("Expenses data:", expensesData);
+                
+                updateDashboard(budgetsData, expensesData, totalExpenses);
+            } catch (error) {
+                console.error("Error loading data:", error);
+                showError("Failed to load data. Please check your connection and try again.");
+            } finally {
+                document.getElementById('spinner').style.display = 'none';
+            }
+        }
+
+        function updateDashboard(budgets, expenses, totalExpenses) {
+            const cardContainer = document.getElementById('card-container');
+            const progressContainer = document.getElementById('progress-container');
+            const categoryChartsContainer = document.getElementById('category-charts-container');
+            
+            // Clear previous content
+            cardContainer.innerHTML = '';
+            progressContainer.innerHTML = '<h3>Budget Progress by Category</h3>';
+            categoryChartsContainer.innerHTML = '';
+            
+            // Check if we have any budgets
+            if (Object.keys(budgets).length === 0) {
+                showMessage("No budgets found. Please set up your budget first.");
+                return;
+            }
+
+            let totalBudget = 0;
+            const categories = [];
+            const budgetValues = [];
+            const expenseValues = [];
+
+            // Create cards and progress bars for each budget category
+            Object.entries(budgets).forEach(([category, budget]) => {
+                const spent = expenses[category] || 0;
+                const remaining = budget.amount - spent;
+                const percentage = budget.amount > 0 ? (spent / budget.amount) * 100 : 0;
+
+                // Update totals and chart data
+                totalBudget += budget.amount;
+                categories.push(category);
+                budgetValues.push(budget.amount);
+                expenseValues.push(spent);
+
+                // Create progress bar
+                const progressBar = document.createElement('div');
+                progressBar.className = 'progress-container';
+                progressBar.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>${category}</span>
+                        <span>${percentage.toFixed(0)}% (RM ${spent.toFixed(2)} of RM ${budget.amount.toFixed(2)})</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill ${getProgressBarClass(percentage)}" 
+                             style="width: ${Math.min(percentage, 100)}%"></div>
+                    </div>
+                `;
+                progressContainer.appendChild(progressBar);
+
+                // Create individual category chart
+                createCategoryChart(category, budget.amount, spent);
+            });
+
+            // Add summary cards
+            const summaryCards = [
+                {
+                    title: "Total Budget",
+                    value: totalBudget,
+                    icon: "💰",
+                    class: "card-positive"
+                },
+                {
+                    title: "Total Spent",
+                    value: totalExpenses,
+                    icon: "💸",
+                    class: totalExpenses > totalBudget ? "card-negative" : "card-positive"
+                },
+                {
+                    title: "Remaining",
+                    value: Math.max(0, totalBudget - totalExpenses),
+                    icon: "✅",
+                    class: totalBudget > totalExpenses ? "card-positive" : "card-negative"
+                }
+            ];
+
+            summaryCards.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h3 class="card-title">${item.title}</h3>
+                        <span>${item.icon}</span>
+                    </div>
+                    <div class="card-value ${item.class}">
+                        RM ${item.value.toFixed(2)} 
+                    </div>
+                `;
+                cardContainer.appendChild(card);
+            });
+
+            // Update main chart
+            updateMainChart(categories, budgetValues, expenseValues);
+        }
+
+        function createCategoryChart(category, budgetAmount, spentAmount) {
+            const container = document.getElementById('category-charts-container');
+            const chartId = `chart-${category.replace(/\s+/g, '-')}`;
+            
+            const chartCard = document.createElement('div');
+            chartCard.className = 'category-chart';
+            
+            chartCard.innerHTML = `
+                <div class="category-chart-header">
+                    <h4 class="category-chart-title">${category}</h4>
+                    <small>${((spentAmount/budgetAmount)*100).toFixed(0)}% spent</small>
+                </div>
+                <canvas id="${chartId}"></canvas>
+            `;
+            
+            container.appendChild(chartCard);
+            
+            // Destroy previous chart if exists
+            if (categoryCharts[category]) {
+                categoryCharts[category].destroy();
+            }
+            
+            // Create the chart
+            const ctx = document.getElementById(chartId).getContext('2d');
+            categoryCharts[category] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Spent', 'Remaining'],
+                    datasets: [{
+                        data: [spentAmount, Math.max(0, budgetAmount - spentAmount)],
+                        backgroundColor: [
+                            spentAmount > budgetAmount ? 'rgba(255, 99, 132, 0.7)' : 'rgba(54, 162, 235, 0.7)',
+                            'rgba(200, 200, 200, 0.5)'
+                        ],
+                        borderColor: [
+                            spentAmount > budgetAmount ? 'rgba(255, 99, 132, 1)' : 'rgba(54, 162, 235, 1)',
+                            'rgba(200, 200, 200, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: RM ${context.raw.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateMainChart(categories, budgetValues, expenseValues) {
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+            
+            // Destroy previous chart if exists
+            if (budgetChart) {
+                budgetChart.destroy();
+            }
+            
+            budgetChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: categories,
+                    datasets: [
+                        {
+                            label: 'Budget',
+                            data: budgetValues,
+                            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1,
+                            barPercentage: 0.6
+                        },
+                        {
+                            label: 'Expenses',
+                            data: expenseValues,
+                            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1,
+                            barPercentage: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Amount (RM)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return 'RM ' + value;
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Categories'
+                            },
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Budget vs Expenses',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: RM ${context.raw.toFixed(2)}`;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Helper functions
+        function getProgressBarClass(percentage, alertThreshold = 80) {
+            if (percentage >= 100) return 'danger';
+            if (percentage >= alertThreshold) return 'warning';
+            return '';
+        }
+
+        function showError(message) {
+            const cardContainer = document.getElementById('card-container');
+            cardContainer.innerHTML = `
+                <div class="card" style="color: #F44336; grid-column: 1 / -1; text-align: center;"> 
+                    <h3>Error</h3>
+                    <p>${message}</p>
+                    <button class="retry-button" onclick="loadDashboardData()">Retry</button>
+                </div>
+            `;
+        }
+
+        function showMessage(message) {
+            const cardContainer = document.getElementById('card-container');
+            cardContainer.innerHTML = `
+                <div class="card" style="grid-column: 1 / -1; text-align: center;"> 
+                    <h3>Notice</h3>
+                    <p>${message}</p>
+                    <button class="retry-button" onclick="window.location.href='set_budget.html'">Set Up Budget</button>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

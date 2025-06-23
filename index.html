@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Budget Tracker | Home</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #2ecc71;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo img {
+            height: 40px;
+        }
+        
+        .logo h1 {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        nav a:hover {
+            background-color: var(--light-color);
+            color: var(--primary-color);
+        }
+        
+        .auth-buttons .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-login {
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+        
+        .btn-signup {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-login:hover {
+            background-color: var(--light-color);
+        }
+        
+        .btn-signup:hover {
+            background-color: #2980b9;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .hero-content {
+            flex: 1;
+            padding-right: 2rem;
+        }
+        
+        .hero h2 {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .hero-image {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--light-color);
+            transform: translateY(-2px);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 2rem;
+            background-color: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h3 {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .section-title p {
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-card h4 {
+            font-size: 1.3rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* Stats Section */
+        .stats {
+            padding: 4rem 2rem;
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .stat-item h4 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+        
+        .stat-item p {
+            color: var(--light-color);
+        }
+        
+        /* Testimonials Section */
+        .testimonials {
+            padding: 4rem 2rem;
+            background-color: white;
+        }
+        
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .testimonial-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .testimonial-card::before {
+            content: '"';
+            font-size: 5rem;
+            color: var(--light-color);
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            line-height: 1;
+        }
+        
+        .testimonial-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .testimonial-card p {
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--light-color);
+            margin-right: 1rem;
+            overflow: hidden;
+        }
+        
+        .author-info h5 {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .author-info p {
+            font-size: 0.8rem;
+            color: #666;
+            font-style: normal;
+        }
+        
+        /* CTA Section */
+        .cta {
+            padding: 4rem 2rem;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+        }
+        
+        .cta h3 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .cta p {
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 3rem 2rem;
+        }
+        
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-logo img {
+            height: 30px;
+        }
+        
+        .footer-logo h3 {
+            font-size: 1.2rem;
+        }
+        
+        .footer-about p {
+            color: var(--light-color);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-links a {
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .footer-links h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer-links ul {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: var(--light-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .footer-contact p {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+            color: var(--light-color);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--light-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <img src="images/f-track_logo.png" alt="Family Budget Tracker Logo">
+            <h1>Family Budget Tracker</h1>
+        </div>
+        
+        <div class="auth-buttons">
+            <a href="login.html" class="btn btn-login">Log In</a>
+            <a href="signup.html" class="btn btn-signup">Sign Up</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Take Control of Your Family Finances</h2>
+            <p>Family Budget Tracker helps you manage your household expenses, track spending patterns, and save money with intuitive budgeting tools designed for families.</p>
+            <div class="cta-buttons">
+                <a href="signup.html" class="btn btn-primary">Get Started for Free</a>
+                <a href="#features" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="images/frontpage.png" alt="Family Budget Tracker Dashboard">
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-title">
+            <h3>Powerful Features for Your Family</h3>
+            <p>Everything you need to manage your family budget effectively and achieve your financial goals together.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h4>Expense Tracking</h4>
+                <p>Easily record and categorize all your family expenses to understand where your money goes each month.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h4>Budget Planning</h4>
+                <p>Set monthly budgets for different categories and get alerts when you're approaching your limits.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">👨‍👩‍👧‍👦</div>
+                <h4>Multi-Member Access</h4>
+                <p>Invite family members to contribute to the budget while maintaining control over permissions.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h4>Mobile Friendly</h4>
+                <p>Access your budget from anywhere with our responsive web app that works on all devices.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h4>Visual Reports</h4>
+                <p>Beautiful charts and graphs to visualize your spending patterns and financial progress.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h4>Bank-Level Security</h4>
+                <p>Your financial data is protected with industry-standard encryption and security protocols.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-item">
+                <h4>10,000+</h4>
+                <p>Families Tracking Budgets</p>
+            </div>
+            <div class="stat-item">
+                <h4>₱5M+</h4>
+                <p>Monthly Expenses Tracked</p>
+            </div>
+            <div class="stat-item">
+                <h4>92%</h4>
+                <p>Report Better Savings</p>
+            </div>
+            <div class="stat-item">
+                <h4>24/7</h4>
+                <p>Support Available</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="section-title">
+            <h3>What Families Are Saying</h3>
+            <p>Don't just take our word for it - hear from families who transformed their finances.</p>
+        </div>
+        
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>Family Budget Tracker helped us save ₱15,000 in just three months by showing us where we were overspending on groceries and eating out.</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="images/user1.jpg" alt="Maria Santos">
+                        </div>
+                        <div class="author-info">
+                            <h5>Maria Santos</h5>
+                            <p>Manila, Philippines</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>As a family of six, keeping track of expenses was chaotic. Now we all use the app and know exactly where our money goes each month.</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="images/user2.jpg" alt="John and Lisa Reyes">
+                        </div>
+                        <div class="author-info">
+                            <h5>John & Lisa Reyes</h5>
+                            <p>Cebu, Philippines</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>The visual reports helped us explain budgeting to our teenagers. Now they understand why we can't always say yes to every request!</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="images/user3.jpg" alt="The Lim Family">
+                        </div>
+                        <div class="author-info">
+                            <h5>The Lim Family</h5>
+                            <p>Davao, Philippines</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <h3>Ready to Transform Your Family Finances?</h3>
+        <p>Join thousands of families who are taking control of their budgets and achieving their financial goals together.</p>
+        <div class="cta-buttons" style="justify-content: center;">
+            <a href="signup.html" class="btn btn-primary">Start Free Trial</a>
+            <a href="login.html" class="btn btn-secondary">Existing User? Log In</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-about">
+                <div class="footer-logo">
+                    <img src="images/f-track_logo.png" alt="Family Budget Tracker Logo">
+                    <h3>Family Budget Tracker</h3>
+                </div>
+                <p>Helping families achieve financial wellness through smart budgeting tools since 2020.</p>
+                <div class="social-links">
+                    <a href="#"><i>📱</i></a>
+                    <a href="#"><i>💻</i></a>
+                    <a href="#"><i>📧</i></a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Features</h4>
+                <ul>
+                    <li><a href="#">Expense Tracking</a></li>
+                    <li><a href="#">Budget Planning</a></li>
+                    <li><a href="#">Family Sharing</a></li>
+                    <li><a href="#">Reports</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-contact">
+                <h4>Contact Us</h4>
+                <p><i>📧</i> hello@familytracker.com</p>
+                <p><i>📞</i> +63 912 345 6789</p>
+                <p><i>🏢</i> Manila, Philippines</p>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2023 Family Budget Tracker. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase Script -->
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
+            authDomain: "f-track-e5c35.firebaseapp.com",
+            databaseURL: "https://f-track-e5c35-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "f-track-e5c35",
+            storageBucket: "f-track-e5c35.firebasestorage.app",
+            messagingSenderId: "650188769848",
+            appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd",
+            measurementId: "G-YPQT10VSBJ"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Check auth state
+        firebase.auth().onAuthStateChanged((user) => {
+            const authButtons = document.querySelector('.auth-buttons');
+            
+            if (user) {
+                // User is signed in - show logout button
+                authButtons.innerHTML = `
+                    <a href="#" class="btn btn-login logout-btn">Log Out</a>
+                `;
+                
+                // Add logout functionality
+                document.querySelector('.logout-btn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    firebase.auth().signOut()
+                        .then(() => {
+                            window.location.href = 'index.html';
+                        })
+                        .catch((error) => {
+                            console.error('Logout error:', error);
+                            alert('Error signing out. Please try again.');
+                        });
+                });
+            } else {
+                // User is signed out - show login/signup buttons
+                authButtons.innerHTML = `
+                    <a href="login.html" class="btn btn-login">Log In</a>
+                    <a href="signup.html" class="btn btn-signup">Sign Up</a>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

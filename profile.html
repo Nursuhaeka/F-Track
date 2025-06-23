@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Family Expense Tracker</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #ecf0f1;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar-menu li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .sidebar-menu li:hover {
+            background-color: #34495e;
+        }
+        
+        .sidebar-menu li.active {
+            background-color: #3498db;
+        }
+        
+        .sidebar-menu li i {
+            margin-right: 10px;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #4e9ad6;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        input:read-only {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .edit-btn {
+            background-color: #4e9ad6;
+            color: white;
+        }
+
+        .save-btn {
+            background-color: #428514;
+            color: white;
+            display: none;
+        }
+
+        .cancel-btn {
+            background-color: #e1e1e1;
+            color: #555;
+            display: none;
+        }
+
+        .status-message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar - Matching Add Expenses -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>F-Track</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="window.location.href='add_expenses.html'">
+                <i>📝</i> Add Expense
+            </li>
+            <li onclick="window.location.href='dashboard.html'">
+                <i>📊</i> Dashboard
+            </li>
+            <li onclick="window.location.href='list_expenses.html'">
+                <i>💰</i> List Expenses
+            </li>
+            <li onclick="window.location.href='set_budget.html'">
+                <i>💵</i> Set Budget
+            </li>
+            <li onclick="window.location.href='list_budget.html'">
+                <i>🧾</i> List Budgets
+            </li>
+            <li onclick="window.location.href='report.html'">
+                <i>📅</i> Monthly Reports
+            </li>
+            <li>
+                <i>🏷️</i> Categories
+            </li>
+            <li onclick="window.location.href='family_member.html'">
+                <i>👨‍👩‍👧‍👦</i> Family Members
+            </li>
+            <li onclick="window.location.href='setting.html'">
+                <i>⚙️</i> Settings
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="form-container">
+            <div class="profile-header">
+                <div class="profile-pic" id="profilePic">NT</div>
+                <h1>Profile Settings</h1>
+            </div>
+            
+            <div id="statusMessage" class="status-message"></div>
+            
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="firstName" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" name="address" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="role">Role</label>
+                    <select id="role" name="role" disabled>
+                        <option value="individual">Individual</option>
+                        <option value="family">Family</option>
+                    </select>
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" id="editBtn" class="edit-btn">Edit Profile</button>
+                    <button type="button" id="saveBtn" class="save-btn">Save Changes</button>
+                    <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration - REPLACE WITH YOUR ACTUAL CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIs6VNmlndKX66p0YmdXsDkc6igb2-Eg8",
+            authDomain: "f-track-e5c35.firebaseapp.com",
+            projectId: "f-track-e5c35",
+            storageBucket: "f-track-e5c35.appspot.com",
+            messagingSenderId: "650188769848",
+            appId: "1:650188769848:web:59ca6bbfcd428a667cb4cd"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // DOM elements
+        const profileForm = document.getElementById('profileForm');
+        const editBtn = document.getElementById('editBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const profilePic = document.getElementById('profilePic');
+
+        // Form fields
+        const firstNameInput = document.getElementById('firstName');
+        const lastNameInput = document.getElementById('lastName');
+        const emailInput = document.getElementById('email');
+        const addressInput = document.getElementById('address');
+        const roleSelect = document.getElementById('role');
+
+        // Current user data
+        let originalData = {};
+        let currentUser = null;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Set auth persistence
+                await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+                
+                // Check auth state
+                auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        currentUser = user;
+                        await loadProfileData(user.uid);
+                    } else {
+                        // Redirect to login if not authenticated
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 1500);
+                    }
+                });
+            } catch (error) {
+                showMessage('Error initializing: ' + error.message, 'error');
+                console.error('Initialization error:', error);
+            }
+        });
+
+        // Load profile data from Firestore
+        async function loadProfileData(userId) {
+            try {
+                const doc = await db.collection('users').doc(userId).get();
+                
+                if (doc.exists) {
+                    const userData = doc.data();
+                    originalData = {...userData};
+                    
+                    // Update profile picture initials
+                    if (userData.firstName && userData.lastName) {
+                        profilePic.textContent = 
+                            userData.firstName.charAt(0) + userData.lastName.charAt(0);
+                    }
+                    
+                    // Populate form fields
+                    firstNameInput.value = userData.firstName || '';
+                    lastNameInput.value = userData.lastName || '';
+                    emailInput.value = userData.email || '';
+                    addressInput.value = userData.address || '';
+                    roleSelect.value = userData.role || 'individual';
+                    
+                    // Enable edit button
+                    editBtn.disabled = false;
+                } else {
+                    showMessage('No profile data found', 'error');
+                }
+            } catch (error) {
+                showMessage('Error loading profile: ' + error.message, 'error');
+                console.error('Profile load error:', error);
+            }
+        }
+
+        // Enable editing
+        editBtn.addEventListener('click', () => {
+            // Make fields editable
+            firstNameInput.readOnly = false;
+            lastNameInput.readOnly = false;
+            addressInput.readOnly = false;
+            roleSelect.disabled = false;
+            
+            // Show save/cancel buttons
+            editBtn.style.display = 'none';
+            saveBtn.style.display = 'block';
+            cancelBtn.style.display = 'block';
+        });
+
+        // Cancel editing
+        cancelBtn.addEventListener('click', () => {
+            // Restore original values
+            firstNameInput.value = originalData.firstName || '';
+            lastNameInput.value = originalData.lastName || '';
+            addressInput.value = originalData.address || '';
+            roleSelect.value = originalData.role || 'individual';
+            
+            // Make fields read-only again
+            resetFormToReadOnly();
+        });
+
+        // Save changes
+        saveBtn.addEventListener('click', async () => {
+            try {
+                // Get updated values
+                const updates = {
+                    firstName: firstNameInput.value.trim(),
+                    lastName: lastNameInput.value.trim(),
+                    address: addressInput.value.trim(),
+                    role: roleSelect.value,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                // Validate inputs
+                if (!updates.firstName || !updates.lastName) {
+                    showMessage('First and last name are required', 'error');
+                    return;
+                }
+                
+                // Show loading state
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+                
+                // Update Firestore
+                await db.collection('users').doc(currentUser.uid).update(updates);
+                
+                // Update original data
+                originalData = {...originalData, ...updates};
+                
+                // Show success message
+                showMessage('Profile updated successfully!', 'success');
+                
+                // Reset form to read-only
+                resetFormToReadOnly();
+                
+                // Update profile pic initials if name changed
+                if (updates.firstName && updates.lastName) {
+                    profilePic.textContent = 
+                        updates.firstName.charAt(0) + updates.lastName.charAt(0);
+                }
+                
+            } catch (error) {
+                showMessage('Error updating profile: ' + error.message, 'error');
+                console.error('Update error:', error);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Changes';
+            }
+        });
+
+        // Helper function to reset form to read-only
+        function resetFormToReadOnly() {
+            firstNameInput.readOnly = true;
+            lastNameInput.readOnly = true;
+            addressInput.readOnly = true;
+            roleSelect.disabled = true;
+            
+            editBtn.style.display = 'block';
+            saveBtn.style.display = 'none';
+            cancelBtn.style.display = 'none';
+        }
+
+        // Helper function to show status messages
+        function showMessage(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message ' + type;
+            statusMessage.style.display = 'block';
+            
+            // Hide message after 5 seconds
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

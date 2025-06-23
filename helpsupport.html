@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Help & Support - Family Expense Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #ecf0f1;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-menu li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .sidebar-menu li:hover {
+            background-color: #34495e;
+        }
+        .sidebar-menu li.active {
+            background-color: #3498db;
+        }
+        .sidebar-menu li i {
+            margin-right: 10px;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        .help-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 24px;
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .help-section {
+            margin-bottom: 40px;
+        }
+        .help-section h2 {
+            font-size: 20px;
+            color: #3498db;
+            margin-top: 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .help-section h2 i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+        
+        /* FAQ Styles */
+        .faq-item {
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .faq-question {
+            padding: 15px;
+            background-color: #f9f9f9;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-question:hover {
+            background-color: #f1f1f1;
+        }
+        .faq-answer {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .faq-item.active .faq-answer {
+            padding: 15px;
+            max-height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>F-Track</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="window.location.href='add_expenses.html'">
+                <i>📝</i> Add Expense
+            </li>
+            <li onclick="window.location.href='dashboard.html'">
+                <i>📊</i> Dashboard
+            </li>
+            <li onclick="window.location.href='list_expenses.html'">
+                <i>💰</i> List Expenses
+            </li>
+            <li class onclick="window.location.href='set_budget.html'">
+                <i>💵</i> Set Budget
+            </li>
+            <li onclick="window.location.href='list_budget.html'">
+                <i>🧾</i> List Budgets
+            </li>
+            <li onclick="window.location.href='report.html'">
+                <i>📅</i> Monthly Reports
+            </li>
+            <li>
+                <i>🏷️</i> Categories
+            </li>
+            <li onclick="window.location.href='family_member.html'">
+                <i>👨‍👩‍👧‍👦</i> Family Members
+            </li>
+            <li onclick="window.location.href='setting.html'">
+                <i>⚙️</i> Settings
+            </li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="help-container">
+            <h1>Help & Support</h1>
+            
+            <!-- FAQ Section -->
+            <div class="help-section">
+                <h2><i>❓</i> Frequently Asked Questions</h2>
+                
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <div class="faq-question">
+                        <span>How do I add a new expense?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>To add a new expense:</p>
+                        <ol>
+                            <li>Go to the "Add Expense" page from the sidebar</li>
+                            <li>Select the category for your expense</li>
+                            <li>Enter the amount and date</li>
+                            <li>Add any additional notes if needed</li>
+                            <li>Click "Save Expense"</li>
+                        </ol>
+                        <p>Your expense will now appear in your budget reports.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <div class="faq-question">
+                        <span>How can I set a monthly budget for a category?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Setting a monthly budget is easy:</p>
+                        <ol>
+                            <li>Navigate to "Set Budget" from the sidebar</li>
+                            <li>Select the category you want to budget for</li>
+                            <li>Enter your monthly budget amount</li>
+                            <li>Set an alert threshold if desired</li>
+                            <li>Click "Save Budget"</li>
+                        </ol>
+                        <p>You can view your budget progress on the "List Budgets" page.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <div class="faq-question">
+                        <span>How do I change my account password?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>To change your password:</p>
+                        <ol>
+                            <li>Go to "Settings" in the sidebar</li>
+                            <li>Select the "Security" tab</li>
+                            <li>Click on "Change Password"</li>
+                            <li>Enter your current password and new password</li>
+                            <li>Confirm the new password and click "Save"</li>
+                        </ol>
+                        <p>For security reasons, we recommend changing your password regularly.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Toggle FAQ items
+        function toggleFAQ(item) {
+            item.classList.toggle("active");
+            const icon = item.querySelector(".faq-question span:last-child");
+            icon.textContent = item.classList.contains("active") ? "−" : "+";
+        }
+    </script>
+</body>
+</html>
