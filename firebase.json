@@ -10,18 +10,16 @@
     ],
     "timeoutSeconds": 60
   },
+  
   "hosting": {
-    "public": "y",
+    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
     ]
   }
+
+
+
 }

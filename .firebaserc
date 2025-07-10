@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "f-track-e5c35"
-  }
+    "default": "f-track-e5c35",
+    "myfunctions": "f-track-e5c35"
+  },
+  "targets": {},
+  "etags": {}
 }
