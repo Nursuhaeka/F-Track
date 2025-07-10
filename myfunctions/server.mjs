@@ -99,6 +99,11 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
+// ✅ Add root route so Firebase knows the app is alive
+app.get('/', (req, res) => {
+  res.send('✅ Server is up and running');
+});
+
 // Start the Express server
 const PORT = process.env.PORT;
 
