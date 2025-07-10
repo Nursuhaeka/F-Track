@@ -4,6 +4,9 @@ import bodyParser from 'body-parser';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
+// ✅ Log container start
+console.log("🚀 Starting Firebase App Hosting container...");
+
 // Initialize Express app
 const app = express();
 app.use(bodyParser.json());
@@ -15,9 +18,14 @@ const __dirname = path.dirname(__filename);
 // Initialize Firebase Admin SDK
 const serviceAccount = path.join(__dirname, 'f-track-e5c35-firebase-adminsdk-fbsvc-c6fdfbfe53.json');
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+// ✅ Catch potential errors during Firebase Admin initialization
+try {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+} catch (error) {
+  console.error("❌ Firebase Admin initialization error:", error);
+}
 
 const db = admin.firestore();
 
