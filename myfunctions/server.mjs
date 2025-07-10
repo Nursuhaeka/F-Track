@@ -4,9 +4,6 @@ import bodyParser from 'body-parser';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
-// ✅ Log container start
-console.log("🚀 Starting Firebase App Hosting container...");
-
 // Initialize Express app
 const app = express();
 app.use(bodyParser.json());
@@ -18,14 +15,9 @@ const __dirname = path.dirname(__filename);
 // Initialize Firebase Admin SDK
 const serviceAccount = path.join(__dirname, 'f-track-e5c35-firebase-adminsdk-fbsvc-c6fdfbfe53.json');
 
-// ✅ Catch potential errors during Firebase Admin initialization
-try {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-} catch (error) {
-  console.error("❌ Firebase Admin initialization error:", error);
-}
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
 const db = admin.firestore();
 
@@ -99,14 +91,8 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
-// ✅ Add root route so Firebase knows the app is alive
-app.get('/', (req, res) => {
-  res.send('✅ Server is up and running');
-});
-
 // Start the Express server
-const PORT = process.env.PORT || 8080;
-
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Webhook server is running on port ${PORT}`);
 });
